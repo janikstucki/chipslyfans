@@ -3,7 +3,7 @@
 
 <template>
   <div class="bg-blue-500">
-    <h1 class="text-9xl underline">
+    <h1 class="text-9xl underline bg blue">
       chipsy 🍑🍑🍑🍑⚡⚡🫃🫃🙏🥵🥵🥵🤓🤓🤓🤓
     </h1>
   </div>
