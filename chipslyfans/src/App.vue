@@ -2,10 +2,8 @@
 </script>
 
 <template>
-  <div class="bg-blue-500">
-    <h1 class="text-9xl underline">
-      chipsy 🍑🍑🍑🍑
-    </h1>
+  <div>
+    <router-view />
   </div>
 </template>
 
