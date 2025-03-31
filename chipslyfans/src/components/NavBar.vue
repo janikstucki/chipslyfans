@@ -27,8 +27,18 @@
   padding: 20px 0;
   border-right: 1px solid #dbdbdb;
   display: flex;
-  flex-direction: column;
+  flex-direction: column; 
   gap: 12px;
+}
+
+@media (min-width: 768px) {
+  .navbar-left {
+    flex-direction: row; 
+    justify-content: space-between; 
+  }
+  .nav-item {
+    padding: 12px 24px;
+  }
 }
 
 .nav-item {
@@ -62,16 +72,4 @@
   stroke-width: 2.5;
 }
 
-@media (max-width: 768px) {
-  .navbar-left {
-    width: 80px;
-    align-items: center;
-  }
-  .nav-item span {
-    display: none;
-  }
-  .nav-item {
-    padding: 16px;
-  }
-}
 </style>
