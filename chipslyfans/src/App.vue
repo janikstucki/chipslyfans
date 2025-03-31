@@ -13,6 +13,9 @@ import navbar from '../src/components/NavBar.vue'
   </div>
 </template>
 
+<style>
+@import url('./style.css');
+</style>
 <style scoped>
   .app {
     display: flex;

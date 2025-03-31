@@ -9,7 +9,3 @@
     </h1>
   </div>
 </template>
-
-<style scoped>
-@import "tailwindcss";
-</style>
