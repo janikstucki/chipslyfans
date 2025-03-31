@@ -1,31 +1,173 @@
-<script setup>
-import { RouterLink } from 'vue-router'
-</script>
-
 <template>
-  <div class="fixed left-0 top-0 bottom-0 w-64 p-5 border-r border-gray-200 flex flex-col gap-3 bg-white">
-    <RouterLink 
-      to="/" 
-      class="nav-item flex items-center gap-4 p-3 text-gray-800 font-medium text-base rounded-lg transition-colors hover:bg-gray-50"
-      active-class="!text-sky-400 font-semibold [&>svg]:stroke-sky-400 [&>svg]:stroke-[2.5]"
+  <div class="flex h-screen bg-gray-100">
+    <!-- Sidebar -->
+    <aside 
+      class="sidebar bg-white border-r border-gray-200 transition-all duration-300 fixed top-0 bottom-0 z-50"
+      :class="{
+        'w-64': isExpanded,
+        'w-20': !isExpanded,
+        'shadow-lg': isMobileOpen
+      }"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-house">
-        <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/>
-        <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-      </svg>
-      Start
-    </RouterLink>
+      <!-- Toggle Button -->
+      <button 
+        @click="toggleSidebar"
+        class="absolute -right-3 top-5 bg-white rounded-full p-1 shadow-md border border-gray-200 hover:bg-gray-100 z-10"
+      >
+        <ChevronRightIcon v-if="!isExpanded" class="h-4 w-4 text-gray-600" />
+        <ChevronLeftIcon v-else class="h-4 w-4 text-gray-600" />
+      </button>
 
-    <RouterLink 
-      to="/postfach" 
-      class="nav-item flex items-center gap-4 p-3 text-gray-800 font-medium text-base rounded-lg transition-colors hover:bg-gray-50"
-      active-class="!text-sky-400 font-semibold [&>svg]:stroke-sky-400 [&>svg]:stroke-[2.5]"
+      <!-- Logo -->
+      <div class="flex items-center justify-center h-16 border-b border-gray-200">
+        <span v-if="isExpanded" class="text-xl font-bold">Chipsly</span>
+        <span v-else class="text-xl font-bold">C</span>
+      </div>
+
+      <!-- Navigation Items -->
+      <nav class="mt-4">
+        <router-link 
+          to="/" 
+          class="flex items-center mx-3 my-1 p-3 rounded-lg transition-all duration-200 group hover:bg-gray-100"
+          active-class="bg-gray-100 text-blue-600"
+        >
+          <HomeIcon class="h-6 w-6 flex-shrink-0" />
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">Start</span>
+        </router-link>
+
+        <router-link 
+          to="/postfach" 
+          class="flex items-center mx-3 my-1 p-3 rounded-lg transition-all duration-200 group hover:bg-gray-100"
+          active-class="bg-gray-100 text-blue-600"
+        >
+          <EnvelopeIcon class="h-6 w-6 flex-shrink-0" />
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">Postfach</span>
+        </router-link>
+
+        <router-link 
+          to="/nachrichten" 
+          class="flex items-center mx-3 my-1 p-3 rounded-lg transition-all duration-200 group hover:bg-gray-100"
+          active-class="bg-gray-100 text-blue-600"
+        >
+          <ChatBubbleLeftRightIcon class="h-6 w-6 flex-shrink-0" />
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">Nachrichten</span>
+        </router-link>
+
+        <router-link 
+          to="/sammlung" 
+          class="flex items-center mx-3 my-1 p-3 rounded-lg transition-all duration-200 group hover:bg-gray-100"
+          active-class="bg-gray-100 text-blue-600"
+        >
+          <BookmarkIcon class="h-6 w-6 flex-shrink-0" />
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">Sammlung</span>
+        </router-link>
+
+        <router-link 
+          to="/abonnements" 
+          class="flex items-center mx-3 my-1 p-3 rounded-lg transition-all duration-200 group hover:bg-gray-100"
+          active-class="bg-gray-100 text-blue-600"
+        >
+          <UserGroupIcon class="h-6 w-6 flex-shrink-0" />
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">Abonnements</span>
+        </router-link>
+
+        <router-link 
+          to="/profil" 
+          class="flex items-center mx-3 my-1 p-3 rounded-lg transition-all duration-200 group hover:bg-gray-100"
+          active-class="bg-gray-100 text-blue-600"
+        >
+          <UserIcon class="h-6 w-6 flex-shrink-0" />
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">Profil</span>
+        </router-link>
+
+        <router-link 
+          to="/mehr" 
+          class="flex items-center mx-3 my-1 p-3 rounded-lg transition-all duration-200 group hover:bg-gray-100"
+          active-class="bg-gray-100 text-blue-600"
+        >
+          <EllipsisHorizontalIcon class="h-6 w-6 flex-shrink-0" />
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">Mehr</span>
+        </router-link>
+
+        <div class="px-3 mt-6 transition-all duration-300" :class="{'mx-0': !isExpanded, 'mx-3': isExpanded}">
+          <button 
+            @click="createNewPost"
+            class="w-full flex items-center justify-center p-3 rounded-lg transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700 overflow-hidden"
+          >
+            <PlusIcon class="h-6 w-6 flex-shrink-0 text-white" />
+            <span 
+              class="ml-3 whitespace-nowrap transition-opacity duration-200"
+              :class="{'opacity-0 w-0': !isExpanded, 'opacity-100 w-auto': isExpanded}"
+            >
+              Neuer Beitrag
+            </span>
+          </button>
+        </div>
+      </nav>
+    </aside>
+    <main 
+      class="flex-1 overflow-auto transition-all duration-300"
+      :class="{
+        'ml-20': !isExpanded && !isMobile,
+        'ml-64': isExpanded && !isMobile
+      }"
     >
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail">
-        <rect width="20" height="16" x="2" y="4" rx="2"/>
-        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-      </svg>
-      Postfach
-    </RouterLink>
+      <router-view />
+    </main>
   </div>
 </template>
+
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { 
+  ChevronRightIcon, 
+  ChevronLeftIcon,
+  HomeIcon,
+  EnvelopeIcon,
+  ChatBubbleLeftRightIcon,
+  BookmarkIcon,
+  UserGroupIcon,
+  UserIcon,
+  EllipsisHorizontalIcon,
+  PlusIcon
+} from '@heroicons/vue/24/outline'
+
+const isExpanded = ref(true)
+const isMobile = ref(false)
+
+const toggleSidebar = () => {
+  isExpanded.value = !isExpanded.value
+}
+
+const createNewPost = () => {
+  console.log('Create new post clicked')
+}
+
+const checkScreenSize = () => {
+  isMobile.value = window.innerWidth < 1024
+}
+
+onMounted(() => {
+  checkScreenSize()
+  window.addEventListener('resize', checkScreenSize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', checkScreenSize)
+})
+</script>
+
+<style scoped>
+.sidebar {
+  transition-property: width;
+}
+
+@media (max-width: 1023px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  .sidebar.w-64, .sidebar.w-20 {
+    transform: translateX(0);
+  }
+}
+</style>

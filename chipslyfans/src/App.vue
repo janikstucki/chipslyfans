@@ -1,23 +1,29 @@
 <script setup>
-import navbar from '../src/components/NavBar.vue'
+import Navbar from './components/Navbar.vue'
 </script>
 
 <template>
-  <div class="display flex app">
-      <div class="w-1/4">
-          <navbar />
-      </div>
-      <div class="w-3/4">
-          <router-view />
-      </div>
+  <div class="app flex min-h-screen">
+    <!-- Sidebar/Navbar with content-->
+    <Navbar />
   </div>
 </template>
 
 <style>
-@import url('./style.css');
+@import url('./style.css');   
 </style>
 <style scoped>
-  .app {
-    display: flex;
-  }
-</style>  
+.app {
+  /* Flex layout ensures navbar and content stay in place */
+  display: flex;
+  flex-direction: row;
+}
+
+/* Optional: Add some basic styling for better separation */
+nav {
+  border-right: 1px solid #e2e8f0;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+}
+</style>
