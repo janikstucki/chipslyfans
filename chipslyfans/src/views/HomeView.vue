@@ -78,7 +78,7 @@
 
       <!-- Neue Beiträge unten -->
       <div class="new-posts bg-white border-t border-gray-200 p-4">
-        <h3 class="font-medium mb-3">Neue Beiträge</h3>
+        <h3 class="font-medium mb-3">{{ $t('root.search_most_searched_title') }}</h3>
         <div class="grid grid-cols-3 gap-2">
           <div 
             v-for="(beitrag, index) in filteredBeitraege.slice(0, 3)" 

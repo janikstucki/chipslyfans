@@ -20,8 +20,8 @@
 
       <!-- Logo -->
       <div class="flex items-center justify-center h-16 border-b border-gray-200">
-        <span v-if="isExpanded" class="text-xl font-bold">Chipsly</span>
-        <span v-else class="text-xl font-bold"><img src="../assets/images/ChipslyFans-logo.png" alt=""></span>
+        <span v-if="isExpanded" class="text-xl font-bold">ChipslyFans</span>
+        <span v-else class="text-xl font-bold">C</span>
       </div>
 
       <!-- Navigation Items -->
@@ -104,6 +104,26 @@
           </button>
         </div>
       </nav>
+      <div class="px-3 mt-6 transition-all duration-300">
+        <button 
+          v-if="!isLoggedIn" 
+          @click="login"
+          class="w-full flex items-center justify-center p-3 rounded-lg transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700 overflow-hidden"
+        >
+          <ArrowLeftEndOnRectangleIcon class="h-6 w-6 flex-shrink-0 text-white" />
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200"
+          :class="{'opacity-0 w-0': !isExpanded, 'opacity-100 w-auto': isExpanded}">Login</span>
+        </button>
+        <button 
+          v-else 
+          @click="logout"
+          class="w-full flex items-center justify-center p-3 rounded-lg transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700 overflow-hidden"
+        >
+          <ArrowLeftStartOnRectangleIcon class="h-6 w-6 flex-shrink-0 text-white" />
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200"
+          :class="{'opacity-0 w-0': !isExpanded, 'opacity-100 w-auto': isExpanded}">Logout</span>
+        </button>
+      </div>
     </aside>
     <main 
       class="flex-1 overflow-auto transition-all duration-300"
@@ -129,11 +149,15 @@ import {
   UserGroupIcon,
   UserIcon,
   EllipsisHorizontalIcon,
-  PlusIcon
+  PlusIcon,
+  ArrowLeftEndOnRectangleIcon,
+  ArrowLeftStartOnRectangleIcon,
+
 } from '@heroicons/vue/24/outline'
 
 const isExpanded = ref(true)
 const isMobile = ref(false)
+const isLoggedIn = ref(true)
 
 const toggleSidebar = () => {
   isExpanded.value = !isExpanded.value
@@ -155,6 +179,14 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', checkScreenSize)
 })
+
+const login = () => {
+  isLoggedIn.value = true;
+};
+
+const logout = () => {
+  isLoggedIn.value = false;
+};
 </script>
 
 <style scoped>
@@ -169,5 +201,9 @@ onBeforeUnmount(() => {
   .sidebar.w-64, .sidebar.w-20 {
     transform: translateX(0);
   }
+}
+
+.mt-auto {
+  margin-top: auto;
 }
 </style>
