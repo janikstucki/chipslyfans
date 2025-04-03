@@ -1,0 +1,20 @@
+{
+    "nav":
+    {
+        "start": "Start",
+        "inbox": "Postfach",
+        "messages": "Nachrichten",
+        "collection": "Sammlung",
+        "abonements": "Abonnements",    
+        "profile": "Profil",
+        "more": "Mehr",
+        "new_post": "Neuer Beitrag"
+    },
+    "root":
+    {
+        "title": "Neuste Beiträge",
+        "search_bar": "Beiträge durchsuchen",
+        "search_info": "Suche nach Inhalten"
+        
+    }
+}

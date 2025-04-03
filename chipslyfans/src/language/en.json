@@ -1,0 +1,17 @@
+{
+    "nav": {
+        "start": "Home",
+        "inbox": "Inbox",
+        "messages": "Messages",
+        "collection": "Collection",
+        "abonements": "Subscriptions",
+        "profile": "Profile",
+        "more": "More",
+        "new_post": "New Post"
+    },
+    "root": {
+        "title": "Recent Posts",
+        "search_bar": "Search Posts",
+        "search_info": "Search for content"
+    }
+}

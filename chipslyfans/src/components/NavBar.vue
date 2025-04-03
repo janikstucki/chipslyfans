@@ -21,7 +21,7 @@
       <!-- Logo -->
       <div class="flex items-center justify-center h-16 border-b border-gray-200">
         <span v-if="isExpanded" class="text-xl font-bold">Chipsly</span>
-        <span v-else class="text-xl font-bold">C</span>
+        <span v-else class="text-xl font-bold"><img src="../assets/images/ChipslyFans-logo.png" alt=""></span>
       </div>
 
       <!-- Navigation Items -->
@@ -32,7 +32,7 @@
           active-class="bg-gray-100 text-blue-600"
         >
           <HomeIcon class="h-6 w-6 flex-shrink-0" />
-          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">Start</span>
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">{{ $t('nav.start') }}</span>
         </router-link>
 
         <router-link 
@@ -41,7 +41,7 @@
           active-class="bg-gray-100 text-blue-600"
         >
           <EnvelopeIcon class="h-6 w-6 flex-shrink-0" />
-          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">Postfach</span>
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">{{ $t('nav.inbox') }}</span>
         </router-link>
 
         <router-link 
@@ -50,7 +50,7 @@
           active-class="bg-gray-100 text-blue-600"
         >
           <ChatBubbleLeftRightIcon class="h-6 w-6 flex-shrink-0" />
-          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">Nachrichten</span>
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">{{ $t('nav.messages') }}</span>
         </router-link>
 
         <router-link 
@@ -59,7 +59,7 @@
           active-class="bg-gray-100 text-blue-600"
         >
           <BookmarkIcon class="h-6 w-6 flex-shrink-0" />
-          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">Sammlung</span>
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">{{ $t('nav.collection') }}</span>
         </router-link>
 
         <router-link 
@@ -68,7 +68,7 @@
           active-class="bg-gray-100 text-blue-600"
         >
           <UserGroupIcon class="h-6 w-6 flex-shrink-0" />
-          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">Abonnements</span>
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">{{ $t('nav.abonements') }}</span>
         </router-link>
 
         <router-link 
@@ -77,7 +77,7 @@
           active-class="bg-gray-100 text-blue-600"
         >
           <UserIcon class="h-6 w-6 flex-shrink-0" />
-          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">Profil</span>
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">{{ $t('nav.profile') }}</span>
         </router-link>
 
         <router-link 
@@ -86,7 +86,7 @@
           active-class="bg-gray-100 text-blue-600"
         >
           <EllipsisHorizontalIcon class="h-6 w-6 flex-shrink-0" />
-          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">Mehr</span>
+          <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">{{ $t('nav.more') }}</span>
         </router-link>
 
         <div class="px-3 mt-6 transition-all duration-300" :class="{'mx-0': !isExpanded, 'mx-3': isExpanded}">
@@ -99,7 +99,7 @@
               class="ml-3 whitespace-nowrap transition-opacity duration-200"
               :class="{'opacity-0 w-0': !isExpanded, 'opacity-100 w-auto': isExpanded}"
             >
-              Neuer Beitrag
+              {{ $t('nav.new_post') }}
             </span>
           </button>
         </div>

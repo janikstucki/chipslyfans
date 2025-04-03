@@ -14,7 +14,7 @@ const routes = [
         path: '/postfach',
         name: 'Postfach',
         component: Postfach
-    }
+    },
 ];
 
 const router = createRouter({
