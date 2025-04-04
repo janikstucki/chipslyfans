@@ -46,13 +46,23 @@
                 "or_cnt_wth": "or continue with"
             },
             "placeholder":{
-                "email": "john.doe@example.com",
+                "email_start": "max.mustermann",
+                "email_domain": "beispiel.de",
                 "username": "cooking_lover",
                 "firstname": "John",
                 "lastname": "Doe",
                 "birthdate": "YYYY-MM-DD"
+            },
+            "error": {
+                "username": "Username must be at least 3 characters long",
+                "email": "Email must be a valid email address",
+                "password_invalide": "Password must be at least 8 characters long",
+                "confirm_password": "Passwords do not match",
+                "password": "Please enter a password",
+                "firstname": "Enter a valid first name",
+                "lastname": "Enter a valid last name",
+                "birthdate": "Birthdate must be in the format YYYY-MM-DD"
             }
         }
-
     }
 }
