@@ -6,33 +6,34 @@
         <h2 class="text-xl font-bold mb-4">{{ $t('root.title') }}</h2>
         <div class="space-y-4">
           <div 
-            v-for="(beitrag, index) in beitraege" 
+            v-for="(post, index) in posts" 
             :key="index"
             class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100 cursor-pointer transition"
-            @click="navigateToPost(beitrag.id)"
+            @click="navigateToPost(post.id)"
           >
             <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white font-bold">
-                {{ beitrag.autor.charAt(0) }}
-              </div>
+              <!-- <div class="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white font-bold">
+                {{ post.autor.charAt(0) }}
+              </div> -->
               <div>
-                <h3 class="font-medium">{{ beitrag.autor }}</h3>
-                <p class="text-gray-500 text-sm">{{ beitrag.datum }}</p>
+                <!-- <h3 class="font-medium">{{ post.autor }}</h3> -->
+                <p class="text-gray-500 text-sm">{{ formatDate(post.createdAt) }}</p>
               </div>
             </div>
-            <p class="mt-2 text-sm line-clamp-2">{{ beitrag.inhalt }}</p>
+            <p class="mt-2 text-md line-clamp-2">{{ post.title }}</p>
+            <p class="mt-2 text-sm line-clamp-2">{{ post.content }}</p>
             <div class="flex space-x-4 text-gray-500 border-t border-gray-200 pt-4">
-            <button class="flex items-center space-x-1 hover:text-pink-500">
+            <button class="flex items-center space-x-1 hover:text-pink-500" @click.stop="likepost(post.id)">
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
               </svg>
-              <span>{{ beitrag.likes }}</span>
+              <!-- <span>{{ beitrag.likes }}</span> -->
             </button>
             <button class="flex items-center space-x-1 hover:text-pink-500">
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
               </svg>
-              <span>{{ beitrag.kommentare }} Kommentare</span>
+              <!-- <span>{{ beitrag.kommentare }} Kommentare</span> -->
             </button>
             <button class="flex items-center space-x-1 hover:text-pink-500">
               <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -114,12 +115,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { useFetch } from '../helpers/getPosts';
+import { formatDate } from '../utils/formatDate.js';
 
 import { 
   BookmarkIcon
 } from '@heroicons/vue/24/outline'
+
 
 
 const beitraege = ref([
@@ -205,6 +209,16 @@ const beitraege = ref([
     geteilt: 42
   },
 ])
+const posts = ref([]);
+
+onMounted(async() => {
+  const {data} = await useFetch('/posts')
+  posts.value = data
+  console.log(posts.value)
+});
+
+
+
 
 const selectedBeitrag = ref(null)
 const searchQuery = ref('')
@@ -221,6 +235,10 @@ const filteredBeitraege = computed(() => {
     beitrag.autor.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
 })
+
+function likepost(likedpost){
+  console.log(likedpost)
+}
 </script>
 
 <style scoped>
