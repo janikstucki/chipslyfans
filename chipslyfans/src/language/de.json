@@ -1,20 +1,56 @@
 {
-    "nav":
-    {
-        "start": "Start",
-        "inbox": "Postfach",
+    "nav": {
+        "start": "Startseite",
+        "inbox": "Posteingang",
         "messages": "Nachrichten",
         "collection": "Sammlung",
-        "abonements": "Abonnements",    
+        "abonements": "Abonnements",
         "profile": "Profil",
         "more": "Mehr",
         "new_post": "Neuer Beitrag"
     },
-    "root":
-    {
-        "title": "Neuste Beiträge",
+    "root": {
+        "title": "Aktuelle Beiträge",
         "search_bar": "Beiträge durchsuchen",
-        "search_info": "Suche nach Inhalten",
-        "search_most_searched_title": "Meist gesucht"
+        "search_info": "Nach Inhalten suchen",
+        "search_most_searched_title": "Am häufigsten gesucht"
+    },
+    "login": {
+        "panel": {
+            "sub_title": "Verbinde dich mit deinen Lieblings-Erstellern",
+            "login_message": "Die beste Plattform für Content-Ersteller"
+        },
+        "form": {
+            "sign_up": {
+                "title": "In wenigen Sekunden bereit",
+                "description": "Erstelle ein Konto, um deine Reise mit uns zu beginnen. Es ist schnell und einfach!",
+                "sign_in": "Anmelden",
+                "submit_btn": "Konto erstellen"
+            },
+            "sign_in": {
+                "title": "Willkommen zurück",
+                "description": "Melde dich an, um unsere Plattform weiterhin zu nutzen.",
+                "sign_up": "Registrieren",
+                "submit_btn": "Anmelden"
+            },
+            "label": {
+                "password": "Passwort",
+                "confirm_password": "Passwort bestätigen",
+                "username": "Benutzername",
+                "firstname": "Vorname",
+                "lastname": "Nachname",
+                "birthdate": "Geburtsdatum",
+                "remember_me": "Angemeldet bleiben",
+                "forgot_password": "Passwort vergessen?",
+                "or_cnt_wth": "oder fortfahren mit"
+            },
+            "placeholder": {
+                "email": "max.mustermann@beispiel.de",
+                "username": "koch_liebhaber",
+                "firstname": "Max",
+                "lastname": "Mustermann",
+                "birthdate": "JJJJ-MM-TT"
+            }
+        }
     }
 }
