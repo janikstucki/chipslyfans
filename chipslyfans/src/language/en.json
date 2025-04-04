@@ -54,6 +54,7 @@
                 "birthdate": "YYYY-MM-DD"
             },
             "error": {
+                "login": "Invalid username or password",
                 "username": "Username must be at least 3 characters long",
                 "email": "Email must be a valid email address",
                 "password_invalide": "Password must be at least 8 characters long",

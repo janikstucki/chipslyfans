@@ -1,7 +1,7 @@
 <template>
     <div class="min-h-screen  flex items-center justify-center p-4">
         <!-- Large Version -->
-        <div class="hidden md:block w-full max-w-7xl">
+        <div v-if="!loading" class="hidden md:block w-full max-w-7xl">
             <div class="bg-black bg-opacity-70 rounded-xl shadow-2xl overflow-hidden">
                 <div class="grid grid-cols-2">
                     <!-- Left Side - Branding -->
@@ -149,10 +149,11 @@
                             
                             <button 
                                 type="submit" 
-                                class="w-full bg-gradient-to-l from-blue-700 to-indigo-400 text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-opacity mb-6"
+                                class="w-full bg-gradient-to-l from-blue-700 to-indigo-400 text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-opacity mb-1"
                                 >
                                 {{ isLogin ? $t('login.form.sign_in.submit_btn') : $t('login.form.sign_up.submit_btn') }}
                             </button>
+                            <label class="text-red-500 mb-5" v-if="loginError" for="emailerror">{{ loginErrorMsg }}</label>
                             
                             <div class="text-center text-gray-400 text-sm mb-4">{{ $t('login.form.label.or_cnt_wth') }}</div>
                             
@@ -341,6 +342,9 @@
                     </div>
                 </div>
         </div>
+        <div v-if="loading" 
+            class="w-10 h-10 border-4 border-t-blue-500 border-gray-300 rounded-full animate-spin"
+        ></div>
     </div>
 </template>
 
@@ -352,11 +356,14 @@ import 'flatpickr/dist/flatpickr.min.css';
 import { 
     ArrowUturnLeftIcon
 } from '@heroicons/vue/24/outline'
+
 import router from '../router';
+import { useFetch} from '../helpers/authenticate.js';
 
 const isLogin = ref(true);
 const datepicker = ref(null);
 let picker = null;
+const loading = ref(false);
 const { t } = useI18n()
 
 // Form fields
@@ -368,9 +375,11 @@ const firstname = ref('');
 const lastname = ref('');
 const birthdate = ref('');
 
+const loginError = ref(false);
 const emailError = ref(false);
 const passwordError = ref(false);
 
+const loginErrorMsg = ref(t('login.form.error.login'));
 const emailErrorMsg = ref("");
 const passwordErrorMsg = ref("");
 
@@ -407,17 +416,12 @@ const submitForm = () => {
     // If isLogin is true, perform login action
     if (isLogin.value) {
         checkLoginForm();
-            if (!passwordError.value || !emailError.value) {
-                console.log('Login form is valid. Proceeding with login...');
-                console.log('Logging in with:', { 
-                email: email.value, 
-                password: password01.value 
-            });
+        if (!passwordError.value || !emailError.value) {
+            loading.value = true;
+            login();
         }
-
-
-        // Perform login action here
-    } else {
+    }
+    else {
         // If isLogin is false, perform signup action
         console.log('Signing up with:', { 
             email: email.value, 
@@ -427,9 +431,47 @@ const submitForm = () => {
             lastname: lastname.value, 
             birthdate: birthdate.value 
         });
-
     }
 };
+
+const login = async () => {
+    try{
+        const { res, data } = await useFetch('/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', },
+            body: JSON.stringify({
+                identifier: email.value,
+                password: password01.value
+            }),
+            credentials: 'include'
+        });
+
+
+        if (res.ok) {
+            if (route.query.state === 'authorize') {
+            const redirect_uri = route.query.redirect_uri;
+            const state = route.query.state;
+
+            const { res, data } = await useFetch('/auth/auto', { credentials: 'include' });
+            if (res.ok) {
+                window.location.href = `${redirect_uri}?code=${data.token}&state=${state}`;
+            } else {
+                window.location.href = `${import.meta.env.VITE_BASE_URL}/login?client_id=${route.query.client_id}&redirect_uri=${redirect_uri}&state=authorize`;
+            }
+            } else {
+            router.push('/');
+            }
+
+        } else {
+            loginErrorMsg.value = data.message || 'Invalid login credentials';
+        }
+    } catch {
+        loginErrorMsg.value = 'An error occurred. Please try again.';
+    } finally {
+        loading.value = false;
+    }
+};
+
 
 const checkLoginForm = () => {
     // Check if email is valid
