@@ -2,6 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 const Home = () => import(/* webpackChunkName: "Home" */ '../views/HomeView.vue');
 const Postfach = () => import(/* webpackChunkName: "Postfach" */ '../views/NotificationsView.vue');
+const Login = () => import(/* webpackChunkName: "Postfach" */ '../views/LoginView.vue');
+
+const PostDetail = () => import(/* webpackChunkName: "Postfach" */ '../views/PostView.vue');
 
 
 const routes = [
@@ -15,10 +18,21 @@ const routes = [
         name: 'Postfach',
         component: Postfach
     },
+    { 
+        path: '/post/:id', 
+        name: 'PostDetail', 
+        component: PostDetail, 
+        props: true 
+    },
+    {
+        path: '/login',
+        name: 'Login',
+        component: Login
+    },
 ];
 
 const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHistory(import.meta.env.BASE_URL),
     routes,
 });
 
