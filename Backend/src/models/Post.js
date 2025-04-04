@@ -20,6 +20,13 @@ export const Post = sequelize.define("Post", {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
     },
+    likes: {
+        type: DataTypes.JSON,
+        defaultValue: {
+            likeCount: 0,
+            likedBy: [],
+        },
+    },
     authorId: {
         type: DataTypes.INTEGER,
         allowNull: false,

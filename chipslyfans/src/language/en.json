@@ -14,5 +14,45 @@
         "search_bar": "Search Posts",
         "search_info": "Search for content",
         "search_most_searched_title": "Most Searched"
+    },
+    "login": {
+        "panel":{
+            "sub_title": "Connect with your favorite creators",
+            "login_message": "The best platform for content creators"
+        },
+        "form": {
+            "sign_up":{
+                "title": "Get ready in a few seconds",
+                "description": "Create an account to start your journey with us. It's quick and easy!",
+                "sign_in": "Sign In",
+                "submit_btn": "Create account"
+            },
+            "sign_in":{
+                "title": "Welcome back",
+                "description": "Log in to your account to continue enjoying our platform.",
+                "sign_up": "Sign Up",
+                "submit_btn": "Sign in to your account"
+            },
+            "label":{
+                "password": "Password",
+                "confirm_password": "Confirm Password",
+                "username": "Username",
+                "firstname": "Firstname",
+                "lastname": "Lastname",
+                "birthdate": "Birthdate",
+
+                "remember_me": "Remember Me",
+                "forgot_password": "Forgot Password?",
+                "or_cnt_wth": "or continue with"
+            },
+            "placeholder":{
+                "email": "john.doe@example.com",
+                "username": "cooking_lover",
+                "firstname": "John",
+                "lastname": "Doe",
+                "birthdate": "YYYY-MM-DD"
+            }
+        }
+
     }
 }

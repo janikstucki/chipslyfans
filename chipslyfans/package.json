@@ -12,6 +12,7 @@
     "@heroicons/vue": "^2.2.0",
     "@tailwindcss/postcss7-compat": "^2.2.17",
     "@tailwindcss/vite": "^4.0.17",
+    "flatpickr": "^4.6.13",
     "i18n": "^0.15.1",
     "router": "^2.2.0",
     "vue": "^3.5.13",
