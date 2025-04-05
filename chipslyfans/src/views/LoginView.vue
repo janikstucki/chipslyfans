@@ -375,13 +375,23 @@ const firstname = ref('');
 const lastname = ref('');
 const birthdate = ref('');
 
+const registerError = ref(false);
 const loginError = ref(false);
 const emailError = ref(false);
 const passwordError = ref(false);
+const usernameError = ref(false);
+const firstnameError = ref(false);
+const lastnameError = ref(false);
+const birthdateError = ref(false);
 
+const registerErrorMsg = ref(t('login.form.error.register'));
 const loginErrorMsg = ref(t('login.form.error.login'));
 const emailErrorMsg = ref("");
 const passwordErrorMsg = ref("");
+const usernameErrorMsg = ref("");
+const firstnameErrorMsg = ref("");
+const lastnameErrorMsg = ref("");
+const birthdateErrorMsg = ref("");
 
 onMounted(() => {
     if (datepicker.value) { // Sicherstellen, dass das Element existiert
@@ -423,14 +433,11 @@ const submitForm = () => {
     }
     else {
         // If isLogin is false, perform signup action
-        console.log('Signing up with:', { 
-            email: email.value, 
-            password: password01.value, 
-            username: username.value, 
-            firstname: firstname.value, 
-            lastname: lastname.value, 
-            birthdate: birthdate.value 
-        });
+        checkRegisterForm();
+        if (!registerError.value) {
+            loading.value = true;
+            register();
+        }
     }
 };
 
@@ -448,19 +455,22 @@ const login = async () => {
 
 
         if (res.ok) {
-            if (route.query.state === 'authorize') {
-            const redirect_uri = route.query.redirect_uri;
-            const state = route.query.state;
+            console.log("Res was ok...");
+            window.location.href = '/'  
 
-            const { res, data } = await useFetch('/auth/auto', { credentials: 'include' });
-            if (res.ok) {
-                window.location.href = `${redirect_uri}?code=${data.token}&state=${state}`;
-            } else {
-                window.location.href = `${import.meta.env.VITE_BASE_URL}/login?client_id=${route.query.client_id}&redirect_uri=${redirect_uri}&state=authorize`;
-            }
-            } else {
-            router.push('/');
-            }
+            // if (route.query.state === 'authorize') {
+            // const redirect_uri = route.query.redirect_uri;
+            // const state = route.query.state;
+            //     console.log("Authorizing now...");
+            // const { res, data } = await useFetch('/auth/auto', { credentials: 'include' });
+            // if (res.ok) {
+            //     window.location.href = `${redirect_uri}?code=${data.token}&state=${state}`;
+            // } else {
+            //     window.location.href = `${import.meta.env.VITE_BASE_URL}/login?client_id=${route.query.client_id}&redirect_uri=${redirect_uri}&state=authorize`;
+            // }
+            // } else {
+            // router.push('/');
+            // }
 
         } else {
             loginErrorMsg.value = data.message || 'Invalid login credentials';

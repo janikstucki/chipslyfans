@@ -4,7 +4,7 @@ export async function useFetch(urlParams, options = {}) {
         const url = `${import.meta.env.VITE_BASE_URL}${urlParams}`;
         const res = await fetch(url, { ...options });
         const data = await res.json();
-
+        console.log("Response:", res, "Data:", data);
         return { res, data };
     } catch (error) {
         console.error("Fetch error:", error);
