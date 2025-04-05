@@ -1,6 +1,7 @@
 <script setup>
 import { useRoute } from 'vue-router';
 import { computed, ref, onMounted, onBeforeUnmount  } from 'vue';
+import { useAuthStore } from './store/auth.js';
 import { 
   ChevronRightIcon, 
   ChevronLeftIcon,
@@ -21,6 +22,7 @@ import router from './router';
 const isExpanded = ref(true)
 const isMobile = ref(false)
 const isLoggedIn = ref(true)
+const authStore = useAuthStore();
 
 const toggleSidebar = () => {
   isExpanded.value = !isExpanded.value
@@ -37,6 +39,7 @@ const checkScreenSize = () => {
 onMounted(() => {
   checkScreenSize()
   window.addEventListener('resize', checkScreenSize)
+  authStore.checkAuth();
 })
 
 onBeforeUnmount(() => {
