@@ -3,75 +3,46 @@ import { config } from 'dotenv';
 import { User } from '../models/User.js';
 import { Op } from 'sequelize';
 import bcrypt from 'bcryptjs';
+import { generateToken, verifyToken } from '../utils/jwt.js';
 
 config();
 
 export const login = async (req, res) => {
     try {
         const { identifier, password } = req.body;
-        console.log("Input Password:", password);
-
-        if (!identifier || !password) {
-            res.status(400).json({ message: "Missing credentials" });
-            return;
-        }
-
-        const user = await User.findOne({
-            where: {
-                [Op.or]: [{ email: identifier }, { username: identifier }]
-            }
-        });
-        console.log("User PasswordHash:", user?.passwordHash);
-
+        console.log("Login attempt for:", identifier); // Log who's trying to login
+    
+        const user = await User.findOne({ where: { email: identifier } });
         if (!user) {
-            res.status(404).json({ message: "User not found" });
-            return;
+            console.log("User not found:", identifier);
+            return res.status(404).json({ message: 'User not found' });
         }
-
-        const passwordMatch = await bcrypt.compare(password, user.passwordHash);
-        if (!passwordMatch) {
-            res.status(401).json({ message: "Invalid credentials" });
-            return;
+    
+        const validPassword = await bcrypt.compare(password, user.passwordHash);
+        if (!validPassword) {
+            console.log("Invalid password for user:", user.email);
+            return res.status(401).json({ message: 'Invalid credentials' });
         }
+    
+        const token = generateToken(user);
+        console.log("Generated JWT for user:", user.id); // Verify token generation
 
-        const token = jwt.sign(
-            { userId: user._id, username: user.username, email: user.email },
-            process.env.JWT_SECRET || 'your_jwt_secret',
-            { expiresIn: '15m' }
-        );
-
-        // Refresh-Token
-        const refresh_token = jwt.sign(
-            { userId: user._id },
-            process.env.JWT_REFRESH || 'your_jwt_secret',
-            { expiresIn: '1y' }
-        );
-
-        res.cookie('auth_token', token, {
+        res.cookie('jwt', token, { 
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
+            secure: process.env.NODE_ENV === 'production', // in dev: false
             sameSite: 'strict',
-            maxAge: 15 * 60 * 1000,
+            maxAge: 86400000
         });
-
-        res.cookie('refresh_token', refresh_token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            maxAge: 365 * 24 * 60 * 60 * 1000,
+    
+        res.json({ 
+            id: user.id,
+            username: user.username,
+            email: user.email
         });
-
-        res.status(200).json({ message: "Login successful", user });
-    } catch (error) {
-        console.error("Login error details:", {
-            error: error.message,
-            stack: error.stack,
-            body: req.body
-            });
-        res.status(500).json({ 
-            message: "Internal Server Error",
-            error: process.env.NODE_ENV === 'development' ? error.message : null
-        });
+    
+        } catch (error) {
+        console.error("Login error:", error); // <-- THIS WILL SHOW THE ROOT CAUSE
+        res.status(500).json({ message: 'Login failed', error: error.message });
     }
 };
 
@@ -112,3 +83,33 @@ export const success = async (req, res) => {
     );
     res.json({ message: "success", username: user.username, user: user, token: token });
 };
+
+
+export const protectedRoute = async (req, res) => {
+    try {
+        console.log("[DEBUG] Empfangene Cookies:", req.cookies);
+        const token = req.cookies.jwt;
+        if (!token) {
+            console.log("❌ Kein Token gefunden");
+            return res.status(401).json({ message: 'Not authenticated' });
+        }
+        const decoded = verifyToken(token);
+        const user = await User.findByPk(decoded.id);
+        if (!user) {
+            console.log("❌ Benutzer nicht gefunden");
+            return res.status(401).json({ message: 'Not authenticated' });
+        }
+        console.log("✅ Authentifizierter Benutzer:", user.email);
+        res.json({
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        console.log("🚨 Fehler bei der Tokenvalidierung:", error.message);
+        res.status(401).json({ message: 'Invalid token' });
+    }
+};
+

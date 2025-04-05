@@ -384,8 +384,8 @@ const loading = ref(false);
 const { t } = useI18n()
 
 // Form fields
-const email = ref('');
-const password01 = ref('');
+const email = ref('test@example06.com');
+const password01 = ref('your_secure_password');
 const password02 = ref('');
 const username = ref('');
 const firstname = ref('');
@@ -489,7 +489,8 @@ const login = async () => {
 
         if (res.ok) {
             console.log("Res was ok...");
-            window.location.href = '/'  
+            isAuthenticated();
+            // window.location.href = '/'  
 
             // if (route.query.state === 'authorize') {
             // const redirect_uri = route.query.redirect_uri;
@@ -514,6 +515,27 @@ const login = async () => {
         loading.value = false;
     }
 };
+
+const isAuthenticated = async () => {
+    try {
+        const { res, data } = await useFetch('/auth/protected', {
+            method: 'GET',
+            credentials: 'include'
+        });
+        if (res && res.ok && data?.user) {
+        console.log("Benutzer ist authentifiziert:", data.user);
+        return true;
+        } else {
+        console.warn("Benutzer ist nicht authentifiziert");
+        return false;
+        }
+    } catch (error) {
+        console.error("Fehler beim Auth-Check:", error);
+        return false;
+    }
+};
+
+
 
 const register = async () => {
     try {
