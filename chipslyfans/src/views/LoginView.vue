@@ -121,7 +121,6 @@
                                         class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-600"
                                         :placeholder="$t('login.form.placeholder.birthdate')"
                                         ref="datepicker"
-                                        readonly
                                         v-model="birthdate"
                                         :class="{'border-red-500': birthdateError}"
                                     />
@@ -291,7 +290,6 @@
                                         class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-600"
                                         :placeholder="$t('login.form.placeholder.birthdate')"
                                         ref="datepicker"
-                                        readonly
                                         v-model="birthdate"
                                         :class="{'border-red-500': birthdateError}"
                                     />
@@ -453,6 +451,7 @@ const toggleForm = () => {
 
 
 const submitForm = () => {
+    console.log("Submitting form...");
     // If isLogin is true, perform login action
     if (isLogin.value) {
         checkLoginForm();
@@ -465,6 +464,7 @@ const submitForm = () => {
         // If isLogin is false, perform signup action
         checkRegisterForm();
         if (!registerError.value) {
+            console.log("Registering...");
             loading.value = true;
             register();
         }
@@ -510,6 +510,39 @@ const login = async () => {
         }
     } catch {
         loginErrorMsg.value = 'An error occurred. Please try again.';
+    } finally {
+        loading.value = false;
+    }
+};
+
+const register = async () => {
+    try {
+        const { res, data } = await useFetch('/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: username.value,
+                email: email.value,
+                password: password01.value,
+                firstname: firstname.value,
+                lastname: lastname.value,
+                birthdate: birthdate.value
+            }),
+            credentials: 'include'
+        });
+
+        if (res.ok) {
+            console.log("data token:", data.object);
+            if (data) {
+                localStorage.setItem('token', data); // If storing client-side
+                console.log('Token stored:', data);
+            }
+            // window.location.href = '/';
+        } else {
+            registerErrorMsg.value = data.message || 'Registration failed. Please try again.';
+        }
+    } catch (error) {
+        registerErrorMsg.value = 'An error occurred. Please try again.';
     } finally {
         loading.value = false;
     }
