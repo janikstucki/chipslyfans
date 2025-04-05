@@ -123,7 +123,7 @@
                                         ref="datepicker"
                                         readonly
                                         v-model="birthdate"
-                                        :class="{'border-red-500': datepickerError}"
+                                        :class="{'border-red-500': birthdateError}"
                                     />
                                     <label class="text-red-500" v-if="birthdateError" for="passwordError">{{ birthdateErrorMsg }}</label>
                                 </div>
@@ -210,86 +210,94 @@
                     
                     <form @submit.prevent="submitForm">
                         <div class="mb-4">
-                            <label class="block text-gray-600 text-sm mb-2">Email</label>
-                            <input 
-                                type="text" 
-                                v-model="email"
-                                :placeholder="$t('login.form.placeholder.email_start') + '@' + $t('login.form.placeholder.email_domain')"
-                                class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                                :class="{'border-red-500': emailError}"
-                                required
-                            >
-                            <label class="text-red-500" v-if="emailError" for="emailerror">{{ emailErrorMsg }}</label>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label class="block text-gray-600 text-sm mb-2">{{ $t('login.form.label.password') }}</label>
-                            <input 
-                                type="password" 
-                                v-model="password01"
-                                placeholder="••••••••" 
-                                class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                                required
-                            >
-                        </div>
-
-                        <div class="mb-4" v-if="!isLogin">
-                            <label class="block text-gray-600 text-sm mb-2">{{ $t('login.form.label.confirm_password') }}</label>
-                            <input 
-                                type="text" 
-                                v-model="password02"
-                                placeholder="••••••••" 
-                                class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                                required
-                            >
-                        </div>
-
-                        
-                        <div class="mb-4" v-if="!isLogin">
-                            <label class="block text-gray-600 text-sm mb-2">{{ $t('login.form.label.username') }}</label>
-                            <input 
-                                type="text" 
-                                v-model="username"
-                                :placeholder="$t('login.form.placeholder.username')"  
-                                class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                                required
-                            >
-                        </div>
-                        <div class="flex gap-4">
-                            <div class="mb-4 w-2/5" v-if="!isLogin">
-                                <label class="block text-gray-600 text-sm mb-2">{{ $t('login.form.label.firstname') }}</label>
+                                <label class="block text-gray-600 text-sm mb-2">Email</label>
                                 <input 
                                     type="text" 
-                                    v-model="firstname"
-                                    :placeholder="$t('login.form.placeholder.firstname')"
+                                    v-model="email"
+                                    :placeholder="$t('login.form.placeholder.email_start') + '@' + $t('login.form.placeholder.email_domain')"
                                     class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                                    required
+                                    :class="{'border-red-500': emailError}"
                                 >
+                                <label class="text-red-500" v-if="emailError" for="emailerror">{{ emailErrorMsg }}</label>
                             </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-600 text-sm mb-2">{{ $t('login.form.label.password') }}</label>
+                                <input 
+                                    type="password" 
+                                    v-model="password01"
+                                    placeholder="••••••••" 
+                                    class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                                    :class="{'border-red-500': passwordError}"
+                                >
+                                <label class="text-red-500" v-if="passwordError" for="passwordError">{{ passwordErrorMsg }}</label>
+                            </div>
+
                             <div class="mb-4" v-if="!isLogin">
-                                <label class="block text-gray-600 text-sm mb-2">{{ $t('login.form.label.lastname') }}</label>
+                                <label class="block text-gray-600 text-sm mb-2">{{ $t('login.form.label.confirm_password') }}</label>
                                 <input 
                                     type="text" 
-                                    v-model="lastname"
-                                    :placeholder="$t('login.form.placeholder.lastname')" 
+                                    v-model="password02"
+                                    placeholder="••••••••" 
                                     class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                                    required
+                                    :class="{'border-red-500': confirmPasswordError}"
                                 >
+                                <label class="text-red-500" v-if="confirmPasswordError" for="passwordError">{{ confirmPasswordErrorMsg }}</label>
                             </div>
-                        </div>
-                        <div class="mb-7" v-if="!isLogin">
-                            <label class="block text-gray-600 text-sm mb-2">{{ $t('login.form.label.birthdate') }}</label>
-                            <div class="relative">
-                                <input
-                                    type="text"
-                                    class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                                    :placeholder="$t('login.form.placeholder.birthdate')"
-                                    ref="datepicker"
-                                    readonly
-                                    v-model="birthdate"
-                                />
+
+                            
+                            <div class="mb-4" v-if="!isLogin">
+                                <label class="block text-gray-600 text-sm mb-2">{{ $t('login.form.label.username') }}</label>
+                                <input 
+                                    type="text" 
+                                    v-model="username"
+                                    :placeholder="$t('login.form.placeholder.username')"  
+                                    class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                                    :class="{'border-red-500': usernameError}"
+                                >
+                                <label class="text-red-500" v-if="usernameError">{{ usernameErrorMsg }}</label>
                             </div>
-                        </div>
+
+                                <div class="mb-4 w-2/5" v-if="!isLogin">
+                                    <label class="block text-gray-600 text-sm mb-2">{{ $t('login.form.label.firstname') }}</label>
+                                    <input 
+                                        type="text" 
+                                        v-model="firstname"
+                                        :placeholder="$t('login.form.placeholder.firstname')"
+                                        class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                                        :class="{'border-red-500': firstnameError}"
+                                    >
+                                    <label class="text-red-500" v-if="firstnameError" for="passwordError">{{ firstnameErrorMsg }}</label>
+                                </div>
+
+
+                                <div class="mb-4 w-3/5" v-if="!isLogin">
+                                    <label class="block text-gray-600 text-sm mb-2">{{ $t('login.form.label.lastname') }}</label>
+                                    <input 
+                                        type="text" 
+                                        v-model="lastname"
+                                        :placeholder="$t('login.form.placeholder.lastname')" 
+                                        class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                                        :class="{'border-red-500': lastnameError}"
+                                    >
+                                    <label class="text-red-500" v-if="lastnameError" for="passwordError">{{ lastnameErrorMsg }}</label>
+                                </div>
+
+                            <div class="mb-7" v-if="!isLogin">
+                                <label class="block text-gray-600 text-sm mb-2">{{ $t('login.form.label.birthdate') }}</label>
+                                <div class="relative">
+                                    <input
+                                        type="text"
+                                        class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+                                        :placeholder="$t('login.form.placeholder.birthdate')"
+                                        ref="datepicker"
+                                        readonly
+                                        v-model="birthdate"
+                                        :class="{'border-red-500': birthdateError}"
+                                    />
+                                    <label class="text-red-500" v-if="birthdateError" for="passwordError">{{ birthdateErrorMsg }}</label>
+                                </div>
+                            </div>
                         
                         <div class="flex items-center justify-between mb-6">
                             <div class="flex items-center space-x-3">
@@ -371,7 +379,7 @@ import {
 import router from '../router';
 import { useFetch} from '../helpers/authenticate.js';
 
-const isLogin = ref(false);
+const isLogin = ref(true);
 const datepicker = ref(null);
 let picker = null;
 const loading = ref(false);
@@ -431,6 +439,15 @@ onBeforeUnmount(() => {
 });
 
 const toggleForm = () => {
+
+    emailError.value = false;
+    passwordError.value = false;
+    confirmPasswordError.value = false;
+    usernameError.value = false;
+    firstnameError.value = false;
+    lastnameError.value = false;
+    birthdateError.value = false;
+
     isLogin.value = !isLogin.value;
 };
 
@@ -450,6 +467,9 @@ const submitForm = () => {
         if (!registerError.value) {
             loading.value = true;
             register();
+        }
+        else {
+            loading.value = false;
         }
     }
 };
@@ -523,6 +543,7 @@ const checkRegisterForm = () => {
     if (!emailPattern.test(email.value)) {
         emailErrorMsg.value = t('login.form.error.email');
         emailError.value = true;
+        registerError.value = true;
     }
     else {
         emailError.value = false;
@@ -532,6 +553,7 @@ const checkRegisterForm = () => {
     if (password01.value.length <= 0) {
         passwordErrorMsg.value = t('login.form.error.password');
         passwordError.value = true;
+        registerError.value = true;
     }
     else {
         passwordError.value = false;
@@ -541,12 +563,14 @@ const checkRegisterForm = () => {
     if (password01.value !== password02.value || password02.value.length <= 0) {
         confirmPasswordErrorMsg.value = t('login.form.error.confirm_password');
         confirmPasswordError.value = true;
+        registerError.value = true;
     }
 
     // Check if username is valid
     if (username.value.length <= 0) {
         usernameErrorMsg.value = t('login.form.error.username');
         usernameError.value = true;
+        registerError.value = true;
     }
     else {
         usernameError.value = false;
@@ -556,6 +580,7 @@ const checkRegisterForm = () => {
     if (firstname.value.length <= 0) {
         firstnameErrorMsg.value = t('login.form.error.firstname');
         firstnameError.value = true;
+        registerError.value = true;
     }
     else {
         firstnameError.value = false;
@@ -565,6 +590,7 @@ const checkRegisterForm = () => {
     if (lastname.value.length <= 0) {
         lastnameErrorMsg.value = t('login.form.error.lastname');
         lastnameError.value = true;
+        registerError.value = true;
     }
     else {
         lastnameError.value = false;
@@ -572,11 +598,11 @@ const checkRegisterForm = () => {
     if (birthdate.value.length <= 0) {
         birthdateErrorMsg.value = t('login.form.error.birthdate');
         birthdateError.value = true;
+        registerError.value = true;
     }
     else {
         birthdateError.value = false;
     }
-    loginValue.value = false;
 };
 </script>
 
