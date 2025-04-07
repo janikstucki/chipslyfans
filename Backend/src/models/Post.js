@@ -28,7 +28,7 @@ export const Post = sequelize.define("Post", {
         },
     },
     authorId: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.UUID,
         allowNull: false,
     },
 }, {

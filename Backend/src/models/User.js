@@ -1,12 +1,14 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db.js";
+import { DataType } from "sequelize-typescript";
 
 export const User = sequelize.define("User", {
     id: {
-        type: DataTypes.INTEGER,
-        autoIncrement: true,
+        type: DataTypes.UUID,
         primaryKey: true,
         allowNull: false,
+        unique: true,
+        defaultValue: DataType.UUIDV4
     },
     username: {
         type: DataTypes.STRING(255),
@@ -19,10 +21,14 @@ export const User = sequelize.define("User", {
     },
     passwordHash: {
         type: DataTypes.STRING,
-        allowNull: false, 
+        allowNull: true, 
         validate: {
             notEmpty: true
         }
+    },
+    profilepicture: {
+        type: DataTypes.STRING(255),
+        allowNull: true
     },
     firstname: {
         type: DataTypes.STRING(255),
@@ -39,6 +45,11 @@ export const User = sequelize.define("User", {
     interest: {
         type: DataTypes.JSON,
         allowNull: true
+    },
+    login_site:{
+        type: DataTypes.STRING(20),
+        allowNull: false,
+        defaultValue: "chipslyfans"
     }
 }, {
     tableName: "users",

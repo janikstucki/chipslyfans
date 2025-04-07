@@ -1,17 +1,29 @@
 export async function useFetch(urlParams, options = {}) {
+    const url = `${import.meta.env.VITE_BASE_URL}${urlParams}`;
     try {
-        const url = `${import.meta.env.VITE_BASE_URL}${urlParams}`;
         const response = await fetch(url, {
             ...options,
-            credentials: 'include' // Important for cookies
+            credentials: 'include' // Send cookies
         });
-        
-        if (!response.ok) throw new Error('Request failed');
-        
-        const data = await response.json();
-        return { res: response, data };
+
+        const data = await response.json().catch(() => null); // In case no JSON
+
+        // Return full context for UI decisions
+        return {
+            res: response,
+            data,
+            status: response.status,
+            ok: response.ok
+        };
+
     } catch (error) {
         console.error("Fetch error:", error);
-        return { res: null, data: null, error };
+        return {
+            res: null,
+            data: null,
+            status: 0,
+            ok: false,
+            error
+        };
     }
 }

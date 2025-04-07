@@ -180,11 +180,12 @@
                                 <button 
                                     type="button" 
                                     class="flex items-center justify-center bg-gray-800 text-white py-2 px-4 rounded-lg border border-gray-700 hover:bg-gray-700 transition-colors"
+                                    @click="AuthCipslyTok"
                                 >
                                     <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53-1.71-2.48-2.96-7.02-1.24-10.08 1.72-3.06 4.57-4.05 7.38-4.05 1.53 0 2.99.62 4.03 1.63 1.01.99 1.69 2.39 1.51 3.96h-4.54c-.01 1.1.75 2.14 1.78 2.15 1.03.01 2.65-1.01 3.47-2.99 0 0 1.72-.66 1.72 2.4.01 3.07-2.23 6.59-5.15 6.59z"/>
                                     </svg>
-                                    Apple
+                                    Chipslytok
                                 </button>
                             </div>
                         </form>
@@ -535,7 +536,16 @@ const isAuthenticated = async () => {
     }
 };
 
+const AuthCipslyTok = async () => {
+    try{
+       window.location.href=`https://api.chipsytok.bbzwinf.ch/oauth/authorize?client_id=${import.meta.env.VITE_TOK_OAUTH_CLIENT_ID}&redirect_uri=http://localhost:3000/auth/oauth/callback&response_type=code`
+    }   
+    catch (err)
+    {
 
+    }
+
+}
 
 const register = async () => {
     try {
