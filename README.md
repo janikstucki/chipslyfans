@@ -66,3 +66,44 @@ The platform is ideal for artists, performers, educators, fitness coaches, and a
 - Admin panel for managing users, content, and transactions
 
 ---
+
+
+## 🌐 Deployment & Infrastructure
+
+- Dockerized services (optional)
+- Nginx reverse proxy
+- SSL via Let's Encrypt
+- Scalable RESTful API
+- CI/CD pipeline with GitHub Actions or GitLab CI
+
+---
+
+## 🔧 Project Setup
+
+### Frontend
+
+```bash
+cd chipslyfans
+npm install
+npm run dev
+```
+
+### Backend
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+### .env file
+
+```bash
+PORT=3000
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=chipslyfans
+DB_USER=root
+DB_PASS=yourpassword
+JWT_SECRET=your_jwt_secret
+```
