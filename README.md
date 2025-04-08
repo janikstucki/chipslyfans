@@ -35,3 +35,34 @@ The platform is ideal for artists, performers, educators, fitness coaches, and a
 
 ---
 
+## 📦 Features
+
+### 🔒 Authentication
+- Secure JWT-based login system
+- Role-based access control (Admin / Creator / Subscriber)
+- Email verification & password recovery
+
+### 🎥 Content System
+- Upload images, videos, and written content
+- Schedule posts
+- Content tagging and categorization
+- Pay-per-view (PPV) content
+
+### 💳 Monetization
+- Monthly and yearly subscription models
+- Custom tip amounts and donation options
+- Revenue dashboard for creators
+- Integrated payment gateway (Stripe or PayPal)
+
+### 💬 Messaging & Interaction
+- Private messaging between creators and fans
+- Commenting and likes on content
+- Notification system (real-time via sockets or polling)
+
+### 📊 Analytics & Admin Panel
+- Real-time user engagement stats
+- Creator earnings reports
+- Moderation tools and content flagging
+- Admin panel for managing users, content, and transactions
+
+---
