@@ -7,7 +7,7 @@
 ChipslyFans empowers creators and influencers to:
 - Build a monetizable fanbase
 - Offer tier-based subscriptions
-- Share exclusive content (images, videos, posts)
+- Share exclusive content (images, posts)
 - Interact privately with subscribers
 - Receive tips and donations
 
