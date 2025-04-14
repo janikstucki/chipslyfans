@@ -16,7 +16,7 @@ const routes = [
         component: Home
     },
     {
-        path: '/postfach',
+        path: '/inbox',
         name: 'Postfach',
         component: Postfach
     },
@@ -40,8 +40,8 @@ const routes = [
         component: Subscriptions
     },
     {
-        path: '/newpost',
-        name: 'NewPost',
+        path: '/new-post',
+        name: 'New-Post',
         component: NewPost
     },
 ];

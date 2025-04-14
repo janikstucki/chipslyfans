@@ -143,7 +143,7 @@ const isAuthenticated = computed(async () => {
           </router-link>
 
           <router-link 
-            to="/postfach" 
+            to="/inbox" 
             class="flex items-center mx-3 my-1 p-3 rounded-lg transition-all duration-200 group hover:bg-gray-100"
             active-class="bg-gray-100 text-blue-600"
           >
@@ -152,7 +152,7 @@ const isAuthenticated = computed(async () => {
           </router-link>
 
           <router-link 
-            to="/nachrichten" 
+            to="/messages" 
             class="flex items-center mx-3 my-1 p-3 rounded-lg transition-all duration-200 group hover:bg-gray-100"
             active-class="bg-gray-100 text-blue-600"
           >
@@ -161,7 +161,7 @@ const isAuthenticated = computed(async () => {
           </router-link>
 
           <router-link 
-            to="/sammlung" 
+            to="/collection" 
             class="flex items-center mx-3 my-1 p-3 rounded-lg transition-all duration-200 group hover:bg-gray-100"
             active-class="bg-gray-100 text-blue-600"
           >
@@ -188,7 +188,7 @@ const isAuthenticated = computed(async () => {
           </router-link>
 
           <router-link 
-            to="/mehr" 
+            to="/more" 
             class="flex items-center mx-3 my-1 p-3 rounded-lg transition-all duration-200 group hover:bg-gray-100"
             active-class="bg-gray-100 text-blue-600"
           >
@@ -198,7 +198,7 @@ const isAuthenticated = computed(async () => {
 
           <div class="px-3 mt-6 transition-all duration-300" :class="{'mx-0': !isExpanded, 'mx-3': isExpanded}">
             <button 
-              @click="createNewPost"
+              @click="router.push('/new-post')"
               class="w-full flex items-center justify-center p-3 rounded-lg transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700 overflow-hidden"
             >
               <PlusIcon class="h-6 w-6 flex-shrink-0 text-white" />
