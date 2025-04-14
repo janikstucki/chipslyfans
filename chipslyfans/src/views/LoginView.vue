@@ -182,21 +182,20 @@
                                     class="flex items-center justify-center bg-gray-800 text-white py-2 px-4 rounded-lg border border-gray-700 hover:bg-gray-700 transition-colors"
                                     @click="AuthCipslyTok"
                                 >
-                                <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 86.000000 111.000000" class="w-6 h-6"
+                                    <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 86.000000 111.000000" class="w-6 h-6"
                                         preserveAspectRatio="xMidYMid meet">
-
                                         <g transform="translate(0.000000,111.000000) scale(0.100000,-0.100000)"
-                                        fill="#fff" stroke="none">
+                                            fill="#fff" stroke="none">
                                         <path d="M362 989 c-72 -28 -164 -115 -198 -186 -76 -162 -64 -409 27 -546 71
-                                        -107 169 -153 324 -151 142 2 235 41 235 101 0 34 -36 123 -61 149 -20 22 -23
-                                        22 -51 8 -16 -8 -56 -16 -88 -16 -103 -1 -160 55 -175 173 -22 179 85 293 228
-                                        244 58 -19 63 -16 101 60 18 38 26 68 24 93 -3 33 -8 39 -53 62 -42 21 -67 25
-                                        -155 27 -87 3 -114 -1 -158 -18z"/>
+                                            -107 169 -153 324 -151 142 2 235 41 235 101 0 34 -36 123 -61 149 -20 22 -23
+                                            22 -51 8 -16 -8 -56 -16 -88 -16 -103 -1 -160 55 -175 173 -22 179 85 293 228
+                                            244 58 -19 63 -16 101 60 18 38 26 68 24 93 -3 33 -8 39 -53 62 -42 21 -67 25
+                                            -155 27 -87 3 -114 -1 -158 -18z"/>
                                         <path d="M510 645 c0 -18 5 -25 20 -25 17 0 19 -8 22 -82 3 -82 3 -83 31 -86
-                                        l27 -3 0 85 c0 79 2 86 20 86 15 0 20 7 20 25 0 24 -2 25 -70 25 -68 0 -70 -1
-                                        -70 -25z"/>
+                                            l27 -3 0 85 c0 79 2 86 20 86 15 0 20 7 20 25 0 24 -2 25 -70 25 -68 0 -70 -1
+                                            -70 -25z"/>
                                         </g>
-                                        </svg>
+                                    </svg>
                                     Chipslytok
                                 </button>
                             </div>
@@ -503,7 +502,9 @@ const login = async () => {
         if (res.ok) {
             console.log("Res was ok...");
             isAuthenticated();
-            // window.location.href = '/'  
+            if (isAuthenticated()){
+                window.location.href = '/'  
+            }
 
             // if (route.query.state === 'authorize') {
             // const redirect_uri = route.query.redirect_uri;
@@ -521,6 +522,7 @@ const login = async () => {
 
         } else {
             loginErrorMsg.value = data.message || 'Invalid login credentials';
+            loginError.value = true;
         }
     } catch {
         loginErrorMsg.value = 'An error occurred. Please try again.';

@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '../store/auth.js';
 const Home = () => import(/* webpackChunkName: "Home" */ '../views/HomeView.vue');
-const Postfach = () => import(/* webpackChunkName: "Postfach" */ '../views/NotificationsView.vue');
-const Login = () => import(/* webpackChunkName: "Postfach" */ '../views/LoginView.vue');
-const Subscriptions = () => import(/* webpackChunkName: "Subscriptions" */ '../views/SubscriptionsView.vue');
+const Login = () => import(/* webpackChunkName: "LoginView" */ '../views/LoginView.vue');
 
-const PostDetail = () => import(/* webpackChunkName: "Postfach" */ '../views/PostView.vue');
+const Subscriptions = () => import(/* webpackChunkName: "Subscriptions" */ '../views/SubscriptionsView.vue');
+const Postfach = () => import(/* webpackChunkName: "Notifications" */ '../views/NotificationsView.vue');
+const PostDetail = () => import(/* webpackChunkName: "PostView" */ '../views/PostView.vue');
+const NewPost = () => import(/* webpackChunkName: "PostView" */ '../views/NewPostView.vue')
 
 
 const routes = [
@@ -37,6 +38,11 @@ const routes = [
         path: '/subscriptions',
         name: 'Subscriptions',
         component: Subscriptions
+    },
+    {
+        path: '/newpost',
+        name: 'NewPost',
+        component: NewPost
     },
 ];
 
