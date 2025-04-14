@@ -2,35 +2,24 @@
     <div>
       <h1 class=" text-xl font-bold mb-4" >Postfach</h1>
       <div class="p-6">
-        <!-- Benachrichtigungsliste -->
+        <!-- subscriptionslist -->
         <div class="space-y-4">
           <div 
-            v-for="benachrichtigung in benachrichtigungen"
-            :key="benachrichtigung.id"
+            v-for="subscription in subscriptions"
+            :key="subscription.id"
             class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100 cursor-pointer transition">
             <div class="flex gap-3 items-center">
               <!-- Avatar -->
               <div class="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white font-bold">
-                {{ benachrichtigung.autor.charAt(1) }}
+                {{ subscription.creator.charAt(1) }}
               </div>
               
               <!-- Inhalt -->
               <div class="flex-1">
                 <div class="flex items-baseline gap-2">
-                  <span class="font-medium text-gray-900">{{ benachrichtigung.autor }}</span>
-                  <span class="text-sm text-gray-500">{{ benachrichtigung.datum }}</span>
+                  <span class="font-medium text-gray-900">{{ subscription.creator }}</span>
+                  <span class="text-sm text-gray-500">{{ 'Bis am ' + subscription.untilDate }}</span>
                 </div>
-                <p class="mt-1 text-gray-600">{{ benachrichtigung.inhalt }}</p>
-              </div>
-  
-                <!-- Icons -->
-              <div className="w-8 h-8 rounded-full bg-500 flex items-center justify-center text-blackfont-bold">
-                <HeartIcon v-if="benachrichtigung.art === 'like'" />
-                <BanknotesIcon v-if="benachrichtigung.art === 'payment'" />
-                <ChatBubbleLeftIcon v-if="benachrichtigung.art === 'comment'" />
-                <ChatBubbleLeftRightIcon v-if="benachrichtigung.art === 'message'" />
-                <BanknotesIcon v-if="benachrichtigung.art === 'abo'" />
-                <BookmarkIcon v-if="benachrichtigung.art === 'collection'" />
               </div>
             </div>
           </div>
@@ -44,20 +33,16 @@
     
   
   
-    const benachrichtigungen = ref([
+    const subscriptions = ref([
       {
         id: 1,
-        autor: '@Chipsly#69420',
-        datum: 'Vor 2 Stunden',
-        inhalt: 'Hat dir Geld gesendet',
-        art: 'payment'
+        creator: '@Julian#78728723',
+        untilDate: '24.12.2025'
       },
       {
         id: 2,
-        autor: '@Chipsly#69420',
-        datum: 'Vor 1 Stunde',
-        inhalt: 'Hat dein Video geliked',
-        art: 'like'
+        creator: '@Chipsly#69420',
+        untilDate: '13.02.2027'
       }
     ]);
     </script>
