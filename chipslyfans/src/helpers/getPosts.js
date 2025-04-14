@@ -7,6 +7,6 @@ export async function useFetch(urlParams, options = {}) {
         return { res, data };
     } catch (error) {
         console.error("Fetch error:", error);
-        return { res: null, data: null, error };
+        throw new Error("Fetch error:", error)
     }
 }
