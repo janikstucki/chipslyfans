@@ -164,7 +164,7 @@ const isAuthenticated = async () => {
           </router-link>
 
           <router-link 
-            to="/abonnements" 
+            to="/subscriptions" 
             class="flex items-center mx-3 my-1 p-3 rounded-lg transition-all duration-200 group hover:bg-gray-100"
             active-class="bg-gray-100 text-blue-600"
           >

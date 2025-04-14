@@ -3,6 +3,7 @@ import { useAuthStore } from '../store/auth.js';
 const Home = () => import(/* webpackChunkName: "Home" */ '../views/HomeView.vue');
 const Postfach = () => import(/* webpackChunkName: "Postfach" */ '../views/NotificationsView.vue');
 const Login = () => import(/* webpackChunkName: "Postfach" */ '../views/LoginView.vue');
+const Subscriptions = () => import(/* webpackChunkName: "Subscriptions" */ '../views/SubscriptionsView.vue');
 
 const PostDetail = () => import(/* webpackChunkName: "Postfach" */ '../views/PostView.vue');
 
@@ -31,6 +32,11 @@ const routes = [
         name: 'Login',
         component: Login,
         meta: { fullScreen: true },
+    },
+    {
+        path: '/subscriptions',
+        name: 'Subscriptions',
+        component: Subscriptions
     },
 ];
 
