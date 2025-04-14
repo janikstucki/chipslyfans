@@ -2,6 +2,7 @@
 import { useRoute } from 'vue-router';
 import { computed, ref, onMounted, onBeforeUnmount  } from 'vue';
 import { useAuthStore } from './store/auth.js';
+import { useFetch } from './helpers/authenticate.js'
 import { 
   ChevronRightIcon, 
   ChevronLeftIcon,
@@ -21,7 +22,6 @@ import router from './router';
 
 const isExpanded = ref(true)
 const isMobile = ref(false)
-const isLoggedIn = ref(true)
 const authStore = useAuthStore();
 
 const toggleSidebar = () => {
@@ -40,6 +40,8 @@ onMounted(() => {
   checkScreenSize()
   window.addEventListener('resize', checkScreenSize)
   authStore.checkAuth();
+  isAuthenticated
+  console.log(isAuthenticated)
 })
 
 onBeforeUnmount(() => {
@@ -52,12 +54,46 @@ const login = () => {
   router.push('/login')
 };
 
-const logout = () => {
-  isLoggedIn.value = false;
+
+const logout = async () => {
+    try {
+        const { res } = await useFetch('/auth/logout', {
+            method: 'POST',
+            credentials: 'include'
+        });
+
+        if (res.ok) {
+            console.log("✅ Erfolgreich ausgeloggt");
+        } else {
+            console.warn("⚠️ Logout fehlgeschlagen");
+        }
+    } catch (error) {
+        console.error("❌ Fehler beim Logout:", error);
+    }
 };
 
 const route = useRoute();
 const showNavbar = computed(() => route.path !== '/login');
+
+
+const isAuthenticated = async () => {
+    try {
+        const { res, data } = await useFetch('/auth/protected', {
+            method: 'GET', 
+            credentials: 'include'
+        });
+        if (res && res.ok && data?.user) {
+        console.log("Benutzer ist authentifiziert:", data.user);
+        return true;
+        } else {
+        console.warn("Benutzer ist nicht authentifiziert");
+        return false;
+        }
+    } catch (error) {
+        console.error("Fehler beim Auth-Check:", error);
+        return false;
+    }
+};
 
 </script>
 
@@ -171,7 +207,7 @@ const showNavbar = computed(() => route.path !== '/login');
         </nav>
         <div class="px-3 mt-6 transition-all duration-300" :class="{'mx-0': !isExpanded, 'mx-3': isExpanded}">
           <button 
-            v-if="!isLoggedIn" 
+            v-if="!isAuthenticated.value" 
             @click="login"
             class="w-full flex items-center justify-center p-3 rounded-lg transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700 overflow-hidden"
           >

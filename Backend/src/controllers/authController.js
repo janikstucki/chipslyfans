@@ -119,29 +119,54 @@ export const oauthcallback = async (req, res) => {
     const code = req.query.code;
     const user = jwt.decode(code);
 
-    const newUser = await User.create({ 
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        firsrname: user.firstname,
-        lastname: user.lastname,
-        profilepicture: user.profilepicture,
-        login_site: "chipstok"
+    const userExists = await User.findOne({
+        where: {id: user.id},
     });
+    if(!userExists){
+        const newUser = await User.create({ 
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            firsrname: user.firstname,
+            lastname: user.lastname,
+            profilepicture: user.profilepicture,
+            login_site: "chipstok"
+        });
+        const token = generateToken(newUser);
+        console.log("Generated JWT for user:", user.id); // Verify token generation
+
+
+        res.cookie('jwt', token, { 
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // in dev: false
+            sameSite: 'strict',
+            maxAge: 86400000 // Oneday
+        });
+    }
+    else {
+        const token = generateToken(userExists);
+        console.log("Generated JWT for user:", user.id); // Verify token generation
+
+
+        res.cookie('jwt', token, { 
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // in dev: false
+            sameSite: 'strict',
+            maxAge: 86400000 // Oneday
+        });
+    }
 
 
     res.redirect(`${process.env.FRONTEND_URL}`)
 
-    const token = generateToken(newUser);
-    console.log("Generated JWT for user:", user.id); // Verify token generation
-
-    
-    res.cookie('jwt', token, { 
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production', // in dev: false
-        sameSite: 'strict',
-        maxAge: 86400000 // Oneday
-    });
-
-
 }
+
+
+export const logout = (req, res) => {
+    res.clearCookie('jwt', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+    });
+    res.status(200).json({ message: "Erfolgreich ausgeloggt" });
+};
