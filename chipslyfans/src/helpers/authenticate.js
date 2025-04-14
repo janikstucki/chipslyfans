@@ -18,12 +18,6 @@ export async function useFetch(urlParams, options = {}) {
 
     } catch (error) {
         console.error("Fetch error:", error);
-        return {
-            res: null,
-            data: null,
-            status: 0,
-            ok: false,
-            error
-        };
+        throw new Error("Fetch error:", error)
     }
 }

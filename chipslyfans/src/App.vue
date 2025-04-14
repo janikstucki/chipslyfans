@@ -36,12 +36,13 @@ const checkScreenSize = () => {
   isMobile.value = window.innerWidth < 1024
 }
 
-onMounted(() => {
+const isAuth = ref(null)
+onMounted(async () => {
   checkScreenSize()
   window.addEventListener('resize', checkScreenSize)
   authStore.checkAuth();
-  isAuthenticated
-  console.log(isAuthenticated)
+   isAuth.value = await isAuthenticated.value
+  console.log(await isAuthenticated.value)
 })
 
 onBeforeUnmount(() => {
@@ -55,33 +56,38 @@ const login = () => {
 };
 
 
-const logout = async () => {
+async function logout() {
     try {
         const { res } = await useFetch('/auth/logout', {
             method: 'POST',
-            credentials: 'include'
+            credentials: 'include',
         });
 
         if (res.ok) {
             console.log("✅ Erfolgreich ausgeloggt");
+            // Optional: Weiterleitung
+            window.location.href = '/login';
         } else {
             console.warn("⚠️ Logout fehlgeschlagen");
         }
     } catch (error) {
         console.error("❌ Fehler beim Logout:", error);
     }
-};
+}
 
 const route = useRoute();
 const showNavbar = computed(() => route.path !== '/login');
 
 
-const isAuthenticated = async () => {
+const isAuthenticated = computed(async () => {
     try {
-        const { res, data } = await useFetch('/auth/protected', {
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/protected`, {
             method: 'GET', 
             credentials: 'include'
         });
+        console.log(res)
+
+        const data = await res.json();
         if (res && res.ok && data?.user) {
         console.log("Benutzer ist authentifiziert:", data.user);
         return true;
@@ -93,7 +99,7 @@ const isAuthenticated = async () => {
         console.error("Fehler beim Auth-Check:", error);
         return false;
     }
-};
+})
 
 </script>
 
@@ -207,7 +213,7 @@ const isAuthenticated = async () => {
         </nav>
         <div class="px-3 mt-6 transition-all duration-300" :class="{'mx-0': !isExpanded, 'mx-3': isExpanded}">
           <button 
-            v-if="!isAuthenticated.value" 
+            v-if="!isAuth" 
             @click="login"
             class="w-full flex items-center justify-center p-3 rounded-lg transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700 overflow-hidden"
           >
@@ -216,7 +222,7 @@ const isAuthenticated = async () => {
             :class="{'opacity-0 w-0': !isExpanded, 'opacity-100 w-auto': isExpanded}">Login</span>
           </button>
           <button 
-            v-else 
+          v-else
             @click="logout"
             class="w-full flex items-center justify-center p-3 rounded-lg transition-all duration-200 bg-blue-600 text-white hover:bg-blue-700 overflow-hidden"
           >

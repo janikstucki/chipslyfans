@@ -167,6 +167,8 @@ export const logout = (req, res) => {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
+        path: '/', // wichtig, sonst wird nicht korrekt gelöscht
     });
-    res.status(200).json({ message: "Erfolgreich ausgeloggt" });
+
+    res.status(200).json({ message: 'Erfolgreich ausgeloggt' });
 };
