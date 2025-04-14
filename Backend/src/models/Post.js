@@ -31,6 +31,31 @@ export const Post = sequelize.define("Post", {
         type: DataTypes.UUID,
         allowNull: false,
     },
+    images: {
+        type: DataTypes.JSON, // Geändert von ARRAY zu JSON
+        defaultValue: []
+    },
+    visibility: {
+        type: DataTypes.ENUM('public', 'subscription'),
+        allowNull: false,
+        defaultValue: 'subscription'
+    },
+    tags: {
+        type: DataTypes.JSON, // Geändert von ARRAY zu JSON
+        defaultValue: []
+    },
+    taggedUsers: {
+        type: DataTypes.JSON, // Geändert von ARRAY zu JSON
+        defaultValue: []
+    },
+    scheduleDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    sendNotification: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+    }
 }, {
     tableName: "posts",
     timestamps: true,

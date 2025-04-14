@@ -1,13 +1,26 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { PlusIcon, TrashIcon, ArrowLeftIcon, PhotoIcon, TagIcon, CalendarIcon, BellIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router'
+import { useUserStore } from '../store/auth.js'
+import { storeToRefs } from 'pinia'
 
 const { t } = useI18n()
 
 
-const currentStep = ref(2)
+const userStore = useUserStore()
+const { userId, isAuthenticated } = storeToRefs(userStore)
+
+
+const currentStep = ref(1)
 const showConfirmation = ref(false)
+const router = useRouter()
+const isLoading = ref(false)
+const errorMessage = ref('')
+
+
+
 const form = ref({
     title: '',
     content: '',
@@ -16,15 +29,18 @@ const form = ref({
     visibility: 'subscription',
     tags: [],
     scheduleDate: null,
-    sendNotification: true
+    sendNotification: true,
+    authorId: userId.value
 })
 
 const newTag = ref('')
 const newPersonTag = ref('')
+const fileInput = ref(null)
 
 // Bild-Upload Handlung
 const handleImageUpload = (e) => {
     const files = e.target.files
+    if (!files) return
     for (let i = 0; i < files.length; i++) {
         const reader = new FileReader()
             reader.onload = (e) => {
@@ -56,9 +72,68 @@ const removeImage = (index) => {
 }
 
 // Formular Einreichen
-const submitForm = () => {
-    console.log('Formular eingereicht:', form.value)
-    // Hier API-Anbindung einfügen
+
+const submitForm = async () => {
+    try {
+        isLoading.value = true
+        errorMessage.value = ''
+
+
+        if (!userStore.isAuthenticated) {
+            await userStore.fetchCurrentUser() // Erneuter Versuch den User zu laden
+            if (!userStore.isAuthenticated) {
+                return router.push('/login')
+            }
+        }
+
+        const formData = new FormData()
+
+        // Zugriff über die Vue-Ref
+        const files = fileInput.value?.files
+        
+        // Überprüfung ob Dateien existieren
+        if (files) {
+            for (const file of files) {
+                formData.append('images', file)
+            }
+        }
+        
+        // Dateien hinzufügen
+        if (fileInput.value?.files) {
+            for (const file of fileInput.value.files) {
+                formData.append('images', file)
+            }
+        }
+        
+        // Daten ohne authorId senden (wird vom Backend aus dem JWT geholt)
+        formData.append('data', JSON.stringify({
+            ...form.value,
+            authorId: undefined 
+        }))
+
+        const response = await fetch('http://localhost:3000/posts', {
+            method: 'POST',
+            body: formData,
+            credentials: 'include'
+        })
+
+        if (!response.ok) {
+            const error = await response.json()
+            throw new Error(error.message || 'Fehler beim Erstellen des Posts')
+        }
+
+        const result = await response.json()
+        console.log('Erfolgreich gepostet:', result)
+        
+        // Zurück zur Übersicht oder Formular zurücksetzen
+        router.push('/feed')
+        
+    } catch (error) {
+        errorMessage.value = error.message
+        console.error('Fehler:', error)
+    } finally {
+        isLoading.value = false
+    }
 }
 
 const confirmSubmission = () => {
@@ -66,6 +141,11 @@ const confirmSubmission = () => {
     submitForm()
 }
 
+onMounted(async () => {
+  if (!userStore.isAuthenticated) {
+    await userStore.fetchCurrentUser()
+  }
+})
 </script>
 
 <template>
@@ -91,9 +171,14 @@ const confirmSubmission = () => {
                     <button 
                         @click="confirmSubmission"
                         class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                        :disabled="isLoading"
                     >
-                        {{ $t('newpost.confirmation_box.submit') }}
+                        <span v-if="!isLoading">{{ $t('newpost.confirmation_box.submit') }}</span>
+                        <span v-else>Wird gepostet...</span>
                     </button>
+                </div>
+                <div v-if="errorMessage" class="text-red-500 mt-2">
+                    {{ errorMessage }}
                 </div>
             </div>
         </div>
@@ -139,7 +224,8 @@ const confirmSubmission = () => {
                 multiple 
                 @change="handleImageUpload"
                 class="hidden" 
-                id="fileUpload">
+                id="fileUpload"
+                ref="fileInput">
                 <label 
                 for="fileUpload" 
                 class="cursor-pointer inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
@@ -296,6 +382,7 @@ const confirmSubmission = () => {
                 <button 
                     v-if="currentStep === 2"
                     @click="showConfirmation = true"
+                    :disabled="isLoading"
                     class="w-1/4 bg-gradient-to-l from-blue-700 to-indigo-400 text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-opacity mb-1">
                     {{ $t('newpost.form.navigation.pblsh_post') }}
                 </button>
