@@ -21,6 +21,9 @@
                   <span class="text-sm text-gray-500">{{ 'Bis am ' + subscription.untilDate }}</span>
                 </div>
               </div>
+                <button class=" flex items-center justify-center p-3 rounded-lg transition-all duration-200 bg-red-600 text-white hover:bg-red-700 overflow-hidden" @click="handleClick" >
+                  {{ 'Kündigen' + <MinusCircleIcon/> }}
+                </button>
             </div>
           </div>
         </div>
@@ -30,7 +33,7 @@
     
     <script setup>
     import { ref } from 'vue';
-    
+      import { MinusCircleIcon } from '@heroicons/vue/24/outline'
   
   
     const subscriptions = ref([
@@ -45,6 +48,11 @@
         untilDate: '13.02.2027'
       }
     ]);
-    </script>
+
+    const handleClick = () => {
+  console.log('Button wurde geklickt!');
+};
+
+</script>
   
   
