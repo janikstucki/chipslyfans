@@ -74,7 +74,6 @@ The platform is ideal for artists, performers, educators, fitness coaches, and a
 - Nginx reverse proxy
 - SSL via Let's Encrypt
 - Scalable RESTful API
-- CI/CD pipeline with GitHub Actions or GitLab CI
 
 ---
 
