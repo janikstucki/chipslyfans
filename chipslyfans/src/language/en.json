@@ -16,38 +16,37 @@
         "search_most_searched_title": "Most Searched"
     },
     "login": {
-        "panel":{
+        "panel": {
             "sub_title": "Connect with your favorite creators",
             "login_message": "The best platform for content creators"
         },
         "form": {
-            "sign_up":{
-                "title": "Get ready in a few seconds",
-                "description": "Create an account to start your journey with us. It's quick and easy!",
+            "sign_up": {
+                "title": "Ready in just seconds",
+                "description": "Create an account to start your journey with us. It's quick and simple!",
                 "sign_in": "Sign In",
-                "submit_btn": "Create account"
+                "submit_btn": "Create Account"
             },
-            "sign_in":{
-                "title": "Welcome back",
+            "sign_in": {
+                "title": "Welcome Back",
                 "description": "Log in to your account to continue enjoying our platform.",
                 "sign_up": "Sign Up",
-                "submit_btn": "Sign in to your account"
+                "submit_btn": "Sign In"
             },
-            "label":{
+            "label": {
                 "password": "Password",
                 "confirm_password": "Confirm Password",
                 "username": "Username",
-                "firstname": "Firstname",
-                "lastname": "Lastname",
+                "firstname": "First Name",
+                "lastname": "Last Name",
                 "birthdate": "Birthdate",
-
                 "remember_me": "Remember Me",
                 "forgot_password": "Forgot Password?",
                 "or_cnt_wth": "or continue with"
             },
-            "placeholder":{
-                "email_start": "max.mustermann",
-                "email_domain": "beispiel.de",
+            "placeholder": {
+                "email_start": "john.doe",
+                "email_domain": "example.com",
                 "username": "cooking_lover",
                 "firstname": "John",
                 "lastname": "Doe",
@@ -58,11 +57,64 @@
                 "username": "Username must be at least 3 characters long",
                 "email": "Email must be a valid email address",
                 "password_invalide": "Password must be at least 8 characters long",
-                "confirm_password": "Passwords do not match",
                 "password": "Please enter a password",
-                "firstname": "Enter a valid first name",
-                "lastname": "Enter a valid last name",
-                "birthdate": "Birthdate must be in the format YYYY-MM-DD"
+                "confirm_password": "Passwords do not match",
+                "birthdate": "Birthdate must be in the format YYYY-MM-DD",
+                "firstname": "Please enter your first name",
+                "lastname": "Please enter your last name"
+            }
+        }
+    },
+    "notifications": {
+        "inbox": "Inbox",
+        "timestamp": {}
+    },
+    "newpost": {
+        "confirmation_box": {
+            "title": "Publish Post",
+            "question": "Are you sure you want to publish this post",
+            "cancel": "Cancel",
+            "submit": "Submit"
+        },
+        "form": {
+            "page1":{
+                "title": "Create Post",
+                "lbl":{
+                    "title": "Title",
+                    "content": "Content",
+                    "picture": "Add your pictures",
+                    "tag_pers": "Tag other users"
+                },
+                "btn":{
+                    "select_pic": "Select photos"
+                },
+                "placeholder":{
+                    "title": "Add a title",
+                    "content": "Write your contribution...",
+                    "picture": "or drag and drop files here",
+                    "tag_pers": "Enter username"
+                }
+            },
+            "page2":{
+                "title": "Post settings",
+                "lbl":{
+                    "visibility": "Visibility",
+                    "algo_tag": "Algorithm tags",
+                    "pbl_date": "Date of publication",
+                    "notf_sub": "Notify subscribers"
+                },
+                "btn":{
+                    "vis_public": "Public",
+                    "vis_subonly": "Subscribers only"
+                },
+                "placeholder":{
+                    "algo_tag": "Add a Tag"
+                }
+            },
+            "navigation":{
+                "next": "Next",
+                "back": "Back",
+                "pblsh_post": "Publish post"
             }
         }
     }

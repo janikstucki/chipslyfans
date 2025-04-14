@@ -70,5 +70,54 @@
         "timestamp": {
             
         }
+    },
+    "newpost": {
+        "confirmation_box": {
+            "title": "Beitrag veröffentlichen",
+            "question": "Bist du sicher, dass du diesen Beitrag veröffentlichen möchtest?",
+            "cancel": "Abbrechen",
+            "submit": "Veröffentlichen"
+        },
+        "form": {
+            "page1": {
+                "title": "Beitrag erstellen",
+                "lbl": {
+                    "title": "Titel",
+                    "content": "Inhalt",
+                    "picture": "Füge deine Bilder hinzu",
+                    "tag_pers": "Andere Benutzer markieren"
+                },
+                "btn": {
+                    "select_pic": "Fotos auswählen"
+                },
+                "placeholder": {
+                    "title": "Titel hinzufügen",
+                    "content": "Schreibe deinen Beitrag...",
+                    "picture": "oder ziehe Dateien hierher",
+                    "tag_pers": "Benutzernamen eingeben"
+                }
+            },
+            "page2": {
+                "title": "Beitragseinstellungen",
+                "lbl": {
+                    "visibility": "Sichtbarkeit",
+                    "algo_tag": "Algorithmus-Tags",
+                    "pbl_date": "Veröffentlichungsdatum",
+                    "notf_sub": "Abonnenten benachrichtigen"
+                },
+                "btn": {
+                    "vis_public": "Öffentlich",
+                    "vis_subonly": "Nur für Abonnenten"
+                },
+                "placeholder": {
+                    "algo_tag": "Tag hinzufügen"
+                }
+            },
+            "navigation": {
+                "next": "Weiter",
+                "back": "Zurück",
+                "pblsh_post": "Beitrag veröffentlichen"
+            }
+        }
     }
 }
