@@ -1,9 +1,33 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import { User } from '../models/User.js';
+import { verifyToken } from '../utils/jwt.js'
 
 dotenv.config(); 
 
+
+export const authenticate = async (req, res, next) => {
+    try {
+      const token = req.cookies.jwt
+      
+      if (!token) {
+        return res.status(401).json({ message: 'Not authenticated' })
+      }
+  
+      const decoded = verifyToken(token) // Deine Token-Verifizierungsfunktion
+      const user = await User.findByPk(decoded.id)
+      
+      if (!user) {
+        return res.status(401).json({ message: 'User not found' })
+      }
+  
+      req.user = user // User-Objekt an Request anhängen
+      next()
+    } catch (error) {
+      console.error('Authentication error:', error)
+      res.status(401).json({ message: 'Invalid token' })
+    }
+  }
 
 export const authMiddleware = async (req, res, next) => {
     const accessToken = req.cookies['auth_token'];

@@ -1,5 +1,7 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db.js";
+import { User } from "./User.js";
+
 
 export const Post = sequelize.define("Post", {
     id: {
@@ -31,7 +33,37 @@ export const Post = sequelize.define("Post", {
         type: DataTypes.UUID,
         allowNull: false,
     },
+    images: {
+        type: DataTypes.JSON,
+        defaultValue: []
+    },
+    visibility: {
+        type: DataTypes.ENUM('public', 'subscription'),
+        allowNull: false,
+        defaultValue: 'subscription'
+    },
+    tags: {
+        type: DataTypes.JSON,
+        defaultValue: []
+    },
+    taggedUsers: {
+        type: DataTypes.JSON,
+        defaultValue: []
+    },
+    scheduleDate: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    sendNotification: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true
+    }
 }, {
     tableName: "posts",
     timestamps: true,
+});
+
+Post.belongsTo(User, {
+    foreignKey: 'authorId',
+    as: 'author'
 });

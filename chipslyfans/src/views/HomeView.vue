@@ -12,15 +12,15 @@
             @click="navigateToPost(post.id)"
           >
             <div class="flex items-center space-x-3">
-              <!-- <div class="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white font-bold">
-                {{ post.autor.charAt(0) }}
-              </div> -->
+              <div class="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white font-bold">
+                
+              </div>
               <div>
-                <!-- <h3 class="font-medium">{{ post.autor }}</h3> -->
+                <h3 class="font-medium">{{ post.author.username }}</h3>
                 <p class="text-gray-500 text-sm">{{ formatDate(post.createdAt) }}</p>
               </div>
             </div>
-            <p class="mt-2 text-md line-clamp-2">{{ post.title }}</p>
+            <p class="mt-2 text-md fornt-bold line-clamp-2">{{ post.title }}</p>
             <p class="mt-2 text-sm line-clamp-2">{{ post.content }}</p>
             <div class="flex space-x-4 text-gray-500 border-t border-gray-200 pt-4">
             <button class="flex items-center space-x-1 hover:text-indigo-600 " @click.stop="likepost(post.id)">
@@ -214,7 +214,7 @@ const posts = ref([]);
 onMounted(async() => {
   const {data} = await useFetch('/posts')
   posts.value = data
-  console.log(posts.value)
+  console.log("posts", posts.value)
 });
 
 

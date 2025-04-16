@@ -1,8 +1,26 @@
 <script setup>
-import { ref } from 'vue'
-import { PlusIcon, TrashIcon, ArrowLeftIcon, PhotoIcon, TagIcon, CalendarIcon, BellIcon } from '@heroicons/vue/24/outline'
+import { ref, onMounted } from 'vue'
+import { PlusIcon, TrashIcon, ArrowLeftIcon, PhotoIcon, TagIcon, CalendarIcon, BellIcon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { useI18n } from 'vue-i18n';
+import { useRouter } from 'vue-router'
+import { useUserStore } from '../store/auth.js'
+import { storeToRefs } from 'pinia'
+
+const { t } = useI18n()
+
+
+const userStore = useUserStore()
+const { userId, isAuthenticated } = storeToRefs(userStore)
+
 
 const currentStep = ref(1)
+const showConfirmation = ref(false)
+const router = useRouter()
+const isLoading = ref(false)
+const errorMessage = ref('')
+
+
+
 const form = ref({
     title: '',
     content: '',
@@ -11,54 +29,160 @@ const form = ref({
     visibility: 'subscription',
     tags: [],
     scheduleDate: null,
-    sendNotification: true
+    sendNotification: true,
+    authorId: userId.value
 })
 
 const newTag = ref('')
 const newPersonTag = ref('')
+const fileInput = ref(null)
 
 // Bild-Upload Handlung
 const handleImageUpload = (e) => {
-  const files = e.target.files
-  for (let i = 0; i < files.length; i++) {
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      form.value.images.push(e.target.result)
+    const files = e.target.files
+    if (!files) return
+    for (let i = 0; i < files.length; i++) {
+        const reader = new FileReader()
+            reader.onload = (e) => {
+            form.value.images.push(e.target.result)
+        }
+        reader.readAsDataURL(files[i])
     }
-    reader.readAsDataURL(files[i])
-  }
 }
 
 // Tag Hinzufügen
 const addTag = () => {
-  if (newTag.value.trim()) {
-    form.value.tags.push(newTag.value.trim())
-    newTag.value = ''
-  }
+    if (newTag.value.trim()) {
+        form.value.tags.push(newTag.value.trim())
+        newTag.value = ''
+    }
 }
 
 // Person Tag Hinzufügen
 const addPersonTag = () => {
-  if (newPersonTag.value.trim()) {
-    form.value.taggedPeople.push(newPersonTag.value.trim())
-    newPersonTag.value = ''
-  }
+    if (newPersonTag.value.trim()) {
+        form.value.taggedPeople.push(newPersonTag.value.trim())
+        newPersonTag.value = ''
+    }
 }
 
 // Bild Entfernen
 const removeImage = (index) => {
-  form.value.images.splice(index, 1)
+    form.value.images.splice(index, 1)
 }
 
 // Formular Einreichen
-const submitForm = () => {
-  console.log('Formular eingereicht:', form.value)
-  // Hier API-Anbindung einfügen
+
+const submitForm = async () => {
+    try {
+        isLoading.value = true
+        errorMessage.value = ''
+
+
+        if (!userStore.isAuthenticated) {
+            await userStore.fetchCurrentUser() // Erneuter Versuch den User zu laden
+            if (!userStore.isAuthenticated) {
+                return router.push('/login')
+            }
+        }
+
+        const formData = new FormData()
+
+        // Zugriff über die Vue-Ref
+        const files = fileInput.value?.files
+        
+        // Überprüfung ob Dateien existieren
+        if (files) {
+            for (const file of files) {
+                formData.append('images', file)
+            }
+        }
+        
+        // Dateien hinzufügen
+        if (fileInput.value?.files) {
+            for (const file of fileInput.value.files) {
+                formData.append('images', file)
+            }
+        }
+        
+        // Daten ohne authorId senden (wird vom Backend aus dem JWT geholt)
+        formData.append('data', JSON.stringify({
+            ...form.value,
+            authorId: undefined 
+        }))
+
+        const response = await fetch('http://localhost:3000/posts', {
+            method: 'POST',
+            body: formData,
+            credentials: 'include'
+        })
+
+        if (!response.ok) {
+            const error = await response.json()
+            throw new Error(error.message || 'Fehler beim Erstellen des Posts')
+        }
+
+        const result = await response.json()
+        console.log('Erfolgreich gepostet:', result)
+        
+        // Zurück zur Übersicht oder Formular zurücksetzen
+        router.push('/')
+        
+    } catch (error) {
+        errorMessage.value = error.message
+        console.error('Fehler:', error)
+    } finally {
+        isLoading.value = false
+    }
 }
+
+const confirmSubmission = () => {
+    showConfirmation.value = false
+    submitForm()
+}
+
+onMounted(async () => {
+  if (!userStore.isAuthenticated) {
+    await userStore.fetchCurrentUser()
+  }
+})
 </script>
 
 <template>
     <div class="min-h-screen bg-gray-50 p-8">
+        <div v-if="showConfirmation" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div class="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">{{ $t('newpost.confirmation_box.title') }}?</h3>
+                    <button @click="showConfirmation = false" class="text-gray-500 hover:text-gray-700">
+                        <XMarkIcon class="h-6 w-6" />
+                    </button>
+                </div>
+                    <p class="text-gray-600 mb-6">
+                        {{ $t('newpost.confirmation_box.question') }}?
+                    </p>
+                <div class="flex justify-end gap-3">
+                    <button 
+                        @click="showConfirmation = false"
+                        class="px-4 py-2 text-gray-600 hover:text-gray-800 rounded-lg"
+                    >
+                        {{ $t('newpost.confirmation_box.cancel') }}
+                    </button>
+                    <button 
+                        @click="confirmSubmission"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+                        :disabled="isLoading"
+                    >
+                        <span v-if="!isLoading">{{ $t('newpost.confirmation_box.submit') }}</span>
+                        <span v-else>Wird gepostet...</span>
+                    </button>
+                </div>
+                <div v-if="errorMessage" class="text-red-500 mt-2">
+                    {{ errorMessage }}
+                </div>
+            </div>
+        </div>
+
         <div class="max-w-3xl mx-auto bg-neutral-100 rounded-2xl shadow-lg p-6">
         <!-- Progress Indicator -->
         <div class="flex mb-8">
@@ -69,45 +193,46 @@ const submitForm = () => {
 
         <!-- Step 1: Post Inhalt -->
         <div v-if="currentStep === 1">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Post erstellen</h2>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">{{ $t('newpost.form.page1.title') }}</h2>
             
             <!-- Titel -->
             <div class="mb-6">
-                <label class="block text-gray-700 mb-2">Titel</label>
+                <label class="block text-gray-700 mb-2">{{ $t('newpost.form.page1.lbl.title') }}</label>
                 <input 
                     v-model="form.title"
                     type="text" 
                     class="w-full px-4 py-3 bg-gray-100 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                    placeholder="Füge einen Titel hinzu">
+                    :placeholder="$t('newpost.form.page1.placeholder.title')">
             </div>
 
             <!-- Inhalt -->
             <div class="mb-6">
-                <label class="block text-gray-700 mb-2">Inhalt</label>
+                <label class="block text-gray-700 mb-2">{{ $t('newpost.form.page1.lbl.content') }}</label>
                 <textarea 
                     v-model="form.content"
                     rows="4"
                     class="w-full min-h-20 px-4 py-3 bg-gray-100 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                    placeholder="Schreibe deinen Beitrag..."></textarea>
+                    :placeholder="$t('newpost.form.page1.placeholder.content')"></textarea>
             </div>
 
             <!-- Bild Upload -->
             <div class="mb-6">
-            <label class="block text-gray-700 mb-2">Fotos hinzufügen</label>
+            <label class="block text-gray-700 mb-2">{{ $t('newpost.form.page1.lbl.picture') }}</label>
             <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                 <input 
                 type="file" 
                 multiple 
                 @change="handleImageUpload"
                 class="hidden" 
-                id="fileUpload">
+                id="fileUpload"
+                ref="fileInput">
                 <label 
                 for="fileUpload" 
-                class="cursor-pointer inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                class="cursor-pointer inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
                 <PhotoIcon class="h-5 w-5 mr-2"/>
-                Fotos auswählen
+                {{ $t('newpost.form.page1.btn.select_pic') }}
                 </label>
-                <p class="text-gray-500 mt-2">oder Dateien hierher ziehen</p>
+                <p class="text-gray-500 mt-2">{{ $t('newpost.form.page1.placeholder.picture') }}</p>
             </div>
             
             <!-- Bild Vorschau -->
@@ -128,7 +253,7 @@ const submitForm = () => {
 
             <!-- Personen Tags -->
             <div class="mb-6">
-            <label class="block text-gray-700 mb-2">Personen taggen</label>
+            <label class="block text-gray-700 mb-2">{{ $t('newpost.form.page1.lbl.tag_pers') }}</label>
             <div class="flex gap-2 flex-wrap">
                 <div 
                 v-for="(person, index) in form.taggedPeople"
@@ -147,7 +272,7 @@ const submitForm = () => {
                     @keyup.enter="addPersonTag"
                     type="text" 
                     class="w-full px-4 py-3 bg-gray-100 border border-gray-400 rounded-l-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                    placeholder="Username eingeben">
+                    :placeholder="$t('newpost.form.page1.placeholder.tag_pers')">
                 <button 
                     @click="addPersonTag"
                     class="px-3 bg-indigo-600 text-white rounded-r-lg hover:bg-indigo-700">
@@ -160,34 +285,34 @@ const submitForm = () => {
 
         <!-- Step 2: Einstellungen -->
         <div v-if="currentStep === 2">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Post Einstellungen</h2>
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">{{ $t('newpost.form.page2.title') }}</h2>
 
             <!-- Sichtbarkeit -->
             <div class="mb-6">
-            <label class="block text-gray-700 mb-2">Sichtbarkeit</label>
+            <label class="block text-gray-700 mb-2">{{ $t('newpost.form.page2.lbl.visibility') }}</label>
             <div class="flex items-center gap-4">
                 <button 
-                @click="form.visibility = 'public'"
-                :class="`px-6 py-2 rounded-full ${form.visibility === 'public' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`">
-                Öffentlich
+                    @click="form.visibility = 'public'"
+                    :class="`px-6 py-2 rounded-full ${form.visibility === 'public' ? 'bg-indigo-600 text-white' : 'bg-gray-200'}`">
+                    {{ $t('newpost.form.page2.btn.vis_public') }}
                 </button>
                 <button 
-                @click="form.visibility = 'subscription'"
-                :class="`px-6 py-2 rounded-full ${form.visibility === 'subscription' ? 'bg-blue-600 text-white' : 'bg-gray-200'}`">
-                Nur Abonnenten
+                    @click="form.visibility = 'subscription'"
+                    :class="`px-6 py-2 rounded-full ${form.visibility === 'subscription' ? 'bg-indigo-600 text-white' : 'bg-gray-200'}`">
+                    {{ $t('newpost.form.page2.btn.vis_subonly') }}
                 </button>
             </div>
             </div>
 
             <!-- Tags -->
             <div class="mb-6">
-            <label class="block text-gray-700 mb-2">Algorithmus Tags</label>
+            <label class="block text-gray-700 mb-2">{{ $t('newpost.form.page2.lbl.algo_tag') }}</label>
             <div class="flex gap-2 flex-wrap">
                 <div 
                 v-for="(tag, index) in form.tags"
                 :key="index"
                 class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full flex items-center">
-                #{{ tag }}
+                    #{{ tag }}
                 <button 
                     @click="form.tags.splice(index, 1)"
                     class="ml-2 text-blue-500 hover:text-blue-700">
@@ -200,7 +325,7 @@ const submitForm = () => {
                     @keyup.enter="addTag"
                     type="text" 
                     class="p-2 border rounded-l-lg"
-                    placeholder="Tag hinzufügen">
+                    :placeholder="$t('newpost.form.page2.placeholder.algo_tag')">
                 <button 
                     @click="addTag"
                     class="px-3 bg-indigo-600 text-white rounded-r-lg hover:bg-indigo-700">
@@ -212,7 +337,7 @@ const submitForm = () => {
 
             <!-- Zeitplan -->
             <div class="mb-6">
-            <label class="block text-gray-700 mb-2">Zeitplan</label>
+            <label class="block text-gray-700 mb-2">{{ $t('newpost.form.page2.lbl.pbl_date') }}</label>
             <div class="flex items-center gap-2">
                 <CalendarIcon class="h-5 w-5 text-gray-500"/>
                 <input 
@@ -226,11 +351,11 @@ const submitForm = () => {
             <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-2">
                 <BellIcon class="h-5 w-5 text-gray-500"/>
-                <span>Abonnenten benachrichtigen</span>
+                <span>{{ $t('newpost.form.page2.lbl.notf_sub') }}</span>
             </div>
             <button 
                 @click="form.sendNotification = !form.sendNotification"
-                :class="`w-12 h-6 rounded-full p-1 ${form.sendNotification ? 'bg-blue-600' : 'bg-gray-300'}`">
+                :class="`w-12 h-6 rounded-full p-1 ${form.sendNotification ? 'bg-indigo-600' : 'bg-gray-300'}`">
                 <div :class="`h-4 w-4 bg-white rounded-full shadow-md transform transition ${form.sendNotification ? 'translate-x-6' : ''}`"></div>
             </button>
             </div>
@@ -243,22 +368,23 @@ const submitForm = () => {
                         @click="currentStep--"
                         class="flex items-center px-6 py-2 text-gray-600 hover:text-gray-800">
                         <ArrowLeftIcon class="h-5 w-5 mr-2"/>
-                        Zurück
+                        {{ $t('newpost.form.navigation.back') }}
                     </button>
                 <div v-else></div>
                 
                 <button 
                     v-if="currentStep === 1"
                     @click="currentStep++"
-                    class="w-1/4 bg-gradient-to-l from-blue-700 to-indigo-400 text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-opacity mb-1">
-                    Weiter
+                    class="w-1/4 bg-gradient-to-l from-blue-700 to-indigo-400 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-600 hover:to-indigo-300 transform transition-all duration-300 ease-in-out mb-1 hover:scale-[1.02]">
+                    {{ $t('newpost.form.navigation.next') }}
                 </button>
                 
                 <button 
                     v-if="currentStep === 2"
-                    @click="submitForm"
+                    @click="showConfirmation = true"
+                    :disabled="isLoading"
                     class="w-1/4 bg-gradient-to-l from-blue-700 to-indigo-400 text-white py-3 px-4 rounded-lg font-medium hover:opacity-90 transition-opacity mb-1">
-                    Post veröffentlichen
+                    {{ $t('newpost.form.navigation.pblsh_post') }}
                 </button>
             </div>
         </div>
