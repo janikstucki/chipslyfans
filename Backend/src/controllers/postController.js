@@ -1,9 +1,14 @@
 import { Post } from "../models/Post.js";
+import { uploadFile  } from "../middlewares/s3.js";
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
+
+
 import { User } from "../models/User.js";
 import { Op } from 'sequelize';
+
+const upload = multer({ dest: 'uploads/' });
 
 // Multer Konfiguration
 const storage = multer.diskStorage({
@@ -24,12 +29,6 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB Limit
-});
-
 
 // Hilfsfunktion für Error Handling
 const handleError = (res, error, statusCode = 500) => {
@@ -39,6 +38,36 @@ const handleError = (res, error, statusCode = 500) => {
     message: error.message || 'Server error'
   });
 };
+
+
+// controllers/postController.js
+export const createPost = async (req, res) => {
+  try {
+    const data = JSON.parse(req.body.data)
+
+    const imageUrls = []
+    for (const file of req.files || []) {
+      const ext = path.extname(file.originalname)
+      const filename = `${uuidv4()}${ext}`
+
+      const location = await uploadFile(file.buffer, filename, file.mimetype)
+
+      imageUrls.push({ url: location, filename })
+    }
+
+    const newPost = await Post.create({
+      ...data,
+      images: imageUrls,
+      authorId: req.user.id
+    })
+
+    res.status(201).json(newPost)
+  } catch (err) {
+    console.error('[createPost] Upload-Fehler:', err)
+    res.status(500).json({ message: 'Fehler beim Erstellen des Posts' })
+  }
+}
+
 
 export const getPosts = async (req, res) => {
     try {
@@ -92,39 +121,60 @@ export const postController = {
     }
   },
 
+  // createPost: async (req, res) => {
+  //   try {
+  //     const { 
+  //       title,
+  //       content,
+  //       taggedPeople,
+  //       visibility,
+  //       tags,
+  //       scheduleDate,
+  //       sendNotification
+  //     } = JSON.parse(req.body.data);
+  
+  //     // User-ID aus der Authentifizierung holen
+  //     const authorId = req.user.id; 
+  
+  //     // Pfade der hochgeladenen Bilder aus req.files extrahieren
+  //     const imagePaths = req.files?.map(file => file.path) || [];
+  
+  //     // Einen neuen Post erstellen
+  //     const newPost = await Post.create({
+  //       title,
+  //       content,
+  //       images: imagePaths, // Bilderpfade hier speichern
+  //       taggedUsers: taggedPeople,
+  //       visibility,
+  //       tags,
+  //       scheduleDate: scheduleDate || new Date(),
+  //       sendNotification,
+  //       authorId
+  //     });
+  
+  //     res.status(201).json(newPost); // Antwort mit dem neuen Post
+  //   } catch (error) {
+  //     console.error('Error creating post:', error);
+  //     res.status(500).json({ message: 'Internal server error' });
+  //   }
+  // },
   createPost: async (req, res) => {
     try {
-      const { 
-        title,
-        content,
-        taggedPeople,
-        visibility,
-        tags,
-        scheduleDate,
-        sendNotification
-      } = JSON.parse(req.body.data)
-  
-      // User-ID aus der Authentifizierung holen
-      const authorId = req.user.id // ← Korrekte Quelle
-  
-      const imagePaths = req.files?.map(file => file.path) || []
-  
+      const imageUrls = req.files?.map(file => ({
+        path: `/uploads/${file.filename}`, // Generierte URL
+        filename: file.filename
+      })) || [];
+
       const newPost = await Post.create({
-        title,
-        content,
-        images: imagePaths,
-        taggedUsers: taggedPeople,
-        visibility,
-        tags,
-        scheduleDate: scheduleDate || new Date(),
-        sendNotification,
-        authorId // ← Hier verwenden
-      })
-  
-      res.status(201).json(newPost)
+        ...data,
+        images: imageUrls, // Speichere URLs im Format { path, filename }
+        authorId: req.user.id
+      });
+
+      res.status(201).json(newPost);
     } catch (error) {
-      console.error('Error creating post:', error)
-      res.status(500).json({ message: 'Internal server error' })
+      console.error('Error:', error);
+      res.status(500).json({ message: 'Server error' });
     }
   },
 

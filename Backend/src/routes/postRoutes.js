@@ -1,14 +1,27 @@
+// postRoutes.js
 import express from 'express';
-import { postController, getPosts } from '../controllers/postController.js';
+import { postController, getPosts, createPost } from '../controllers/postController.js';
 import { authenticate } from '../middlewares/authMiddleware.js';
+import upload from '../middlewares/multer.js';
 
 const router = express.Router();
 
 router.post(
     '/',
-    postController.uploadMiddleware, // Multer-Middleware
-    authenticate, // Auth-Middleware
-    postController.createPost // Controller-Funktion
+    (req, res, next) => {
+      upload.array('images')(req, res, (err) => {
+        if (err) {
+          console.error('Multer Error:', err);
+          return res.status(400).json({
+            success: false,
+            message: err.message
+          });
+        }
+        next();
+      });
+    },
+    authenticate,
+    createPost
 );
 
 // Restliche Routes...

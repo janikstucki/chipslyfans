@@ -36,15 +36,19 @@ const form = ref({
 const newTag = ref('')
 const newPersonTag = ref('')
 const fileInput = ref(null)
+const selectedFiles = ref([]) 
 
 // Bild-Upload Handlung
 const handleImageUpload = (e) => {
     const files = e.target.files
     if (!files) return
+
+    selectedFiles.value = Array.from(files) // ⬅️ speichere File-Objekte selbst
+
     for (let i = 0; i < files.length; i++) {
         const reader = new FileReader()
-            reader.onload = (e) => {
-            form.value.images.push(e.target.result)
+        reader.onload = (e) => {
+        form.value.images.push(e.target.result) // nur für Vorschau
         }
         reader.readAsDataURL(files[i])
     }
@@ -77,7 +81,7 @@ const submitForm = async () => {
     try {
         isLoading.value = true
         errorMessage.value = ''
-
+        console.log("📦 fileInput.value.files:", fileInput.value?.files)
 
         if (!userStore.isAuthenticated) {
             await userStore.fetchCurrentUser() // Erneuter Versuch den User zu laden
@@ -86,31 +90,35 @@ const submitForm = async () => {
             }
         }
 
+        // Daten an FormData anhängen
         const formData = new FormData()
 
-        // Zugriff über die Vue-Ref
-        const files = fileInput.value?.files
-        
-        // Überprüfung ob Dateien existieren
-        if (files) {
-            for (const file of files) {
-                formData.append('images', file)
-            }
+        if (selectedFiles.value.length > 0) {
+        for (const file of selectedFiles.value) {
+            formData.append('images', file) 
         }
-        
-        // Dateien hinzufügen
-        if (fileInput.value?.files) {
-            for (const file of fileInput.value.files) {
-                formData.append('images', file)
-            }
+        } else {
+            errorMessage.value = 'Bitte mindestens ein Bild auswählen';
+            return
         }
-        
-        // Daten ohne authorId senden (wird vom Backend aus dem JWT geholt)
+
+        if (fileInput.value?.files.length === 0) {
+            errorMessage.value = 'Bitte mindestens ein Bild auswählen';
+            return;
+        }
+
+        // Füge restliche Formulardaten hinzu
         formData.append('data', JSON.stringify({
-            ...form.value,
-            authorId: undefined 
+            title: form.value.title,
+            content: form.value.content,
+            taggedPeople: form.value.taggedPeople,
+            visibility: form.value.visibility,
+            tags: form.value.tags,
+            scheduleDate: form.value.scheduleDate || new Date(),
+            sendNotification: form.value.sendNotification
         }))
 
+        // Absenden der Formulardaten an das Backend
         const response = await fetch('http://localhost:3000/posts', {
             method: 'POST',
             body: formData,
@@ -128,7 +136,6 @@ const submitForm = async () => {
         // Zurück zur Übersicht oder Formular zurücksetzen
         router.push('/')
 
-        
     } catch (error) {
         errorMessage.value = error.message
         console.error('Fehler:', error)

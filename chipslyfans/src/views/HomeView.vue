@@ -22,25 +22,28 @@
             </div>
             <p class="mt-2 text-md fornt-bold line-clamp-2">{{ post.title }}</p>
             <p class="mt-2 text-sm line-clamp-2">{{ post.content }}</p>
+            <div v-for="(image, idx) in post.images" :key="idx">
+              <img :src="image.path" class="post-image">
+            </div>
             <div class="flex space-x-4 text-gray-500 border-t border-gray-200 pt-4">
-            <button class="flex items-center space-x-1 hover:text-indigo-600 " @click.stop="likepost(post.id)">
-              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-              </svg>
-              <span>{{ post.likes.likeCount }}</span>
-            </button>
-            <button class="flex items-center space-x-1 hover:text-indigo-600 ">
-              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-              </svg>
-              <!-- <span>{{ beitrag.kommentare }} Kommentare</span> -->
-            </button>
-            <button class="flex items-center space-x-1 hover:text-indigo-600 ">
-              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"/>
-              </svg>
-            </button>
-          </div>
+              <button class="flex items-center space-x-1 hover:text-indigo-600 " @click.stop="likepost(post.id)">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                </svg>
+                <span>{{ post.likes.likeCount }}</span>
+              </button>
+              <button class="flex items-center space-x-1 hover:text-indigo-600 ">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                </svg>
+                <!-- <span>{{ beitrag.kommentare }} Kommentare</span> -->
+              </button>
+              <button class="flex items-center space-x-1 hover:text-indigo-600 ">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
