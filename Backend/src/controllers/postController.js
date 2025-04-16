@@ -39,34 +39,37 @@ const handleError = (res, error, statusCode = 500) => {
   });
 };
 
-
-// controllers/postController.js
 export const createPost = async (req, res) => {
   try {
     const data = JSON.parse(req.body.data)
 
-    const imageUrls = []
-    for (const file of req.files || []) {
-      const ext = path.extname(file.originalname)
-      const filename = `${uuidv4()}${ext}`
-
-      const location = await uploadFile(file.buffer, filename, file.mimetype)
-
-      imageUrls.push({ url: location, filename })
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: 'Keine Bilder hochgeladen' })
     }
+
+    // Bilder gleichzeitig hochladen
+    const uploadResults = await Promise.all(
+      req.files.map(file => uploadFile(file.buffer, file.originalname, file.mimetype))
+    )
+
+    const imageInfos = uploadResults.map((url, i) => ({
+      url,
+      filename: req.files[i].originalname
+    }))
 
     const newPost = await Post.create({
       ...data,
-      images: imageUrls,
+      images: imageInfos,
       authorId: req.user.id
     })
 
     res.status(201).json(newPost)
-  } catch (err) {
-    console.error('[createPost] Upload-Fehler:', err)
+  } catch (error) {
+    console.error('[createPost] Fehler:', error)
     res.status(500).json({ message: 'Fehler beim Erstellen des Posts' })
   }
 }
+
 
 
 export const getPosts = async (req, res) => {

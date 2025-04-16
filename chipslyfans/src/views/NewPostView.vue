@@ -36,23 +36,24 @@ const form = ref({
 const newTag = ref('')
 const newPersonTag = ref('')
 const fileInput = ref(null)
-const selectedFiles = ref([]) 
 
-// Bild-Upload Handlung
-const handleImageUpload = (e) => {
-    const files = e.target.files
-    if (!files) return
+const selectedFiles = ref([]);        
 
-    selectedFiles.value = Array.from(files) // ⬅️ speichere File-Objekte selbst
 
-    for (let i = 0; i < files.length; i++) {
-        const reader = new FileReader()
-        reader.onload = (e) => {
-        form.value.images.push(e.target.result) // nur für Vorschau
-        }
-        reader.readAsDataURL(files[i])
-    }
+
+
+function handleImageUpload(event) {
+  const files = Array.from(event.target.files);    
+  if (files.length === 0) return;                 
+  files.forEach(file => {
+    selectedFiles.value.push(file);                
+    const reader = new FileReader();              
+    reader.onload = e => form.value.images.push(e.target.result);
+    reader.readAsDataURL(file);                   
+  });
+  event.target.value = null; 
 }
+
 
 // Tag Hinzufügen
 const addTag = () => {
@@ -92,19 +93,14 @@ const submitForm = async () => {
 
         // Daten an FormData anhängen
         const formData = new FormData()
-
+        console.log(selectedFiles.value)
         if (selectedFiles.value.length > 0) {
-        for (const file of selectedFiles.value) {
-            formData.append('images', file) 
-        }
+            selectedFiles.value.forEach(file => {
+                formData.append('images', file);
+            });
         } else {
             errorMessage.value = 'Bitte mindestens ein Bild auswählen';
             return
-        }
-
-        if (fileInput.value?.files.length === 0) {
-            errorMessage.value = 'Bitte mindestens ein Bild auswählen';
-            return;
         }
 
         // Füge restliche Formulardaten hinzu
