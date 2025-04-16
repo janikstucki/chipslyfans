@@ -127,6 +127,7 @@ const submitForm = async () => {
         
         // Zurück zur Übersicht oder Formular zurücksetzen
         router.push('/')
+
         
     } catch (error) {
         errorMessage.value = error.message

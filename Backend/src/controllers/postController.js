@@ -5,7 +5,6 @@ import path from 'path';
 import { User } from "../models/User.js";
 import { Op } from 'sequelize';
 
-
 // Multer Konfiguration
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -40,8 +39,6 @@ const handleError = (res, error, statusCode = 500) => {
     message: error.message || 'Server error'
   });
 };
-
-
 
 export const getPosts = async (req, res) => {
     try {
@@ -78,6 +75,7 @@ export const getPosts = async (req, res) => {
         res.status(500).json({ message: 'Error fetching posts', error });
     }
 };
+
 
 // Controller-Funktionen
 export const postController = {

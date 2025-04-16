@@ -34,6 +34,7 @@ export const Post = sequelize.define("Post", {
         allowNull: false,
     },
     images: {
+
         type: DataTypes.JSON,
         defaultValue: []
     },
@@ -61,6 +62,7 @@ export const Post = sequelize.define("Post", {
 }, {
     tableName: "posts",
     timestamps: true,
+
 });
 
 Post.belongsTo(User, {
