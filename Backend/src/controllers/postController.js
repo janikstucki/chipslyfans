@@ -108,6 +108,40 @@ export const getPosts = async (req, res) => {
     }
 };
 
+export const getPostById = async (req, res) => {
+  try {
+    const post = await Post.findByPk(req.params.id, {
+      include: [
+        {
+          model: User,
+          as: 'author',
+          attributes: ['id', 'username']
+        }
+      ]
+    });
+
+    if (!post) {
+      return res.status(404).json({ message: 'Post nicht gefunden' });
+    }
+
+    const { author, ...rest } = post.toJSON();
+
+    const formattedPost = {
+      ...rest,
+      author: {
+        id: author?.id || null,
+        username: author?.username || 'Unbekannt'
+      }
+    };
+
+    res.status(200).json({ success: true, data: formattedPost });
+  } catch (error) {
+    console.error('[getPostById] Fehler beim Laden des Beitrags:', error);
+    res.status(500).json({ message: 'Fehler beim Laden des Beitrags', error });
+  }
+};
+
+
 
 // Controller-Funktionen
 export const postController = {
