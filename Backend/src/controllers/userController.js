@@ -1,4 +1,6 @@
 import { User } from "../models/User.js";
+import { uploadFile } from "../middlewares/s3.js";
+
 import bcrypt from 'bcryptjs';
 
 export const getUsers = async (req, res) => {
@@ -12,30 +14,46 @@ export const getUsers = async (req, res) => {
 
 export const createUser = async (req, res) => {
     try {
-        const { username, email, password, firstname, lastname, birthdate } = req.body;
-        
-        // Passwort hashen
-        const salt = bcrypt.genSaltSync(10);
-        const passwordHash = bcrypt.hashSync(password, salt);
-
-        const newUser = await User.create({ 
+        const {
             username,
             email,
-            passwordHash,  
+            password,
             firstname,
             lastname,
             birthdate
+        } = req.body;
+    
+        // Passwort hashen
+        const salt = bcrypt.genSaltSync(10);
+        const passwordHash = bcrypt.hashSync(password, salt);
+    
+        let profileImageUrl = null;
+    
+        if (req.file) {
+            profileImageUrl = await uploadFile(
+            req.file.buffer,
+            req.file.originalname,
+            req.file.mimetype
+            );
+        }
+        console.log('S3 URL:', profileImageUrl);
+        const newUser = await User.create({
+            username,
+            email,
+            passwordHash,
+            firstname,
+            lastname,
+            birthdate,
+            profilepicture: profileImageUrl,
         });
-
-        res.status(201).json(newUser);
-        
-    } catch (error) {
-        res.status(500).json({ 
-            message: 'Error creating user',
-            error: process.env.NODE_ENV === 'development' ? error : {}
-        });
+    
+        res.status(201).json({ success: true, user: newUser });
+        } catch (error) {
+        console.error('[registerUser] Fehler:', error);
+        res.status(500).json({ message: 'Fehler beim Registrieren des Users' });
     }
-}
+};
+
 
 export const deleteUser = async (req, res) => {
     try {

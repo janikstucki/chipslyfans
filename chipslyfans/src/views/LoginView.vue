@@ -127,6 +127,28 @@
                                     <label class="text-red-500" v-if="birthdateError" for="passwordError">{{ birthdateErrorMsg }}</label>
                                 </div>
                             </div>
+                            <div class="mb-7" v-if="!isLogin">
+                                <label class="block text-gray-600 text-sm mb-2">{{ $t('login.form.label.profilepic') }}</label>
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                                    <input 
+                                    type="file"
+                                    @change="handleImageUpload"
+                                    class="hidden"
+                                    id="profilepicture"
+                                    ref="profilepicture"
+                                    accept="image/*"
+                                    >
+                                    <label for="profilepicture" class="cursor-pointer inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                                        <PhotoIcon class="h-5 w-5 mr-2" />
+                                        {{ $t('login.form.placeholder.profilepic') }}
+                                    </label>
+                                    <p class="text-gray-500 mt-2">{{ $t('newpost.form.page1.placeholder.picture') }}</p>
+                                    <!-- Vorschau -->
+                                    <div v-if="previewUrl" class="mt-4">
+                                        <img :src="previewUrl" class="h-24 rounded-full object-cover mx-auto shadow" />
+                                    </div>
+                                </div>
+                            </div>
                             
                             <div class="flex items-center justify-between mb-6">
                                 <div class="flex items-center space-x-3">
@@ -383,13 +405,14 @@ import flatpickr from 'flatpickr';
 import { useI18n } from 'vue-i18n';
 import 'flatpickr/dist/flatpickr.min.css';
 import { 
-    ArrowUturnLeftIcon
+    ArrowUturnLeftIcon,
+    PhotoIcon
 } from '@heroicons/vue/24/outline'
 
 import router from '../router';
 import { useFetch} from '../helpers/authenticate.js';
 
-const isLogin = ref(true);
+const isLogin = ref(false);
 const datepicker = ref(null);
 let picker = null;
 const loading = ref(false);
@@ -403,6 +426,7 @@ const username = ref('');
 const firstname = ref('');
 const lastname = ref('');
 const birthdate = ref('');
+const profilepicture = ref(null);
 
 const registerError = ref(false);
 const loginError = ref(false);
@@ -413,6 +437,7 @@ const usernameError = ref(false);
 const firstnameError = ref(false);
 const lastnameError = ref(false);
 const birthdateError = ref(false);
+const profilepictureError = ref(false);
 
 const registerErrorMsg = ref(t('login.form.error.register'));
 const loginErrorMsg = ref(t('login.form.error.login'));
@@ -423,6 +448,7 @@ const usernameErrorMsg = ref("");
 const firstnameErrorMsg = ref("");
 const lastnameErrorMsg = ref("");
 const birthdateErrorMsg = ref("");
+const profilepictureErrorMsg = ref("")
 
 onMounted(() => {
     if (datepicker.value) {
@@ -460,6 +486,15 @@ const toggleForm = () => {
 
     isLogin.value = !isLogin.value;
 };
+
+const previewUrl = ref(null);
+
+function handleImageUpload(event) {
+    const file = event.target.files[0];
+    if (file) {
+        previewUrl.value = URL.createObjectURL(file);
+    }
+}
 
 
 const submitForm = () => {
@@ -563,26 +598,25 @@ const AuthCipslyTok = async () => {
 
 const register = async () => {
     try {
+        const formData = new FormData();
+        formData.append('username', username.value);
+        formData.append('email', email.value);
+        formData.append('password', password01.value); // ← ← ← MUSS vorhanden sein!
+        formData.append('firstname', firstname.value);
+        formData.append('lastname', lastname.value);
+        formData.append('birthdate', birthdate.value);
+
+        if (profilepicture.value?.files?.[0]) {
+        formData.append('profilepicture', profilepicture.value.files[0]);
+        }
+
         const { res, data } = await useFetch('/users', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username: username.value,
-                email: email.value,
-                password: password01.value,
-                firstname: firstname.value,
-                lastname: lastname.value,
-                birthdate: birthdate.value
-            }),
+            body: formData,
             credentials: 'include'
         });
 
         if (res.ok) {
-            console.log("data token:", data.object);
-            if (data) {
-                localStorage.setItem('token', data); // If storing client-side
-                console.log('Token stored:', data);
-            }
             window.location.href = '/';
         } else {
             registerErrorMsg.value = data.message || 'Registration failed. Please try again.';
@@ -593,6 +627,7 @@ const register = async () => {
         loading.value = false;
     }
 };
+
 
 
 const checkLoginForm = () => {

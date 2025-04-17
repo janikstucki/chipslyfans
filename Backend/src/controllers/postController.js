@@ -84,7 +84,7 @@ export const getPosts = async (req, res) => {
                 {
                     model: User,
                     as: 'author',
-                    attributes: ['id', 'username']
+                    attributes: ['id', 'username', 'profilepicture']
                 }
             ],
             order: [['createdAt', 'DESC']]
@@ -96,7 +96,8 @@ export const getPosts = async (req, res) => {
                 ...rest,
                 author: {
                     id: author?.id || null,
-                    username: author?.username || 'Unbekannt'
+                    username: author?.username || 'Unbekannt',
+                    profilepicture: author?.profilepicture || null
                 }
             };
         });

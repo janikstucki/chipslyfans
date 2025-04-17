@@ -48,8 +48,7 @@
               <!-- Next Button -->
               <button
                 v-if="post.images.length > 1 && post.currentImageIndex < post.images.length - 1"
-                @click.stop="nextImage(post)"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition">
+                @click.stop="nextImage(post)">
                 <ChevronRightIcon class="h-5 w-5" />
               </button>
               <div

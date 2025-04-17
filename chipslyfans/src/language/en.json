@@ -43,7 +43,8 @@
                 "birthdate": "Birthdate",
                 "remember_me": "Remember Me",
                 "forgot_password": "Forgot Password?",
-                "or_cnt_wth": "or continue with"
+                "or_cnt_wth": "or continue with",
+                "profilepic": "Select a profilepicture"
             },
             "placeholder": {
                 "email_start": "john.doe",
@@ -51,7 +52,8 @@
                 "username": "cooking_lover",
                 "firstname": "John",
                 "lastname": "Doe",
-                "birthdate": "YYYY-MM-DD"
+                "birthdate": "YYYY-MM-DD",
+                "profilepic": "Select a image"
             },
             "error": {
                 "login": "Invalid username or password",
