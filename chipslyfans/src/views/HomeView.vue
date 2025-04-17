@@ -10,11 +10,21 @@
               v-for="post in displayedPosts"
               :key="post.id"
               class="bg-white shadow-sm rounded-lg p-4 mb-6 hover:shadow-md transition"
+              @click="navigateToPost(post.id)"
             >
             <!-- Header -->
-            <div @click="navigateToPost(post.id)" class="flex items-center gap-3 cursor-pointer">
-              <div class="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center text-white font-bold">
-                {{ post.author.username.charAt(0).toUpperCase() }}
+            <div  class="flex items-center gap-3 cursor-pointer">
+              <div class="w-10 h-10 rounded-full overflow-hidden bg-indigo-500 flex items-center justify-center text-white font-bold">
+                <template v-if="post.author.profilepicture">
+                  <img 
+                    :src="post.author.profilepicture" 
+                    alt="Profilepicture" 
+                    class="w-full h-full object-cover"
+                  />
+                </template>
+                <template v-else>
+                  {{ post.author.username.charAt(0).toUpperCase() }}
+                </template>
               </div>
               <div>
                 <h3 class="font-semibold">{{ post.author.username }}</h3>
@@ -34,27 +44,25 @@
             <div v-if="post.images && post.images.length" class="relative mt-3">
               <img
                 :src="post.images[post.currentImageIndex || 0].url"
-                @click="openImageModal(post.images[post.currentImageIndex || 0].url)"
-                class="rounded-md object-cover w-full h-60 cursor-zoom-in"
-              />
+                @click.stop="openImageModal(post.images[post.currentImageIndex || 0].url)"
+                class="rounded-md object-cover w-full h-60 cursor-zoom-in"/>
               <button
                 v-if="post.images.length > 1 && post.currentImageIndex > 0"
                 @click.stop="prevImage(post)"
-                class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition"
-              >
+                class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition">
                 <ChevronLeftIcon class="h-5 w-5" />
               </button>
 
               <!-- Next Button -->
               <button
                 v-if="post.images.length > 1 && post.currentImageIndex < post.images.length - 1"
-                @click.stop="nextImage(post)">
+                @click.stop="nextImage(post)"
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition">
                 <ChevronRightIcon class="h-5 w-5" />
               </button>
               <div
                 v-if="post.images.length > 1"
-                class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-white bg-black/50 px-2 py-0.5 rounded"
-              >
+                class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-white bg-black/50 px-2 py-0.5 rounded">
                 {{ (post.currentImageIndex || 0) + 1 }} / {{ post.images.length }}
               </div>
               <div
@@ -66,7 +74,7 @@
             <!-- Actions -->
             <div class="flex items-center justify-between text-gray-600 border-t border-b py-3 px-4">
               <!-- Like -->
-              <button class="flex items-center space-x-2 hover:text-blue-600">
+              <button @click.stop="likePost(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
                   <HeartIcon class="h-5 w-5" />
                   <span>{{ post.likes.likeCount }}</span>
               </button>
@@ -76,12 +84,12 @@
                   <span>Kommentieren</span>
               </button>
               <!-- Teilen -->
-              <button class="flex items-center space-x-2 hover:text-blue-600">
+              <button @click.stop="sharePost(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
                   <ShareIcon class="h-5 w-5" />
                   <span>Teilen</span>
               </button>
               <!-- Speichern -->
-              <button class="flex items-center space-x-2 hover:text-blue-600">
+              <button @click.stop="savePost(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
                   <BookmarkIcon class="h-5 w-5" />
                   <span>Speichern</span>
               </button>
@@ -369,9 +377,7 @@ const filteredBeitraege = computed(() => {
   )
 })
 
-function likepost(likedpost){
-  console.log(likedpost)
-}
+
 
 function openImageModal(url) {
   fullImageUrl.value = url
@@ -387,6 +393,17 @@ function nextImage(post) {
 }
 function prevImage(post) {
   post.currentImageIndex = (post.currentImageIndex || 0) - 1
+}
+
+
+function likePost(postId) {
+
+}
+function sharePost(postId) {
+
+}
+function savePost(saveId){
+
 }
 </script>
 
