@@ -583,7 +583,7 @@ const register = async () => {
                 localStorage.setItem('token', data); // If storing client-side
                 console.log('Token stored:', data);
             }
-            // window.location.href = '/';
+            window.location.href = '/';
         } else {
             registerErrorMsg.value = data.message || 'Registration failed. Please try again.';
         }

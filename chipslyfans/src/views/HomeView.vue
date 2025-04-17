@@ -21,21 +21,22 @@
               </div>
             </div>
             <p class="mt-2 text-md fornt-bold line-clamp-2">{{ post.title }}</p>
-            <p class="mt-2 text-sm line-clamp-2">{{ post.content }}</p>
+            <p class="mt-2 text-sm line-clamp-2" :class="!isAuth ? 'preview-text' : ''">
+              {{ !isLoggedIn ? post.content.slice(0, 60) + '...' : post.content }}
+            </p>
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-              <div class="flex flex-wrap gap-2">
-                <div class="flex flex-wrap gap-2">
-                  <div
-                    v-for="(img, index) in post.images"
-                    :key="index"
-                    class="w-[calc(43.333%-0.5rem)] max-w-[43.333%] rounded-md overflow-hidden">
-                      <img
-                        :src="img.url"
-                        @error="e => e.target.src = fallbackimage"
-                        class="w-full h-auto object-cover rounded-md border border-gray-200"/>
-                    </div>
-                  </div>
-                </div>
+              <div
+                v-for="(img, index) in post.images"
+                :key="index"
+                class="relative w-[calc(43.333%-0.5rem)] max-w-[43.333%] rounded-md overflow-hidden"
+              >
+                <img
+                  :src="img.url"
+                  @error="e => e.target.src = fallbackimage"
+                  class="w-full h-auto object-cover rounded-md border border-gray-200"
+                />
+                <div v-if="!isAuth" class="preview-blur absolute inset-0"></div>
+              </div>
               </div>
             <div class="flex space-x-4 text-gray-500 border-t border-gray-200 pt-4">
               <button class="flex items-center space-x-1 hover:text-indigo-600 " @click.stop="likepost(post.id)">
@@ -135,10 +136,13 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFetch } from '../helpers/getPosts';
 import { formatDate } from '../utils/formatDate.js';
+import { useAuthStore } from '../store/auth.js';
+const authStore = useAuthStore();
 
 import { 
   BookmarkIcon
 } from '@heroicons/vue/24/outline'
+
 
 
 
@@ -226,13 +230,38 @@ const beitraege = ref([
   },
 ])
 const posts = ref([]);
+const isAuth = ref(null)
 
 onMounted(async() => {
+  authStore.checkAuth();
+  isAuth.value = await isAuthenticated.value
   const {data} = await useFetch('/posts')
   posts.value = data
   console.log("posts", posts.value)
 });
 
+
+const isAuthenticated = computed(async () => {
+    try {
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/protected`, {
+            method: 'GET', 
+            credentials: 'include'
+        });
+        console.log(res)
+
+        const data = await res.json();
+        if (res && res.ok && data?.user) {
+        console.log("Benutzer ist authentifiziert:", data.user);
+        return true;
+        } else {
+        console.warn("Benutzer ist nicht authentifiziert");
+        return false;
+        }
+    } catch (error) {
+        console.error("Fehler beim Auth-Check:", error);
+        return false;
+    }
+})
 
 
 
@@ -289,5 +318,20 @@ function likepost(likedpost){
   /* -webkit-line-clamp: 2; */
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.preview-blur::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0,0,0,0.4);
+  backdrop-filter: blur(2px);
+  z-index: 10;
+  border-radius: 0.375rem; /* .rounded-md */
+}
+
+.preview-text {
+  color: rgba(0,0,0,0.6);
+  filter: blur(1px);
 }
 </style>
