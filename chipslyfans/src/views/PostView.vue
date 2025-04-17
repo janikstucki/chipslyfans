@@ -7,7 +7,10 @@
         HeartIcon,
         ChatBubbleLeftEllipsisIcon,
         ShareIcon,
-        BookmarkIcon
+        BookmarkIcon,
+        ChevronLeftIcon,
+        ChevronRightIcon,
+        ArrowUturnRightIcon
     } from '@heroicons/vue/24/outline'
     
 
@@ -93,16 +96,16 @@
             <button
                 v-if="post.images.length > 1 && currentImageIndex > 0"
                 @click="prevImage"
-                class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 text-gray-800 rounded-full p-1 hover:bg-white shadow">
-                ⟨
+                class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition">
+                <ChevronLeftIcon class="h-5 w-5" />
             </button>
 
             <!-- Next -->
             <button
                 v-if="post.images.length > 1 && currentImageIndex < post.images.length - 1"
                 @click="nextImage"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 text-gray-800 rounded-full p-1 hover:bg-white shadow">
-                ⟩
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition">
+                <ChevronRightIcon class="h-5 w-5" />
             </button>
 
             <!-- Count -->
@@ -163,16 +166,16 @@
     <!-- Fullscreen Image -->
     <transition name="fade">
         <div
-            v-if="showImageModal"
-            @click.self="closeImageModal"
-            class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center px-4">
+        v-if="showImageModal"
+        @click.self="closeImageModal"
+        class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center px-4">
             <div class="relative max-w-full max-h-full">
                 <button
-                    @click="closeImageModal"
-                    class="absolute top-2 right-2 text-white bg-black/70 rounded-full p-2 hover:bg-black">
-                    ✕
+                @click="closeImageModal"
+                class="absolute top-2 right-2 text-white bg-black/70 rounded-full p-2 hover:bg-black">
+                <ArrowUturnRightIcon class="h-5 w-5"/>
                 </button>
-                <img :src="fullImageUrl" alt="Vorschau Bild" class="max-w-full max-h-screen rounded shadow-lg" />
+                <img :src="fullImageUrl" alt="Bild Vorschau" class="max-w-full max-h-screen rounded shadow-lg" />
             </div>
         </div>
     </transition>

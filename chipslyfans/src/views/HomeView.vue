@@ -30,7 +30,7 @@
               {{ !isAuth ? post.content.slice(0, 60) + '...' : post.content }}
             </p>
 
-            <!-- Image Carousel (wenn Bilder vorhanden) -->
+            <!-- Image Carousel -->
             <div v-if="post.images && post.images.length" class="relative mt-3">
               <img
                 :src="post.images[post.currentImageIndex || 0].url"
@@ -40,13 +40,18 @@
               <button
                 v-if="post.images.length > 1 && post.currentImageIndex > 0"
                 @click.stop="prevImage(post)"
-                class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-1 rounded-full text-black"
-              >⟨</button>
+                class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition"
+              >
+                <ChevronLeftIcon class="h-5 w-5" />
+              </button>
+
+              <!-- Next Button -->
               <button
                 v-if="post.images.length > 1 && post.currentImageIndex < post.images.length - 1"
                 @click.stop="nextImage(post)"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-1 rounded-full text-black"
-              >⟩</button>
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition">
+                <ChevronRightIcon class="h-5 w-5" />
+              </button>
               <div
                 v-if="post.images.length > 1"
                 class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-white bg-black/50 px-2 py-0.5 rounded"
@@ -154,22 +159,20 @@
     </div>
   </div>
   <transition name="fade">
-  <div
-    v-if="showImageModal"
-    @click.self="closeImageModal"
-    class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center px-4"
-  >
-    <div class="relative max-w-full max-h-full">
-      <button
-        @click="closeImageModal"
-        class="absolute top-2 right-2 text-white bg-black/70 rounded-full p-2 hover:bg-black"
-      >
-        ✕
-      </button>
-      <img :src="fullImageUrl" alt="Bild Vorschau" class="max-w-full max-h-screen rounded shadow-lg" />
+    <div
+      v-if="showImageModal"
+      @click.self="closeImageModal"
+      class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center px-4">
+      <div class="relative max-w-full max-h-full">
+        <button
+          @click="closeImageModal"
+          class="absolute top-2 right-2 text-white bg-black/70 rounded-full p-2 hover:bg-black">
+          <ArrowUturnRightIcon class="h-5 w-5"/>
+        </button>
+        <img :src="fullImageUrl" alt="Bild Vorschau" class="max-w-full max-h-screen rounded shadow-lg" />
+      </div>
     </div>
-  </div>
-</transition>
+  </transition>
 </template>
 
 <script setup>
@@ -186,6 +189,9 @@ import {
   HeartIcon,
   ChatBubbleLeftEllipsisIcon,
   ShareIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ArrowUturnRightIcon
 } from '@heroicons/vue/24/outline'
 
 
@@ -320,13 +326,17 @@ function loadMorePosts() {
 
   const start = (currentPage.value - 1) * pageSize
   const end = currentPage.value * pageSize
-  const nextPosts = posts.value.slice(start, end)
+  const nextPosts = posts.value.slice(start, end).map(post => ({
+    ...post,
+    currentImageIndex: 0
+  }))
 
   displayedPosts.value.push(...nextPosts)
   currentPage.value++
 
   isLoadingPosts.value = false
 }
+
 async function checkAuthStatus() {
   try {
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/protected`, {
