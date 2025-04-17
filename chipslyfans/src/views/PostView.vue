@@ -1,8 +1,74 @@
 <!-- src/views/PostDetail.vue -->
+<script setup>
+    import { ref, onMounted } from 'vue'
+    import { useRoute } from 'vue-router'
+    import { formatDate } from "../utils/formatDate.js"
+    import {
+        HeartIcon,
+        ChatBubbleLeftEllipsisIcon,
+        ShareIcon,
+        BookmarkIcon
+    } from '@heroicons/vue/24/outline'
+    
+
+    const post = ref(null)
+    const router = useRoute()
+    const currentImageIndex = ref(0)
+    const showImageModal = ref(false)
+    const fullImageUrl = ref('')
+    
+    
+    
+    function nextImage() {
+        if (post.value?.images && currentImageIndex.value < post.value.images.length - 1) {
+            currentImageIndex.value++
+        }
+    }
+    
+    function prevImage() {
+        if (currentImageIndex.value > 0) {
+            currentImageIndex.value--
+        }
+    }
+    
+    function openImageModal(url) {
+        fullImageUrl.value = url
+        showImageModal.value = true
+    }
+    function closeImageModal() {
+        showImageModal.value = false
+        fullImageUrl.value = ''
+    }
+
+    function onUserClick(userId){
+        router.push({ name: 'UserDetail', params: { userId } })
+    }
+    
+    onMounted(async () => {
+        const postId = router.params.id
+        try {
+            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/posts/${postId}`, {
+                method: 'GET',
+                credentials: 'include'
+            })
+            const data = await res.json()
+    
+            if (res.ok && data.success) {
+                post.value = data.data
+                console.log(post.value.author.id)
+            } else {
+            console.warn('Post nicht gefunden oder Fehler:', data)
+            }
+        } catch (err) {
+            console.error('Fehler beim Laden des Posts:', err)
+        }
+    })
+</script>
+
 <template>
     <div v-if="post" class="w-full max-w-2xl mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-6">
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b">
+        <div @click="onUserClick(post.author.id)" class="flex items-center justify-between px-6 py-4 border-b">
             <div class="flex items-center space-x-3">
                 <div class="w-12 h-12 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-lg">
                     {{ post.author.username.charAt(0).toUpperCase() }}
@@ -110,66 +176,6 @@
         </div>
     </transition>
 </template>
-
-<script setup>
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { formatDate } from "../utils/formatDate.js"
-import {
-    HeartIcon,
-    ChatBubbleLeftEllipsisIcon,
-    ShareIcon,
-    BookmarkIcon
-} from '@heroicons/vue/24/outline'
-
-const post = ref(null)
-const route = useRoute()
-const currentImageIndex = ref(0)
-const showImageModal = ref(false)
-const fullImageUrl = ref('')
-
-
-
-function nextImage() {
-    if (post.value?.images && currentImageIndex.value < post.value.images.length - 1) {
-        currentImageIndex.value++
-    }
-}
-
-function prevImage() {
-    if (currentImageIndex.value > 0) {
-        currentImageIndex.value--
-    }
-}
-
-function openImageModal(url) {
-    fullImageUrl.value = url
-    showImageModal.value = true
-}
-function closeImageModal() {
-    showImageModal.value = false
-    fullImageUrl.value = ''
-}
-
-onMounted(async () => {
-    const postId = route.params.id
-    try {
-        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/posts/${postId}`, {
-            method: 'GET',
-            credentials: 'include'
-        })
-        const data = await res.json()
-
-        if (res.ok && data.success) {
-        post.value = data.data
-        } else {
-        console.warn('Post nicht gefunden oder Fehler:', data)
-        }
-    } catch (err) {
-        console.error('Fehler beim Laden des Posts:', err)
-    }
-})
-</script>
 
 <style>
 .fade-enter-active,
