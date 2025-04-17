@@ -42,7 +42,8 @@ const routes = [
     {
         path: '/new-post',
         name: 'New-Post',
-        component: NewPost
+        component: NewPost,
+        meta: { requiresAuth: true}
     },
 ];
 

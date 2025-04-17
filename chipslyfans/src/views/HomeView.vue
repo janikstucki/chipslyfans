@@ -22,21 +22,24 @@
             </div>
             <p class="mt-2 text-md fornt-bold line-clamp-2">{{ post.title }}</p>
             <p class="mt-2 text-sm line-clamp-2" :class="!isAuth ? 'preview-text' : ''">
-              {{ !isLoggedIn ? post.content.slice(0, 60) + '...' : post.content }}
+              {{ !isAuth ? post.content.slice(0, 60) + '...' : post.content }}
             </p>
             <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
               <div
                 v-for="(img, index) in post.images"
                 :key="index"
-                class="relative w-[calc(43.333%-0.5rem)] max-w-[43.333%] rounded-md overflow-hidden"
-              >
-                <img
-                  :src="img.url"
-                  @error="e => e.target.src = fallbackimage"
-                  class="w-full h-auto object-cover rounded-md border border-gray-200"
-                />
-                <div v-if="!isAuth" class="preview-blur absolute inset-0"></div>
+                class="relative w-[calc(43.333%-0.5rem)] max-w-[43.333%] rounded-md overflow-hidden">
+                  <img
+                    v-if="isAuth"
+                    :src="img.url"
+                    @error="e => e.target.src = fallbackimage"
+                    class="w-full h-auto object-cover rounded-md border border-gray-200"/>
+                  <img v-if="!isAuth" src="../assets/images/NotAuthIMGPlaceholder.png" alt="">
+                  <div v-if="!isAuth" class="preview-blur absolute inset-0"></div>
+                </div>
               </div>
+              <div v-if="!isAuth" class="text-xs text-gray-500 mt-1 italic">
+                {{ $t('root.login_to_see_full_content') }}
               </div>
             <div class="flex space-x-4 text-gray-500 border-t border-gray-200 pt-4">
               <button class="flex items-center space-x-1 hover:text-indigo-600 " @click.stop="likepost(post.id)">
@@ -324,11 +327,12 @@ function likepost(likedpost){
   content: '';
   position: absolute;
   inset: 0;
-  background-color: rgba(0,0,0,0.4);
-  backdrop-filter: blur(2px);
+  background-color: rgba(0,0,0,0.2);
+  backdrop-filter: blur(1px);
   z-index: 10;
-  border-radius: 0.375rem; /* .rounded-md */
-}
+  border-radius: 0.375rem; 
+} 
+
 
 .preview-text {
   color: rgba(0,0,0,0.6);

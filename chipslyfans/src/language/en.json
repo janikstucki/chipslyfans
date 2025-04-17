@@ -13,7 +13,8 @@
         "title": "Recent Posts",
         "search_bar": "Search Posts",
         "search_info": "Search for content",
-        "search_most_searched_title": "Most Searched"
+        "search_most_searched_title": "Most Searched",
+        "login_to_see_full_content": "Login to see full content"
     },
     "login": {
         "panel": {
