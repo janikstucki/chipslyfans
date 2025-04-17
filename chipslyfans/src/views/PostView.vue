@@ -19,7 +19,8 @@
             <img
                 :src="post.images[currentImageIndex].url"
                 alt="Post Bild"
-                class="object-cover w-full h-full transition-all duration-300"/>
+                @click="openImageModal(post.images[currentImageIndex].url)"
+                class="object-cover w-full h-full transition-all duration-300 cursor-zoom-in"/>
 
             <!-- Prev -->
             <button
@@ -92,6 +93,22 @@
     <div v-else class="text-center text-gray-500 mt-10">
         Lade Beitrag...
     </div>
+    <!-- Fullscreen Image -->
+    <transition name="fade">
+        <div
+            v-if="showImageModal"
+            @click.self="closeImageModal"
+            class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center px-4">
+            <div class="relative max-w-full max-h-full">
+                <button
+                    @click="closeImageModal"
+                    class="absolute top-2 right-2 text-white bg-black/70 rounded-full p-2 hover:bg-black">
+                    ✕
+                </button>
+                <img :src="fullImageUrl" alt="Vorschau Bild" class="max-w-full max-h-screen rounded shadow-lg" />
+            </div>
+        </div>
+    </transition>
 </template>
 
 <script setup>
@@ -108,6 +125,8 @@ import {
 const post = ref(null)
 const route = useRoute()
 const currentImageIndex = ref(0)
+const showImageModal = ref(false)
+const fullImageUrl = ref('')
 
 
 
@@ -121,6 +140,15 @@ function prevImage() {
     if (currentImageIndex.value > 0) {
         currentImageIndex.value--
     }
+}
+
+function openImageModal(url) {
+    fullImageUrl.value = url
+    showImageModal.value = true
+}
+function closeImageModal() {
+    showImageModal.value = false
+    fullImageUrl.value = ''
 }
 
 onMounted(async () => {
@@ -142,3 +170,14 @@ onMounted(async () => {
     }
 })
 </script>
+
+<style>
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
+}
+</style>
