@@ -5,63 +5,86 @@
       <div class="p-6">
         <h2 class="text-xl font-bold mb-4">{{ $t('root.title') }}</h2>
         <div class="space-y-4">
-          <div 
-          v-for="post in displayedPosts" :key="post.id"
-            class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100 cursor-pointer transition"
-            @click="navigateToPost(post.id)"
-          >
-            <div class="flex items-center space-x-3">
-              <div class="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white font-bold">
-                
+          <!-- Feed -->
+          <div
+              v-for="post in displayedPosts"
+              :key="post.id"
+              class="bg-white shadow-sm rounded-lg p-4 mb-6 hover:shadow-md transition"
+            >
+            <!-- Header -->
+            <div @click="navigateToPost(post.id)" class="flex items-center gap-3 cursor-pointer">
+              <div class="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center text-white font-bold">
+                {{ post.author.username.charAt(0).toUpperCase() }}
               </div>
               <div>
-                <h3 class="font-medium">{{ post.author.username }}</h3>
-                <p class="text-gray-500 text-sm">{{ formatDate(post.createdAt) }}</p>
+                <h3 class="font-semibold">{{ post.author.username }}</h3>
+                <p class="text-sm text-gray-500">{{ formatDate(post.createdAt) }}</p>
               </div>
             </div>
-            <p class="mt-2 text-md fornt-bold line-clamp-2">{{ post.title }}</p>
-            <p class="mt-2 text-sm line-clamp-2" :class="!isAuth ? 'preview-text' : ''">
+
+            <!-- Title -->
+            <h2 class="text-md font-bold mt-3 line-clamp-2">{{ post.title }}</h2>
+
+            <!-- Content -->
+            <p class="text-sm text-gray-700 mt-1 line-clamp-2" :class="!isAuth ? 'preview-text' : ''">
               {{ !isAuth ? post.content.slice(0, 60) + '...' : post.content }}
             </p>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+
+            <!-- Image Carousel (wenn Bilder vorhanden) -->
+            <div v-if="post.images && post.images.length" class="relative mt-3">
+              <img
+                :src="post.images[post.currentImageIndex || 0].url"
+                @click="openImageModal(post.images[post.currentImageIndex || 0].url)"
+                class="rounded-md object-cover w-full h-60 cursor-zoom-in"
+              />
+              <button
+                v-if="post.images.length > 1 && post.currentImageIndex > 0"
+                @click.stop="prevImage(post)"
+                class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-1 rounded-full text-black"
+              >⟨</button>
+              <button
+                v-if="post.images.length > 1 && post.currentImageIndex < post.images.length - 1"
+                @click.stop="nextImage(post)"
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 p-1 rounded-full text-black"
+              >⟩</button>
               <div
-                v-for="(img, index) in post.images"
-                :key="index"
-                class="relative w-[calc(43.333%-0.5rem)] max-w-[43.333%] rounded-md overflow-hidden">
-                  <img
-                    v-if="isAuth"
-                    :src="img.url"
-                    @error="e => e.target.src = fallbackimage"
-                    class="w-full h-auto object-cover rounded-md border border-gray-200"/>
-                  <img v-if="!isAuth" src="../assets/images/NotAuthIMGPlaceholder.png" alt="">
-                  <div v-if="!isAuth" class="preview-blur absolute inset-0"></div>
-                </div>
+                v-if="post.images.length > 1"
+                class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-white bg-black/50 px-2 py-0.5 rounded"
+              >
+                {{ (post.currentImageIndex || 0) + 1 }} / {{ post.images.length }}
               </div>
-              <div v-if="!isAuth" class="text-xs text-gray-500 mt-1 italic">
-                {{ $t('root.login_to_see_full_content') }}
-              </div>
-            <div class="flex space-x-4 text-gray-500 border-t border-gray-200 pt-4">
-              <button class="flex items-center space-x-1 hover:text-indigo-600 " @click.stop="likepost(post.id)">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                </svg>
-                <span>{{ post.likes.likeCount }}</span>
-              </button>
-              <button class="flex items-center space-x-1 hover:text-indigo-600 ">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                </svg>
-                <!-- <span>{{ beitrag.kommentare }} Kommentare</span> -->
-              </button>
-              <button class="flex items-center space-x-1 hover:text-indigo-600 ">
-                <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"/>
-                </svg>
-              </button>
+              <div
+                v-if="!isAuth"
+                class="preview-blur absolute inset-0 rounded-md"
+              ></div>
             </div>
+
+            <!-- Actions -->
+            <div class="flex items-center justify-between text-gray-600 border-t border-b py-3 px-4">
+              <!-- Like -->
+              <button class="flex items-center space-x-2 hover:text-blue-600">
+                  <HeartIcon class="h-5 w-5" />
+                  <span>{{ post.likes.likeCount }}</span>
+              </button>
+              <!-- Kommentieren -->
+              <button class="flex items-center space-x-2 hover:text-blue-600">
+                  <ChatBubbleLeftEllipsisIcon class="h-5 w-5" />
+                  <span>Kommentieren</span>
+              </button>
+              <!-- Teilen -->
+              <button class="flex items-center space-x-2 hover:text-blue-600">
+                  <ShareIcon class="h-5 w-5" />
+                  <span>Teilen</span>
+              </button>
+              <!-- Speichern -->
+              <button class="flex items-center space-x-2 hover:text-blue-600">
+                  <BookmarkIcon class="h-5 w-5" />
+                  <span>Speichern</span>
+              </button>
           </div>
         </div>
       </div>
+    </div>
     </div>
 
     <!-- Main Content (rechts) -->
@@ -130,6 +153,23 @@
       </div>
     </div>
   </div>
+  <transition name="fade">
+  <div
+    v-if="showImageModal"
+    @click.self="closeImageModal"
+    class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center px-4"
+  >
+    <div class="relative max-w-full max-h-full">
+      <button
+        @click="closeImageModal"
+        class="absolute top-2 right-2 text-white bg-black/70 rounded-full p-2 hover:bg-black"
+      >
+        ✕
+      </button>
+      <img :src="fullImageUrl" alt="Bild Vorschau" class="max-w-full max-h-screen rounded shadow-lg" />
+    </div>
+  </div>
+</transition>
 </template>
 
 <script setup>
@@ -142,7 +182,10 @@ import { useAuthStore } from '../store/auth.js';
 const authStore = useAuthStore();
 
 import { 
-  BookmarkIcon
+  BookmarkIcon,
+  HeartIcon,
+  ChatBubbleLeftEllipsisIcon,
+  ShareIcon,
 } from '@heroicons/vue/24/outline'
 
 
@@ -237,6 +280,8 @@ const currentPage = ref(1)
 const pageSize = 5
 const isLoadingPosts = ref(false)
 const sidebarRef = ref(null)
+const showImageModal = ref(false)
+const fullImageUrl = ref('')
 
 const isAuth = ref(null)
 
@@ -318,6 +363,22 @@ const filteredBeitraege = computed(() => {
 function likepost(likedpost){
   console.log(likedpost)
 }
+
+function openImageModal(url) {
+  fullImageUrl.value = url
+  showImageModal.value = true
+}
+function closeImageModal() {
+  showImageModal.value = false
+  fullImageUrl.value = ''
+}
+
+function nextImage(post) {
+  post.currentImageIndex = (post.currentImageIndex || 0) + 1
+}
+function prevImage(post) {
+  post.currentImageIndex = (post.currentImageIndex || 0) - 1
+}
 </script>
 
 <style scoped>
@@ -367,5 +428,14 @@ function likepost(likedpost){
 .preview-text {
   color: rgba(0,0,0,0.6);
   filter: blur(1px);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
 }
 </style>
