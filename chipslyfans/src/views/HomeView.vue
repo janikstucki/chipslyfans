@@ -75,8 +75,14 @@
             <div class="flex items-center justify-between text-gray-600 border-t border-b py-3 px-4">
               <!-- Like -->
               <button @click.stop="likePost(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
-                  <HeartIcon class="h-5 w-5" />
-                  <span>{{ post.likes.likeCount }}</span>
+                <component
+                  :is="post.likes.likedBy?.includes(userId) ? HeartIconSolid : HeartIcon"
+                  :class="[
+                    'h-5 w-5',
+                    post.likes.likedBy?.includes(userId) ? 'text-blue-600' : ''
+                  ]"
+                />
+                <span>{{ post.likes.likeCount }}</span>
               </button>
               <!-- Kommentieren -->
               <button class="flex items-center space-x-2 hover:text-blue-600">
@@ -201,8 +207,9 @@ import {
   ArrowUturnRightIcon
 } from '@heroicons/vue/24/outline'
 
-
-
+import {
+  HeartIcon as HeartIconSolid,
+} from '@heroicons/vue/24/solid'
 
 const beitraege = ref([
   {
@@ -295,6 +302,7 @@ const isLoadingPosts = ref(false)
 const sidebarRef = ref(null)
 const showImageModal = ref(false)
 const fullImageUrl = ref('')
+const userId = ref(null);
 
 const isAuth = ref(null)
 
@@ -327,6 +335,25 @@ function handleScroll() {
 }
 
 
+async function checkAuthStatus() {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/protected`, {
+      method: 'GET',
+      credentials: 'include'
+    });
+
+    const data = await res.json();
+    if (res.ok && data?.user) {
+      userId.value = data.user.id;
+      return true;
+    }
+    return false;
+  } catch (err) {
+    console.error("Fehler beim Auth-Check:", err);
+    return false;
+  }
+}
+
 function loadMorePosts() {
   if (isLoadingPosts.value) return
   isLoadingPosts.value = true
@@ -344,20 +371,6 @@ function loadMorePosts() {
   isLoadingPosts.value = false
 }
 
-async function checkAuthStatus() {
-  try {
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/protected`, {
-      method: 'GET',
-      credentials: 'include'
-    })
-
-    const data = await res.json()
-    return res.ok && data?.user
-  } catch (err) {
-    console.error("Fehler beim Auth-Check:", err)
-    return false
-  }
-}
 
 
 
@@ -397,10 +410,21 @@ function prevImage(post) {
 
 
 async function likePost(postId) {
-  await useFetch(`/posts/${postId}/like`, {
-    method: 'PUT',
-    credentials: 'include'
-  });
+  try {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/posts/${postId}/like`, {
+      method: 'PUT',
+      credentials: 'include'
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      console.log('Like-Status aktualisiert:', data.likes);
+    } else {
+      console.error('Fehler:', data.message);
+    }
+  } catch (err) {
+    console.error('Fehler beim Liken:', err);
+  }
 }
 function sharePost(postId) {
 

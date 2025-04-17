@@ -71,10 +71,35 @@ export const createPost = async (req, res) => {
 }
 
 export const likePost = async (req, res) => {
-  const postId = req.params.id;
-  const userId = req.user.id;
+  try{
+    const postId = req.params.id;
+    const userId = req.user.id;
 
-  console.log("Post", postId, "User", userId)
+    const post = await Post.findByPk(postId);
+    if (!post){
+      return res.status(404).json({ message: "Post not found"})
+    }
+
+    const likes = { ...post.likes };
+    const likedBy = likes.likedBy || []
+    const alreadyLiked = likedBy.includes(userId);
+
+    if (alreadyLiked){
+      likes.likedBy = likedBy.filter(id => id !== userId);
+      likes.likeCount = Math.max(0, (likes.likeCount || 0) -1);
+    } else {
+      likes.likedBy = [...likedBy, userId];
+      likes.likeCount = (likes.likeCount || 0) + 1;
+    }
+
+    post.likes = likes;
+    await post.save();
+
+    return res.status(200).json({ success: true, likes: post.likes });
+  } catch (error) {
+    console.error('[likePost] Fehler:', error);
+    return res.status(500).json({ message: 'Fehler beim Liken des Posts' });
+  }
 };
 
 
