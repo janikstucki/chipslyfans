@@ -1,13 +1,12 @@
 <template>
   <div class="app-container flex h-screen bg-gray-100">
     <!-- Sidebar (links) -->
-    <div class="sidebar w-3/4 bg-white border-r border-gray-200 overflow-y-auto">
+    <div ref="sidebarRef" class="sidebar w-3/4 bg-white border-r border-gray-200 overflow-y-auto">
       <div class="p-6">
         <h2 class="text-xl font-bold mb-4">{{ $t('root.title') }}</h2>
         <div class="space-y-4">
           <div 
-            v-for="(post, index) in posts" 
-            :key="index"
+          v-for="post in displayedPosts" :key="post.id"
             class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100 cursor-pointer transition"
             @click="navigateToPost(post.id)"
           >
@@ -135,7 +134,7 @@
 
 <script setup>
 import fallbackimage from '../assets/images/fallback.jpg'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFetch } from '../helpers/getPosts';
 import { formatDate } from '../utils/formatDate.js';
@@ -233,38 +232,69 @@ const beitraege = ref([
   },
 ])
 const posts = ref([]);
+const displayedPosts = ref([])
+const currentPage = ref(1)
+const pageSize = 5
+const isLoadingPosts = ref(false)
+const sidebarRef = ref(null)
+
 const isAuth = ref(null)
 
-onMounted(async() => {
-  authStore.checkAuth();
-  isAuth.value = await isAuthenticated.value
-  const {data} = await useFetch('/posts')
+onMounted(async () => {
+  authStore.checkAuth()
+  isAuth.value = await checkAuthStatus()
+
+  const { data } = await useFetch('/posts')
   posts.value = data
-  console.log("posts", posts.value)
-});
+  loadMorePosts()
 
-
-const isAuthenticated = computed(async () => {
-    try {
-        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/protected`, {
-            method: 'GET', 
-            credentials: 'include'
-        });
-        console.log(res)
-
-        const data = await res.json();
-        if (res && res.ok && data?.user) {
-        console.log("Benutzer ist authentifiziert:", data.user);
-        return true;
-        } else {
-        console.warn("Benutzer ist nicht authentifiziert");
-        return false;
-        }
-    } catch (error) {
-        console.error("Fehler beim Auth-Check:", error);
-        return false;
-    }
+  await nextTick() 
+  if (sidebarRef.value) {
+    sidebarRef.value.addEventListener('scroll', handleScroll)
+  }
 })
+
+
+function handleScroll() {
+  const container = sidebarRef.value
+  if (
+    container &&
+    container.scrollTop + container.clientHeight >= container.scrollHeight - 50 &&
+    displayedPosts.value.length < posts.value.length
+  ) {
+    console.log("scroll")
+    loadMorePosts()
+  }
+}
+
+
+function loadMorePosts() {
+  if (isLoadingPosts.value) return
+  isLoadingPosts.value = true
+
+  const start = (currentPage.value - 1) * pageSize
+  const end = currentPage.value * pageSize
+  const nextPosts = posts.value.slice(start, end)
+
+  displayedPosts.value.push(...nextPosts)
+  currentPage.value++
+
+  isLoadingPosts.value = false
+}
+async function checkAuthStatus() {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/protected`, {
+      method: 'GET',
+      credentials: 'include'
+    })
+
+    const data = await res.json()
+    return res.ok && data?.user
+  } catch (err) {
+    console.error("Fehler beim Auth-Check:", err)
+    return false
+  }
+}
 
 
 
@@ -318,7 +348,6 @@ function likepost(likedpost){
 
 .line-clamp-2 {
   display: -webkit-box;
-  /* -webkit-line-clamp: 2; */
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
