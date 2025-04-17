@@ -57,33 +57,28 @@
             </div>
     
             <!-- Actions -->
-            <div class="flex items-center justify-between text-gray-600 border-t border-b py-3">
+            <div class="flex items-center justify-between text-gray-600 border-t border-b py-3 px-4">
+                <!-- Like -->
                 <button class="flex items-center space-x-2 hover:text-blue-600">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
+                    <HeartIcon class="h-5 w-5" />
                     <span>{{ post.likes.likeCount }}</span>
                 </button>
+
+                <!-- Kommentieren -->
                 <button class="flex items-center space-x-2 hover:text-blue-600">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                        </svg>
+                    <ChatBubbleLeftEllipsisIcon class="h-5 w-5" />
                     <span>Kommentieren</span>
                 </button>
+
+                <!-- Teilen -->
                 <button class="flex items-center space-x-2 hover:text-blue-600">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17 16l4-4m0 0l-4-4m4 4H7" />
-                        </svg>
-                        <span>Teilen</span>
+                    <ShareIcon class="h-5 w-5" />
+                    <span>Teilen</span>
                 </button>
+
+                <!-- Speichern -->
                 <button class="flex items-center space-x-2 hover:text-blue-600">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M5 13l4 4L19 7" />
-                    </svg>
+                    <BookmarkIcon class="h-5 w-5" />
                     <span>Speichern</span>
                 </button>
             </div>
@@ -102,7 +97,13 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { formatDate } from '../utils/formatDate.js'
+import { formatDate } from "../utils/formatDate.js"
+import {
+    HeartIcon,
+    ChatBubbleLeftEllipsisIcon,
+    ShareIcon,
+    BookmarkIcon
+} from '@heroicons/vue/24/outline'
 
 const post = ref(null)
 const route = useRoute()
@@ -111,35 +112,33 @@ const currentImageIndex = ref(0)
 
 
 function nextImage() {
-  if (post.value?.images && currentImageIndex.value < post.value.images.length - 1) {
-    currentImageIndex.value++
-  }
+    if (post.value?.images && currentImageIndex.value < post.value.images.length - 1) {
+        currentImageIndex.value++
+    }
 }
 
 function prevImage() {
-  if (currentImageIndex.value > 0) {
-    currentImageIndex.value--
-  }
+    if (currentImageIndex.value > 0) {
+        currentImageIndex.value--
+    }
 }
 
 onMounted(async () => {
-  const postId = route.params.id
-  try {
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/posts/${postId}`, {
-      method: 'GET',
-      credentials: 'include'
-    })
-    const data = await res.json()
-    console.log(data.value)
+    const postId = route.params.id
+    try {
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/posts/${postId}`, {
+            method: 'GET',
+            credentials: 'include'
+        })
+        const data = await res.json()
 
-    if (res.ok && data.success) {
-      post.value = data.data
-      console.log(post.value)
-    } else {
-      console.warn('Post nicht gefunden oder Fehler:', data)
+        if (res.ok && data.success) {
+        post.value = data.data
+        } else {
+        console.warn('Post nicht gefunden oder Fehler:', data)
+        }
+    } catch (err) {
+        console.error('Fehler beim Laden des Posts:', err)
     }
-  } catch (err) {
-    console.error('Fehler beim Laden des Posts:', err)
-  }
 })
 </script>
