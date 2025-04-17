@@ -396,8 +396,11 @@ function prevImage(post) {
 }
 
 
-function likePost(postId) {
-
+async function likePost(postId) {
+  await useFetch(`/posts/${postId}/like`, {
+    method: 'PUT',
+    credentials: 'include'
+  });
 }
 function sharePost(postId) {
 

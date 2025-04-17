@@ -1,6 +1,6 @@
 // postRoutes.js
 import express from 'express';
-import { postController, getPosts, createPost, getPostById } from '../controllers/postController.js';
+import { postController, getPosts, createPost, getPostById, likePost } from '../controllers/postController.js';
 import { authenticate } from '../middlewares/authMiddleware.js';
 import upload from '../middlewares/multer.js';
 
@@ -13,5 +13,7 @@ router.get('/', getPosts)
 router.get('/:id', getPostById);
 router.put('/:id', postController.updatePost);
 router.delete('/:id', postController.deletePost);
+router.put('/:id/like', authenticate, likePost);
+
 
 export default router;

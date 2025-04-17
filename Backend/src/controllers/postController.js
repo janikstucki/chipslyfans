@@ -70,6 +70,13 @@ export const createPost = async (req, res) => {
   }
 }
 
+export const likePost = async (req, res) => {
+  const postId = req.params.id;
+  const userId = req.user.id;
+
+  console.log("Post", postId, "User", userId)
+};
+
 
 
 export const getPosts = async (req, res) => {
