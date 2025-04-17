@@ -14,11 +14,36 @@
             </div>
         </div>
     
-        <!-- Bild -->
-        <div v-if="post.images && post.images.length" class="w-full h-[300px] bg-gray-100">
-            <img :src="post.images[0].url" alt="Post Bild" class="object-cover w-full h-full" />
+        <!-- Bild oder Karussell -->
+        <div v-if="post.images && post.images.length" class="relative w-full h-[300px] bg-gray-100 overflow-hidden rounded-md">
+            <img
+                :src="post.images[currentImageIndex].url"
+                alt="Post Bild"
+                class="object-cover w-full h-full transition-all duration-300"/>
+
+            <!-- Prev -->
+            <button
+                v-if="post.images.length > 1 && currentImageIndex > 0"
+                @click="prevImage"
+                class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 text-gray-800 rounded-full p-1 hover:bg-white shadow">
+                ⟨
+            </button>
+
+            <!-- Next -->
+            <button
+                v-if="post.images.length > 1 && currentImageIndex < post.images.length - 1"
+                @click="nextImage"
+                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 text-gray-800 rounded-full p-1 hover:bg-white shadow">
+                ⟩
+            </button>
+
+            <!-- Count -->
+            <div
+                v-if="post.images.length > 1"
+                class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs bg-black/50 text-white px-2 py-0.5 rounded">
+                {{ currentImageIndex + 1 }} / {{ post.images.length }}
+            </div>
         </div>
-    
         <!-- Body -->
         <div class="px-6 py-4">
             <h2 class="text-lg font-bold mb-2">{{ post.title }}</h2>
@@ -81,6 +106,21 @@ import { formatDate } from '../utils/formatDate.js'
 
 const post = ref(null)
 const route = useRoute()
+const currentImageIndex = ref(0)
+
+
+
+function nextImage() {
+  if (post.value?.images && currentImageIndex.value < post.value.images.length - 1) {
+    currentImageIndex.value++
+  }
+}
+
+function prevImage() {
+  if (currentImageIndex.value > 0) {
+    currentImageIndex.value--
+  }
+}
 
 onMounted(async () => {
   const postId = route.params.id
