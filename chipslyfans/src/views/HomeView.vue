@@ -304,7 +304,7 @@ const searchQuery = ref('')
 const router = useRouter()
 
 const navigateToPost = (id) => {
-  router.push({ name: 'PostDetail', params: { id } })
+  router.push({ name: 'PostDetail', params: { id: id } })
 }
 
 const filteredBeitraege = computed(() => {

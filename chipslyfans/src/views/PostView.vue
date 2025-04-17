@@ -1,7 +1,7 @@
 <!-- src/views/PostDetail.vue -->
 <script setup>
     import { ref, onMounted } from 'vue'
-    import { useRoute } from 'vue-router'
+    import { useRoute, useRouter } from 'vue-router'
     import { formatDate } from "../utils/formatDate.js"
     import {
         HeartIcon,
@@ -12,7 +12,8 @@
     
 
     const post = ref(null)
-    const router = useRoute()
+    const router = useRouter()
+    const route = useRoute()
     const currentImageIndex = ref(0)
     const showImageModal = ref(false)
     const fullImageUrl = ref('')
@@ -40,12 +41,12 @@
         fullImageUrl.value = ''
     }
 
-    function onUserClick(userId){
-        router.push({ name: 'UserDetail', params: { userId } })
+    function onUserClick(userId) {
+        router.push({ name: 'UserDetail', params: { id: userId } })
     }
     
     onMounted(async () => {
-        const postId = router.params.id
+        const postId = route.params.id
         try {
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/posts/${postId}`, {
                 method: 'GET',

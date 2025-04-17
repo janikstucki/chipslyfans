@@ -6,7 +6,8 @@ const Login = () => import(/* webpackChunkName: "LoginView" */ '../views/LoginVi
 const Subscriptions = () => import(/* webpackChunkName: "Subscriptions" */ '../views/SubscriptionsView.vue');
 const Postfach = () => import(/* webpackChunkName: "Notifications" */ '../views/NotificationsView.vue');
 const PostDetail = () => import(/* webpackChunkName: "PostView" */ '../views/PostView.vue');
-const NewPost = () => import(/* webpackChunkName: "PostView" */ '../views/NewPostView.vue')
+const UserDetail = () => import(/* webpackChunkName: "UserView" */ '../views/UserView.vue');
+const NewPost = () => import(/* webpackChunkName: "NewPostView" */ '../views/NewPostView.vue')
 
 
 const routes = [
@@ -24,6 +25,14 @@ const routes = [
         path: '/post/:id', 
         name: 'PostDetail', 
         component: PostDetail, 
+        props: true,
+        meta: { requiresAuth: true}
+
+    },
+    { 
+        path: '/user/:id', 
+        name: 'UserDetail', 
+        component: UserDetail, 
         props: true,
         meta: { requiresAuth: true}
 
