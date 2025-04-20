@@ -31,7 +31,7 @@ The platform is ideal for artists, performers, educators, fitness coaches, and a
 - **JWT Authentication**
 - **Multer** (for file uploads)
 - **Bcrypt** (Password hashing)
-- **Cloud Storage Integration** (e.g. AWS S3 / DigitalOcean Spaces)
+- **Cloud Storage Integration with AWS S3**
 
 ---
 
