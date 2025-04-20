@@ -1,6 +1,6 @@
 <template>
     <div>
-      <h1 class=" text-xl font-bold mb-4" >Postfach</h1>
+      <h1 class=" text-xl font-bold mb-4" >Subscriptions</h1>
       <div class="p-6">
         <!-- subscriptionslist -->
         <div class="space-y-4">
@@ -21,9 +21,12 @@
                   <span class="text-sm text-gray-500">{{ 'Bis am ' + subscription.untilDate }}</span>
                 </div>
               </div>
-                <button class=" flex items-center justify-center p-3 rounded-lg transition-all duration-200 bg-red-600 text-white hover:bg-red-700 overflow-hidden" @click="handleClick" >
-                  {{ 'Kündigen' + <MinusCircleIcon/> }}
-                </button>
+              <button
+                class="flex items-center justify-center p-3 rounded-lg transition-all duration-200 bg-red-600 text-white hover:bg-red-700 overflow-hidden"
+                @click="handleClick">
+                Kündigen
+                <MinusCircleIcon class="w-5 h-5 ml-2" />
+              </button>
             </div>
           </div>
         </div>

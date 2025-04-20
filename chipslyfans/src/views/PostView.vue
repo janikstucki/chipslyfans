@@ -22,7 +22,7 @@
     const fullImageUrl = ref('')
     
     
-    
+
     function nextImage() {
         if (post.value?.images && currentImageIndex.value < post.value.images.length - 1) {
             currentImageIndex.value++
