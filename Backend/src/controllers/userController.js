@@ -1,5 +1,5 @@
 import { uploadFile } from "../middlewares/s3.js";
-import { User, Abonnement, Post } from "../models/index.js";
+import { User, Abonnement, Post, Subscription  } from "../models/index.js";
 
 import bcrypt from 'bcryptjs';
 
@@ -55,10 +55,38 @@ export const createUser = async (req, res) => {
 };
 
 export const getUserbyId = async (req, res) => {
-    const { id } = req.params;
+    const { id: profileUserId } = req.params; 
+    const currentUserId = req.user?.id; 
+
     try {
-        const user = await User.findByPk(id, {
-            attributes: ['id', 'username', 'profilepicture', 'firstname', 'lastname', 'email'], // customize what you expose
+        const isOwner = currentUserId === profileUserId;
+    
+        const abonnement = await Abonnement.findOne({
+            where: { creatorId: profileUserId, isActive: true },
+        });
+    
+        let hasActiveSubscription = false;
+    
+        if (!isOwner && abonnement) {
+            const subscription = await Subscription.findOne({
+            where: {
+                abonnementId: abonnement.id,
+                consumerId: currentUserId,
+                isActive: true,
+            },
+            });
+    
+            if (subscription) {
+            hasActiveSubscription = true;
+            }
+        }
+    
+        const postWhere = isOwner || hasActiveSubscription
+            ? {} // all posts
+            : { visibility: 'public' }; // public only
+    
+        const user = await User.findByPk(profileUserId, {
+            attributes: ['id', 'username', 'profilepicture', 'firstname', 'lastname', 'email'],
             include: [
             {
                 model: Abonnement,
@@ -69,6 +97,7 @@ export const getUserbyId = async (req, res) => {
             {
                 model: Post,
                 as: 'posts',
+                where: postWhere,
                 required: false,
                 order: [['createdAt', 'DESC']],
             },
