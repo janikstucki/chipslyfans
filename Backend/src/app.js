@@ -9,7 +9,6 @@ import authRoutes from "./routes/authRoutes.js";
 import { connectDB, sequelize } from "./config/db.js";
 import cookieParser from 'cookie-parser';
 import cors from "cors";
-import { Post } from "./models/Post.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
