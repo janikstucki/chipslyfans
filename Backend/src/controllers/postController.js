@@ -1,11 +1,11 @@
-import { Post } from "../models/Post.js";
 import { uploadFile  } from "../middlewares/s3.js";
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 
 
-import { User } from "../models/User.js";
+import { User, Post } from "../models/index.js";
+
 import { Op } from 'sequelize';
 
 const upload = multer({ dest: 'uploads/' });

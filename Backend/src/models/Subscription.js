@@ -34,5 +34,3 @@ export const Subscription = sequelize.define("Subscription", {
     timestamps: true,
 });
 
-Subscription.belongsTo(User, { foreignKey: "consumerId", as: "consumer" });
-Subscription.belongsTo(Abonnement, { foreignKey: "abonnementId", as: "abonnement" });

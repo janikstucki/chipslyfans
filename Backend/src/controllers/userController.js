@@ -1,5 +1,5 @@
-import { User } from "../models/User.js";
 import { uploadFile } from "../middlewares/s3.js";
+import { User, Abonnement, Post } from "../models/index.js";
 
 import bcrypt from 'bcryptjs';
 
@@ -51,6 +51,38 @@ export const createUser = async (req, res) => {
         } catch (error) {
         console.error('[registerUser] Fehler:', error);
         res.status(500).json({ message: 'Fehler beim Registrieren des Users' });
+    }
+};
+
+export const getUserbyId = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const user = await User.findByPk(id, {
+            attributes: ['id', 'username', 'profilepicture', 'firstname', 'lastname', 'email'], // customize what you expose
+            include: [
+            {
+                model: Abonnement,
+                as: 'abonnement',
+                where: { isActive: true },
+                required: false,
+            },
+            {
+                model: Post,
+                as: 'posts',
+                required: false,
+                order: [['createdAt', 'DESC']],
+            },
+            ],
+        });
+    
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+    
+        res.json(user);
+    } catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).json({ message: "Server error" });
     }
 };
 

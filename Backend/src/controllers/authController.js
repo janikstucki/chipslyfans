@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { config } from 'dotenv';
-import { User } from '../models/User.js';
-import { Op } from 'sequelize';
+import { User } from "../models/index.js";
 import bcrypt from 'bcryptjs';
 import { generateToken, verifyToken } from '../utils/jwt.js';
 

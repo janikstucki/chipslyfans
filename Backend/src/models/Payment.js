@@ -34,5 +34,3 @@ export const Payment = sequelize.define("Payment", {
     timestamps: true,
 });
 
-Payment.belongsTo(User, { foreignKey: "userId", as: "payer" });
-Payment.belongsTo(Subscription, { foreignKey: "subscriptionId", as: "subscription" });

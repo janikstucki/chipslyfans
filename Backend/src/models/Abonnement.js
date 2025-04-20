@@ -33,4 +33,3 @@ export const Abonnement = sequelize.define("Abonnement", {
     timestamps: false
 });
 
-Abonnement.belongsTo(User, { foreignKey: "creatorId", as: "creator" });

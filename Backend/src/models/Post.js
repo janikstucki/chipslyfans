@@ -64,8 +64,3 @@ export const Post = sequelize.define("Post", {
     timestamps: true,
 
 });
-
-Post.belongsTo(User, {
-    foreignKey: 'authorId',
-    as: 'author'
-});
