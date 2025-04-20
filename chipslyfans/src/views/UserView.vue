@@ -21,18 +21,16 @@
                 </div>
         
                 <button
-                    v-if="!isSubscribed"
+                    v-if="!isSubscribed && currentUserId !== user.id"
                     class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-                    @click="handleSubscribe"
-                >
+                    @click="handleSubscribe">
                     Abonnieren
                 </button>
         
                 <button
-                    v-else
+                    v-else-if="currentUserId !== user.id"
                     class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
-                    @click="handleUnsubscribe"
-                >
+                    @click="handleUnsubscribe">
                     Kündigen
                 </button>
             </div>
@@ -68,6 +66,7 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 
 const user = ref(null);
+const currentUserId = ref(null);
 const isSubscribed = ref(false);
 const route = useRoute();
 const loading = ref(true);
@@ -81,22 +80,31 @@ const handleUnsubscribe = () => {
 
 onMounted(async () => {
     const userId = route.params.id;
+
     try {
+        // Fetch profile data
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/users/profile/${userId}`, {
             method: 'GET',
             credentials: 'include'
         });
         const data = await res.json();
-    
         if (res.ok && data) {
             user.value = data;
-            loading.value = false;
+            console.log('Benutzer:', user.value.id);
         } else {
             console.warn('User nicht gefunden oder Fehler:', data);
-            loading.value = false;
         }
+
+        const resAuth = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/protected`, {
+            credentials: 'include'
+        });
+        const authData = await resAuth.json();
+        currentUserId.value = authData?.user.id;
+        console.log('Aktueller Benutzer:', authData.user.id);
+
     } catch (err) {
-        console.error('Fehler beim Laden des Users:', err);
+        console.error('Fehler beim Laden des Users oder Auth:', err);
+    } finally {
         loading.value = false;
     }
 });
