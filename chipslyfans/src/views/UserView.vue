@@ -48,7 +48,19 @@
                 />
                 <div class="p-4">
                     <h3 class="font-semibold text-lg text-gray-900 mb-2">{{ post.title }}</h3>
-                    <p class="text-sm text-gray-600">{{ post.content.slice(0, 80) }}...</p>
+                    <p class="text-sm text-gray-600 mb-4">{{ post.content.slice(0, 80) }}...</p>
+                    <div class="p-4 flex flex-col justify-between h-full">
+                        <div class="text-right">
+                            <span
+                                :class="[
+                                    'inline-block px-2 py-1 text-xs font-semibold rounded-full',
+                                    post.visibility === 'public' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                ]"
+                            >
+                                {{ post.visibility === 'public' ? 'Öffentlich' : 'Privat' }}
+                            </span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -64,6 +76,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { t } from 'vue-i18n';
 
 const user = ref(null);
 const currentUserId = ref(null);
@@ -90,7 +103,7 @@ onMounted(async () => {
         const data = await res.json();
         if (res.ok && data) {
             user.value = data;
-            console.log('Benutzer:', user.value.id);
+            console.log('Benutzer:', user.value);
         } else {
             console.warn('User nicht gefunden oder Fehler:', data);
         }
