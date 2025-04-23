@@ -130,14 +130,13 @@ const handleSubscribe = async () => {
     const data = await response.json();
 
         if (response.ok && data.url) {
-            // ✅ Benutzer zur Stripe Checkout Seite weiterleiten
             window.location.href = data.url;
         } else {
             console.error("❌ Fehler beim Erstellen der Checkout-Session:", data);
         }
 };
 
-const abonnementId = "5c4c684e-2080-11f0-80e8-0a0027000012"; // Beispiel-ID, sollte dynamisch sein
+const abonnementId = "5c4c684e-2080-11f0-80e8-0a0027000012"; // Beispiel-ID
 
 
 

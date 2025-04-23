@@ -8,6 +8,7 @@ const Postfach = () => import(/* webpackChunkName: "Notifications" */ '../views/
 const PostDetail = () => import(/* webpackChunkName: "PostView" */ '../views/PostView.vue');
 const UserDetail = () => import(/* webpackChunkName: "UserView" */ '../views/UserView.vue');
 const NewPost = () => import(/* webpackChunkName: "NewPostView" */ '../views/NewPostView.vue')
+const PaymentSuccess = () => import(/* webpackChunkName: "PaymentSuccess" */ '../views/PaymentSuccess.vue')
 
 
 const routes = [
@@ -53,6 +54,11 @@ const routes = [
         name: 'New-Post',
         component: NewPost,
         meta: { requiresAuth: true}
+    },
+    {
+        path: '/payment-success',
+        name: 'PaymentSuccess',
+        component: PaymentSuccess
     },
 ];
 
