@@ -1,7 +1,14 @@
 import { Router } from 'express';
+import express from 'express';
+import Stripe from 'stripe';
 import { getUsers, createUser, deleteUser, getUserbyId } from '../controllers/userController.js';
 import upload from "../middlewares/multer.js";
 import { authenticate } from '../middlewares/authMiddleware.js';
+import { Abonnement, Subscription } from '../models/index.js';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+
 
 const router = Router();
 
@@ -12,5 +19,36 @@ router.post('/', upload.single('profilepicture'), createUser);
 router.delete('/:id', deleteUser);
 
 router.get('/profile/:id',authenticate , getUserbyId);
+
+router.post('/subscribe', authenticate, async (req, res) => {
+    const { abonnementId } = req.body;
+    const consumerId = req.user.id; // z.B. aus Middleware
+  
+    const abo = await Abonnement.findByPk(abonnementId);
+    if (!abo || !abo.isActive) return res.status(404).json({ error: 'Abo nicht gefunden oder inaktiv' });
+  
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card'],
+      mode: 'payment', // kein subscription-mode, weil du dynamisch zahlst
+      line_items: [{
+        price_data: {
+          currency: 'chf',
+          product_data: {
+            name: `Abo von ${abo.creatorId}`,
+          },
+          unit_amount: parseInt(abo.cost * 100), // Stripe erwartet Rappen
+        },
+        quantity: 1,
+      }],
+      metadata: {
+        abonnementId,
+        consumerId,
+      },
+      success_url: 'http://localhost:5173/payment-success?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url: 'http://localhost:5173/payment-cancelled',
+    });
+  
+    res.json({ url: session.url });
+});
 
 export default router;

@@ -6,6 +6,8 @@ import { fileURLToPath } from "url";
 import postRoutes from "./routes/postRoutes.js";
 import userRoutes from "./routes/userRoutes.js"; 
 import authRoutes from "./routes/authRoutes.js";
+
+import webhookRoutes from "./middlewares/webhookRoutes.js";
 import { connectDB, sequelize } from "./config/db.js";
 import cookieParser from 'cookie-parser';
 import cors from "cors";
@@ -26,12 +28,13 @@ const watcher = chokidar.watch('uploads', {
     persistent: true,
     ignoreInitial: true
 });
-
+app.use("/webhook", webhookRoutes);
 // Middleware-Initialisierung
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());  // Cookie-Parser vor den Routen einbinden
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 watcher
     .on('add', path => console.log(`Datei hinzugefügt: ${path}`))
@@ -49,6 +52,7 @@ app.use(cors({
 app.use("/posts", postRoutes);
 app.use("/users", userRoutes); 
 app.use("/auth", authRoutes);
+
 
 async function startServer() {
     await connectDB();

@@ -116,12 +116,26 @@ const isSubscribed = ref(false);
 const route = useRoute();
 const loading = ref(true);
 const loadingError = ref(false);
-const handleSubscribe = () => {
+
+const handleSubscribe = async () => {
     isSubscribed.value = true;
+    await fetch(`${import.meta.env.VITE_BASE_URL}/users/subscribe`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ abonnementId })
+    });
 };
+
+const abonnementId = "5c4c684e-2080-11f0-80e8-0a0027000012"; // Beispiel-ID, sollte dynamisch sein
+
+
 
 const handleUnsubscribe = () => {
     isSubscribed.value = false;
+
 };
 
 function onPostClick(postId){
