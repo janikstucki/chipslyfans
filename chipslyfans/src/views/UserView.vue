@@ -68,7 +68,8 @@
             <div
                 v-for="post in user.posts || []"
                 :key="post.id"
-                class="bg-white shadow-md rounded-lg overflow-hidden">
+                class="bg-white shadow-md rounded-lg overflow-hidden"
+                @click="onPostClick(post.id)">
                 <img
                     :src="post.images?.[0]?.url || '/post-placeholder.jpg'"
                     class="w-full h-48 object-cover"
@@ -103,10 +104,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
 const { t } = useI18n();
+const router = useRouter();
 
 const user = ref(null);
 const currentUserId = ref(null);
@@ -121,6 +123,10 @@ const handleSubscribe = () => {
 const handleUnsubscribe = () => {
     isSubscribed.value = false;
 };
+
+function onPostClick(postId){
+    router.push({ name: 'PostDetail', params: { id: postId } })
+}
 
 onMounted(async () => {
     const userId = route.params.id;
