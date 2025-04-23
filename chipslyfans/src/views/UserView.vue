@@ -1,5 +1,33 @@
 <template>
-    <div v-if="loading" class="text-center py-20 text-gray-500">Lade Profil...</div>
+    <div v-if="loading" class="max-w-5xl mx-auto px-4 py-8 space-y-8">
+        <!-- Profilkopf -->
+        <div class="flex flex-col items-center text-center space-y-4">
+            <div class="w-20 h-20 rounded-full bg-gray-200 text-white text-3xl font-bold flex items-center justify-center animate-pulse">
+                ?
+            </div>
+            <div class="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
+            <div class="flex gap-4 mt-2">
+                <div class="h-10 w-28 rounded-lg bg-gray-300 animate-pulse"></div>
+                <div class="h-10 w-28 rounded-lg bg-gray-300 animate-pulse"></div>
+            </div>
+        </div>
+
+        <!-- Post-Karten Skeleton -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div v-for="n in 6" :key="n" class="bg-white shadow-md rounded-lg overflow-hidden animate-pulse">
+                <div class="w-full h-48 bg-gray-300"></div>
+                    <div class="p-4 space-y-4 flex flex-col justify-between h-full">
+                        <div>
+                        <div class="h-5 bg-gray-300 rounded w-3/4"></div>
+                        <div class="h-4 bg-gray-300 rounded w-full mt-2"></div>
+                        </div>
+                        <div class="flex justify-end pt-4">
+                        <div class="h-5 w-16 rounded-full bg-gray-300"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div v-if="user" class="max-w-5xl mx-auto px-4 py-8">
         <div class="flex flex-col items-center text-center space-y-4 mb-8">
@@ -57,7 +85,7 @@
                                     post.visibility === 'public' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                                 ]"
                             >
-                                {{ post.visibility === 'public' ? 'Öffentlich' : 'Privat' }}
+                                {{ post.visibility === 'public' ? t('userview.posts.public') : t('userview.posts.sub_only') }}
                             </span>
                         </div>
                     </div>
@@ -65,7 +93,7 @@
             </div>
         </div>
     </div>
-    <div v-if="!user">
+    <div v-if="loadingError">
         <div class="max-w-5xl mx-auto px-4 py-8 text-center">
             <h2 class="text-2xl font-bold text-gray-900">Benutzer nicht gefunden</h2>
             <p class="text-gray-600">Der angeforderte Benutzer existiert nicht oder ist nicht verfügbar.</p>
@@ -76,13 +104,16 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
-import { t } from 'vue-i18n';
+import { useI18n } from 'vue-i18n';
+
+const { t } = useI18n();
 
 const user = ref(null);
 const currentUserId = ref(null);
 const isSubscribed = ref(false);
 const route = useRoute();
 const loading = ref(true);
+const loadingError = ref(false);
 const handleSubscribe = () => {
     isSubscribed.value = true;
 };
@@ -106,6 +137,7 @@ onMounted(async () => {
             console.log('Benutzer:', user.value);
         } else {
             console.warn('User nicht gefunden oder Fehler:', data);
+            loadingError.value = true;
         }
 
         const resAuth = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/protected`, {
@@ -113,13 +145,12 @@ onMounted(async () => {
         });
         const authData = await resAuth.json();
         currentUserId.value = authData?.user.id;
-        console.log('Aktueller Benutzer:', authData.user.id);
 
+        loading.value = false;
     } catch (err) {
         console.error('Fehler beim Laden des Users oder Auth:', err);
-    } finally {
-        loading.value = false;
-    }
+        loadingError.value = false;
+    } 
 });
 </script>
 

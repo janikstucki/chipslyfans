@@ -120,5 +120,14 @@
                 "pblsh_post": "Publish post"
             }
         }
+    },
+    "userview": {
+        "header": {
+
+        },
+        "posts": {
+            "public": "Public",
+            "sub_only": "Subscribers only"
+        }
     }
 }
