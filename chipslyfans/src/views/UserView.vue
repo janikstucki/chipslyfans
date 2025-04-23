@@ -119,7 +119,7 @@ const loadingError = ref(false);
 
 const handleSubscribe = async () => {
     isSubscribed.value = true;
-    await fetch(`${import.meta.env.VITE_BASE_URL}/users/subscribe`, {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users/subscribe`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -127,6 +127,14 @@ const handleSubscribe = async () => {
         },
         body: JSON.stringify({ abonnementId })
     });
+    const data = await response.json();
+
+        if (response.ok && data.url) {
+            // ✅ Benutzer zur Stripe Checkout Seite weiterleiten
+            window.location.href = data.url;
+        } else {
+            console.error("❌ Fehler beim Erstellen der Checkout-Session:", data);
+        }
 };
 
 const abonnementId = "5c4c684e-2080-11f0-80e8-0a0027000012"; // Beispiel-ID, sollte dynamisch sein
