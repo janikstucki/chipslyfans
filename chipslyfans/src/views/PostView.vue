@@ -160,9 +160,46 @@
             <p class="text-gray-400 italic">Kommentarfunktion kommt bald</p>
         </div>
     </div>
-    <div v-else class="text-center text-gray-500 mt-10">
-        Lade Beitrag...
-    </div>
+    <div v-else class="w-full max-w-2xl mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-6 animate-pulse">
+        <!-- Header -->
+        <div class="flex items-center px-6 py-4 space-x-4 border-b">
+            <div class="w-12 h-12 rounded-full bg-gray-300"></div>
+            <div class="space-y-2">
+                <div class="w-32 h-4 bg-gray-300 rounded"></div>
+                <div class="w-24 h-3 bg-gray-200 rounded"></div>
+            </div>
+        </div>
+
+        <!-- Bild -->
+        <div class="w-full h-[300px] bg-gray-200"></div>
+
+        <!-- Body -->
+        <div class="px-6 py-4 space-y-4">
+            <div class="w-2/3 h-5 bg-gray-300 rounded"></div>
+            <div class="h-4 bg-gray-200 rounded w-full"></div>
+            <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+
+            <!-- Tags -->
+            <div class="flex gap-2 mt-4">
+                <div class="h-6 w-16 bg-gray-200 rounded-full"></div>
+                <div class="h-6 w-20 bg-gray-200 rounded-full"></div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-between border-t border-b py-3 px-2 text-gray-400">
+                <div class="h-5 w-14 bg-gray-300 rounded"></div>
+                <div class="h-5 w-20 bg-gray-300 rounded"></div>
+                <div class="h-5 w-16 bg-gray-300 rounded"></div>
+                <div class="h-5 w-20 bg-gray-300 rounded"></div>
+            </div>
+        </div>
+
+        <!-- Kommentarplatzhalter -->
+        <div class="px-6 py-4 space-y-2">
+            <div class="h-4 w-24 bg-gray-300 rounded"></div>
+            <div class="h-3 w-2/3 bg-gray-200 rounded"></div>
+        </div>
+        </div>
     <!-- Fullscreen Image -->
     <transition name="fade">
         <div
