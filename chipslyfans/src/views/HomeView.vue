@@ -90,10 +90,7 @@
                   <span>Kommentieren</span>
               </button>
               <!-- Teilen -->
-              <button @click.stop="sharePost(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
-                  <ShareIcon class="h-5 w-5" />
-                  <span>Teilen</span>
-              </button>
+               <ShareBtn/>
               <!-- Speichern -->
               <button @click.stop="savePost(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
                   <BookmarkIcon class="h-5 w-5" />
@@ -196,7 +193,7 @@ import { useFetch } from '../helpers/getPosts';
 import { formatDate } from '../utils/formatDate.js';
 import { useAuthStore } from '../store/auth.js';
 const authStore = useAuthStore();
-
+ import ShareBtn from '../components/ShareBtn.vue';
 import { 
   BookmarkIcon,
   HeartIcon,
