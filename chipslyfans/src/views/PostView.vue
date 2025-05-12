@@ -157,7 +157,7 @@
     
         <div class="px-6 py-4">
             <h3 class="font-semibold text-sm text-gray-600 mb-2">Kommentare</h3>
-            <p class="text-gray-400 italic">Kommentarfunktion kommt bald</p>
+            <textarea rows="4" class="w-full min-h-20 px-4 py-3 bg-gray-100 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600" placeholder="Write your contribution..."></textarea>
         </div>
     </div>
     <div v-else class="w-full max-w-2xl mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-6 animate-pulse">
