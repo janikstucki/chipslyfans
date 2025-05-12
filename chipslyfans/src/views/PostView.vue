@@ -158,6 +158,8 @@
         <div class="px-6 py-4">
             <h3 class="font-semibold text-sm text-gray-600 mb-2">Kommentare</h3>
             <textarea rows="4" class="w-full min-h-20 px-4 py-3 bg-gray-100 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600" placeholder="Write your contribution..."></textarea>
+
+            <div class="flex justify-between mt-8"><div></div><button class="w-1/4 bg-gradient-to-l from-blue-700 to-indigo-400 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-600 hover:to-indigo-300 transform transition-all duration-300 ease-in-out mb-1 hover:scale-[1.02]">Next</button><!--v-if--></div>
         </div>
     </div>
     <div v-else class="w-full max-w-2xl mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-6 animate-pulse">
