@@ -1,0 +1,2 @@
+deu: Teile dieser Software stammen von © 2025 nathAd17 (nathan ady) und werden unter der MIT-Lizenz verwendet.
+eng: Portions of this software are © 2025 nathAd17 (nathan ady) and used under the MIT License.

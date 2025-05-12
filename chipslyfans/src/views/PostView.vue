@@ -170,12 +170,12 @@
 
                     </div>
 
-    <!-- Sichtbarer Button -->
-                 <button class="flex items-center space-x-2 hover:text-blue-600">
-                    <ShareIcon class="h-5 w-5" />
-                    <span>Teilen</span>
-                </button> 
-</button>
+                    <!-- Sichtbarer Button -->
+                    <button class="flex items-center space-x-2 hover:text-blue-600">
+                        <ShareIcon class="h-5 w-5" />
+                        <span>Teilen</span>
+                    </button> 
+                </button>
                 
 
                 <!-- Speichern -->
