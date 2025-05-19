@@ -29,7 +29,7 @@
         </div>
     </div>
 
-    <div v-if="user" class="max-w-5xl mx-auto px-4 py-8">
+    <div v-if="!loading" class="max-w-5xl mx-auto px-4 py-8">
         <div class="flex flex-col items-center text-center space-y-4 mb-8">
             <div class="w-20 h-20 rounded-full overflow-hidden bg-indigo-500 flex items-center justify-center text-white text-3xl font-bold">
                 <template v-if="user.profilepicture">
@@ -59,7 +59,7 @@
                     v-else-if="currentUserId !== user.id"
                     class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
                     @click="handleUnsubscribe">
-                    Kündigen
+                    Abo Kündigen
                 </button>
             </div>
         </div>
@@ -150,6 +150,7 @@ function onPostClick(postId){
 }
 
 onMounted(async () => {
+    loading.value = true;
     const userId = route.params.id;
 
     try {
@@ -160,9 +161,12 @@ onMounted(async () => {
         });
         const data = await res.json();
         if (res.ok && data) {
-            user.value = data;
+            user.value = data.user;
+            isSubscribed.value = data.hasActiveSubscription;
             console.log('Benutzer:', user.value);
-        } else {
+            console.log('Abo aktiv?', isSubscribed.value);
+        }
+        else {
             console.warn('User nicht gefunden oder Fehler:', data);
             loadingError.value = true;
         }
@@ -178,6 +182,17 @@ onMounted(async () => {
         console.error('Fehler beim Laden des Users oder Auth:', err);
         loadingError.value = false;
     } 
+    try{
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/subscription/status/${userId}`, {
+            credentials: 'include'
+        });
+        const data = await res.json();
+        isSubscribed.value = data.hasActiveSubscription;
+    }catch (err) {
+        console.error('Fehler beim Laden des Users:', err);
+        loadingError.value = true;
+    }
+    loading.value = false;
 });
 </script>
 
