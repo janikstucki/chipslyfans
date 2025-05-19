@@ -340,8 +340,8 @@ function prevImage(post) {
 
 async function likePost(postId) {
   try {
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/posts/${postId}/like`, {
-      method: 'PUT',
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/interactions/like/${postId}`, {
+      method: 'POST',
       credentials: 'include'
     });
 
