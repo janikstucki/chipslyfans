@@ -12,7 +12,9 @@
         ChevronRightIcon,
         ArrowUturnRightIcon
     } from '@heroicons/vue/24/outline'
+    import ShareBtn from '../components/ShareBtn.vue'
     
+    const commentText = ref(''); 
 
     const post = ref(null)
     const router = useRouter()
@@ -43,6 +45,11 @@
         showImageModal.value = false
         fullImageUrl.value = ''
     }
+
+    function submitComment() {
+      console.log('comment:', commentText.value);
+      commentText.value = '';
+    };
 
     function onUserClick(userId) {
         router.push({ name: 'UserDetail', params: { id: userId } })
@@ -141,11 +148,12 @@
                     <span>Kommentieren</span>
                 </button>
 
+                
                 <!-- Teilen -->
-                <button class="flex items-center space-x-2 hover:text-blue-600">
-                    <ShareIcon class="h-5 w-5" />
-                    <span>Teilen</span>
-                </button>
+                <!-- <ShareBtn :postLink="'http://localhost:5173/post/'+postId"/> -->
+                 <ShareBtn/>
+                
+                
 
                 <!-- Speichern -->
                 <button class="flex items-center space-x-2 hover:text-blue-600">
@@ -157,7 +165,9 @@
     
         <div class="px-6 py-4">
             <h3 class="font-semibold text-sm text-gray-600 mb-2">Kommentare</h3>
-            <p class="text-gray-400 italic">Kommentarfunktion kommt bald</p>
+            <textarea v-model="commentText" rows="4" class="w-full min-h-20 px-4 py-3 bg-gray-100 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600" placeholder="Write your contribution..."></textarea>
+            
+            <div class="flex justify-between mt-8"><div></div><button class="w-1/4 bg-gradient-to-l from-blue-700 to-indigo-400 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-600 hover:to-indigo-300 transform transition-all duration-300 ease-in-out mb-1 hover:scale-[1.02]" :disabled="commentText.length < 1" @click="submitComment">Veröffentlichen</button><!--v-if--></div>
         </div>
     </div>
     <div v-else class="w-full max-w-2xl mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-6 animate-pulse">
@@ -169,6 +179,7 @@
                 <div class="w-24 h-3 bg-gray-200 rounded"></div>
             </div>
         </div>
+        
 
         <!-- Bild -->
         <div class="w-full h-[300px] bg-gray-200"></div>

@@ -127,7 +127,8 @@ const isAuthenticated = computed(async () => {
 
         <!-- Logo -->
         <div class="flex items-center justify-center h-16 border-b border-gray-200">
-          <span v-if="isExpanded" class="text-xl font-bold">ChipslyFans</span>
+          <span v-if="isExpanded" class="text-xl font-bold"><router-link 
+            to="/">ChipslyFans</router-link></span>
           <span v-else class="text-xl font-bold">C</span>
         </div>
 

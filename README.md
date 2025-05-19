@@ -32,6 +32,7 @@ The platform is ideal for artists, performers, educators, fitness coaches, and a
 - **Multer** (for file uploads)
 - **Bcrypt** (Password hashing)
 - **Cloud Storage Integration with AWS S3**
+- **Payments with STRIPE**
 
 ---
 
@@ -52,7 +53,7 @@ The platform is ideal for artists, performers, educators, fitness coaches, and a
 - Monthly and yearly subscription models
 - Custom tip amounts and donation options
 - Revenue dashboard for creators
-- Integrated payment gateway (Stripe or PayPal)
+- Integrated payment gateway with Stripe
 
 ### 💬 Messaging & Interaction
 - Private messaging between creators and fans
