@@ -1,15 +1,15 @@
 import express from 'express';
-import { interactionController } from '../controllers/interactionController.js';
+import { likePost, commentPost, sharePost, subscribe, unsubscribe, deleteComment, deleteLike, getInteractions } from '../controllers/interactionController.js';
 
 const router = express.Router();
 
-router.post('/like', interactionController.likePost);
-router.post('/comment', interactionController.commentPost);
-router.post('/subscribe', interactionController.subscribe);
-router.post('/share', interactionController.sharePost);
+router.post('/like', likePost);
+router.post('/comment', commentPost);
+router.post('/subscribe', subscribe);
+router.post('/share', sharePost);
 
-router.post('/unsubscribe', interactionController.unsubscribe);
-router.post('/deleteComment', interactionController.deleteComment);
-router.post('/disLike', interactionController.deleteLike);
+router.post('/unsubscribe', unsubscribe);
+router.post('/deleteComment', deleteComment);
+router.post('/disLike', deleteLike);
 
 export default router;
