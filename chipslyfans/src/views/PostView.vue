@@ -14,15 +14,12 @@
     } from '@heroicons/vue/24/outline'
     import ShareBtn from '../components/ShareBtn.vue'
     
-    const commentText = ref(''); 
 
     const post = ref(null)
     const router = useRouter()
-    const route = useRoute()
     const currentImageIndex = ref(0)
     const showImageModal = ref(false)
     const fullImageUrl = ref('')
-    
     
 
     function nextImage() {
@@ -46,10 +43,57 @@
         fullImageUrl.value = ''
     }
 
-    function submitComment() {
-      console.log('comment:', commentText.value);
-      commentText.value = '';
-    };
+// Props definieren
+const props = defineProps({
+  postId: {
+    type: String,
+    required: true
+  }
+});
+
+    const route = useRoute()
+const postId = route.params.id;
+
+const comments = ref([]);
+const commentText = ref('');
+
+// Kommentare beim Laden der View holen
+async function loadComments() {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/comments/post/${postId}`);
+    comments.value = await res.json();
+  } catch (err) {
+    console.error('Fehler beim Laden der Kommentare:', err);
+  }
+}
+
+// Neuen Kommentar absenden
+async function submitComment() {
+  try {
+    console.log('postId:', postId, 'text:', commentText.value);
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ postId, text: commentText.value }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Kommentar fehlgeschlagen');
+    }
+    const newComment = await response.json();
+    comments.value.unshift(newComment);      // Neuester Kommentar ganz oben einfügen
+    commentText.value = ''; 
+    window.location.reload    
+} catch (err) {
+    console.error('❌ Fehler beim Kommentar:', err);
+  }
+}
+
+onMounted(() => {
+  loadComments();
+});
+
 
     function onUserClick(userId) {
         router.push({ name: 'UserDetail', params: { id: userId } })
@@ -149,8 +193,6 @@
                 </button>
 
                 
-                <!-- Teilen -->
-                <!-- <ShareBtn :postLink="'http://localhost:5173/post/'+postId"/> -->
                  <ShareBtn/>
                 
                 
@@ -163,23 +205,50 @@
             </div>
         </div>
     
-        <div class="px-6 py-4">
-            <h3 class="font-semibold text-sm text-gray-600 mb-2">Kommentare</h3>
-            <textarea v-model="commentText" rows="4" class="w-full min-h-20 px-4 py-3 bg-gray-100 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600" placeholder="Write your contribution..."></textarea>
-            
-            <div class="flex justify-between mt-8"><div></div><button class="w-1/4 bg-gradient-to-l from-blue-700 to-indigo-400 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-600 hover:to-indigo-300 transform transition-all duration-300 ease-in-out mb-1 hover:scale-[1.02]" :disabled="commentText.length < 1" @click="submitComment">Veröffentlichen</button><!--v-if--></div>
+         <div class="px-6 py-4">
+    <h3 class="font-semibold text-sm text-gray-600 mb-2">Kommentare</h3>
+    
+    <!-- Liste der existierenden Kommentare -->
+    <div v-if="comments.length" class="space-y-4 mb-6">
+      <div 
+        v-for="c in comments" 
+        :key="c.id" 
+        class="bg-white p-4 rounded-lg shadow-sm"
+      >
+        <div class="flex items-center mb-2">
+          <img 
+            :src="c.author.profilepicture || fallbackimage" 
+            alt="Profil" 
+            class="w-6 h-6 rounded-full mr-2 object-cover"
+          />
+          <span class="font-semibold text-sm">{{ c.author.username }}</span>
+          <span class="text-xs text-gray-500 ml-2">{{ formatDate(c.createdAt) }}</span>
         </div>
+        <p class="text-gray-800 text-sm">{{ c.text }}</p>
+      </div>
     </div>
-    <div v-else class="w-full max-w-2xl mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-6 animate-pulse">
-        <!-- Header -->
-        <div class="flex items-center px-6 py-4 space-x-4 border-b">
-            <div class="w-12 h-12 rounded-full bg-gray-300"></div>
-            <div class="space-y-2">
-                <div class="w-32 h-4 bg-gray-300 rounded"></div>
-                <div class="w-24 h-3 bg-gray-200 rounded"></div>
-            </div>
-        </div>
-        
+    <div v-else class="text-gray-500 italic mb-6">
+      Noch keine Kommentare – sei der Erste! 😊
+    </div>
+
+    <!-- Neues Kommentar schreiben -->
+    <textarea
+      v-model="commentText"
+      rows="4"
+      class="w-full min-h-20 px-4 py-3 bg-gray-100 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
+      placeholder="Schreib deinen Kommentar..."
+    ></textarea>
+
+    <div class="flex justify-end mt-4">
+      <button
+        class="bg-gradient-to-l from-blue-700 to-indigo-400 text-white py-2 px-6 rounded-lg font-medium hover:from-blue-600 hover:to-indigo-300 transform transition-all duration-300 ease-in-out disabled:opacity-50"
+        :disabled="commentText.length < 1"
+        @click="submitComment"
+      >
+        Veröffentlichen
+      </button>
+    </div>
+  </div>
 
         <!-- Bild -->
         <div class="w-full h-[300px] bg-gray-200"></div>

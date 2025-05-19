@@ -250,11 +250,6 @@ function onUserClick(userId) {
   }, 10)
 }
 
-// function navigateToPost(postId) {
-//   if (isClickOnProfile.value) return
-//   router.push({ name: 'PostDetail', params: { id: postId } })
-// }
-
 
 function handleScroll() {
   const container = sidebarRef.value
