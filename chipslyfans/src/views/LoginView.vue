@@ -269,7 +269,7 @@
                             <div class="mb-4" v-if="!isLogin">
                                 <label class="block text-gray-600 text-sm mb-2">{{ $t('login.form.label.confirm_password') }}</label>
                                 <input 
-                                    type="text" 
+                                    type="password" 
                                     v-model="password02"
                                     placeholder="••••••••" 
                                     class="w-full px-4 py-3 bg-gray-200 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
@@ -412,15 +412,15 @@ import {
 import router from '../router';
 import { useFetch} from '../helpers/authenticate.js';
 
-const isLogin = ref(false);
+const isLogin = ref(true);
 const datepicker = ref(null);
 let picker = null;
 const loading = ref(false);
 const { t } = useI18n()
 
 // Form fields
-const email = ref('test@example06.com');
-const password01 = ref('your_secure_password');
+const email = ref('');
+const password01 = ref('');
 const password02 = ref('');
 const username = ref('');
 const firstname = ref('');
