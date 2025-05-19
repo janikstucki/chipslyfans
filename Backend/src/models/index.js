@@ -4,6 +4,7 @@ import { Post } from './Post.js';
 import { Subscription } from './Subscription.js';
 import { Payment } from './Payment.js';
 import { Comment } from './Comment.js'
+import { Interaction } from './Interaction.js';
 
 // Associations
 User.hasOne(Abonnement, { foreignKey: "creatorId", as: "abonnement" });
@@ -27,11 +28,15 @@ Comment.belongsTo(User, { foreignKey: "authorId", as: "author" });
 Post.hasMany(Comment, { foreignKey: "postId", as: "comments" });
 Comment.belongsTo(Post, { foreignKey: "postId", as: "post" });
 
+User.hasMany(Interaction, { foreignKey: "userId", as: "interactions" });
+Interaction.belongsTo(User, { foreignKey: "userId", as: "user" });
+
 export {
   User,
   Abonnement,
   Post,
   Subscription,
   Payment,
-  Comment
+  Comment,
+  Interaction
 };
