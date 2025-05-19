@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import postRoutes from "./routes/postRoutes.js";
 import userRoutes from "./routes/userRoutes.js"; 
 import authRoutes from "./routes/authRoutes.js";
+import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 
 import webhookRoutes from "./middlewares/webhookRoutes.js";
 import { connectDB, sequelize } from "./config/db.js";
@@ -52,6 +53,7 @@ app.use(cors({
 app.use("/posts", postRoutes);
 app.use("/users", userRoutes); 
 app.use("/auth", authRoutes);
+app.use("/subscription", subscriptionRoutes);
 
 
 async function startServer() {
