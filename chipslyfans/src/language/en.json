@@ -122,12 +122,18 @@
         }
     },
     "userview": {
-        "header": {
-
-        },
+        "header": {},
         "posts": {
             "public": "Public",
             "sub_only": "Subscribers only"
+        },
+        "profile": {
+            "no_bio": "No biography available.",
+            "subscribe": "Subscribe",
+            "unsubscribe": "Cancel Subscription",
+            "price_per_month": "CHF / month",
+            "user_not_found_title": "User not found",
+            "user_not_found_text": "The requested user does not exist or is not available."
         }
     }
 }

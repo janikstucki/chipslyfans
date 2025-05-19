@@ -41,25 +41,25 @@
             </div>
     
             <h2 class="text-2xl font-bold text-gray-900">@{{ user.username }}</h2>
-            <p class="text-gray-600">{{ user.bio || 'Keine Biografie vorhanden.' }}</p>
+            <p class="text-gray-600">{{ user.bio || t('userview.profile.no_bio') }}</p>
     
             <div class="flex items-center gap-4">
                 <div v-if="!isSubscribed && user?.abonnement?.cost" class="text-lg font-semibold">
-                    {{ user.abonnement.cost }} CHF / Monat
+                    {{ user.abonnement.cost }} {{ t('userview.profile.price_per_month') }}
                 </div>
         
                 <button
                     v-if="!isSubscribed && currentUserId !== user.id"
                     class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
                     @click="handleSubscribe">
-                    Abonnieren
+                    {{ t('userview.profile.subscribe') }}
                 </button>
         
                 <button
                     v-else-if="currentUserId !== user.id"
                     class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition"
                     @click="handleUnsubscribe">
-                    Abo Kündigen
+                    {{ t('userview.profile.unsubscribe') }}
                 </button>
             </div>
         </div>
@@ -96,8 +96,8 @@
     </div>
     <div v-if="loadingError">
         <div class="max-w-5xl mx-auto px-4 py-8 text-center">
-            <h2 class="text-2xl font-bold text-gray-900">Benutzer nicht gefunden</h2>
-            <p class="text-gray-600">Der angeforderte Benutzer existiert nicht oder ist nicht verfügbar.</p>
+            <h2 class="text-2xl font-bold text-gray-900">{{ t('userview.profile.user_not_found_title') }}</h2>
+            <p class="text-gray-600">{{ t('userview.profile.user_not_found_text') }}</p>
         </div>
     </div>
 </template>

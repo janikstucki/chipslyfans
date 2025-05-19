@@ -6,7 +6,7 @@
         <h2 class="text-xl font-bold mb-4">{{ $t('root.title') }}</h2>
         <div class="space-y-4">
           <!-- Feed -->
-          <div
+          <div  
               v-for="post in displayedPosts"
               :key="post.id"
               class="bg-white shadow-sm rounded-lg p-4 mb-6 hover:shadow-md transition"
