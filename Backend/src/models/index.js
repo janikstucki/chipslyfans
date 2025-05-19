@@ -5,6 +5,7 @@ import { Subscription } from './Subscription.js';
 import { Payment } from './Payment.js';
 import { Comment } from './Comment.js'
 import { Interaction } from './Interaction.js';
+import { UserTagInterest } from './userTagInterests.js';
 
 // Associations
 User.hasOne(Abonnement, { foreignKey: "creatorId", as: "abonnement" });
@@ -31,6 +32,11 @@ Comment.belongsTo(Post, { foreignKey: "postId", as: "post" });
 User.hasMany(Interaction, { foreignKey: "userId", as: "interactions" });
 Interaction.belongsTo(User, { foreignKey: "userId", as: "user" });
 
+User.hasMany(UserTagInterest, { foreignKey: 'userId', as: 'tagInterests' });
+UserTagInterest.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+
+
+
 export {
   User,
   Abonnement,
@@ -38,5 +44,6 @@ export {
   Subscription,
   Payment,
   Comment,
-  Interaction
+  Interaction,
+  UserTagInterest 
 };

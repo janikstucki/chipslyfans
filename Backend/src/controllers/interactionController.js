@@ -1,5 +1,6 @@
 import { Interaction, User, Post } from "../models/index.js";
 import { Op } from 'sequelize';
+import { UserTagInterest } from "../models/index.js";
 
 export async function likePost(req, res) {
   const { userId, postId } = req.body;
