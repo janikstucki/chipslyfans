@@ -135,5 +135,10 @@
             "user_not_found_title": "User not found",
             "user_not_found_text": "The requested user does not exist or is not available."
         }
+    },
+    "payment": {
+        "success_title": "Successfully Subscribed!",
+        "success_message": "Thank you for your trust. Your subscription is now active and you have access to all exclusive content.",
+        "back_to_home": "Back to Home"
     }
 }
