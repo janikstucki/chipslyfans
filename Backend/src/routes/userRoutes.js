@@ -29,14 +29,14 @@ router.post('/subscribe', authenticate, async (req, res) => {
   
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      mode: 'payment', // kein subscription-mode, weil du dynamisch zahlst
+      mode: 'payment',
       line_items: [{
         price_data: {
           currency: 'chf',
           product_data: {
             name: `Abo von ${abo.creatorId}`,
           },
-          unit_amount: parseInt(abo.cost * 100), // Stripe erwartet Rappen
+          unit_amount: parseInt(abo.cost * 100), // Rappen
         },
         quantity: 1,
       }],
@@ -50,5 +50,18 @@ router.post('/subscribe', authenticate, async (req, res) => {
   
     res.json({ url: session.url });
 });
+
+router.get('/payment-status/:sessionId', authenticate, async (req, res) => {
+    try {
+      const session = await stripe.checkout.sessions.retrieve(req.params.sessionId);
+      res.json({
+        status: session.payment_status,
+        amount: session.amount_total / 100
+      });
+    } catch (error) {
+      console.error("❌ Stripe Session Fehler:", error.message);
+      res.status(400).json({ error: "Ungültige Session" });
+    }
+  });
 
 export default router;
