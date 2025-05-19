@@ -1,6 +1,7 @@
 import { Interaction, User, Post } from "../models/index.js";
 import { Op } from 'sequelize';
 import { UserTagInterest } from "../models/index.js";
+import { updateUserTagInterests } from "../utils/tagUtils.js";
 
 export async function likePost(req, res) {
   const { userId, postId } = req.body;
@@ -15,6 +16,7 @@ export async function likePost(req, res) {
 
       // Beispiel: Tags zählen oder mitschreiben in eine User-Interest-Tabelle
       const tags = post.tags?.slice(0, 3) || [];
+      await updateUserTagInterests(userId, tags);
 
       console.log(`Top Tags des Posts: ${tags.join(', ')}`);
 
