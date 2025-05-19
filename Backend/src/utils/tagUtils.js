@@ -1,4 +1,4 @@
-async function updateUserTagInterests(userId, tags) {
+export async function updateUserTagInterests(userId, tags) {
   for (const tag of tags) {
     const [entry, created] = await UserTagInterest.findOrCreate({
       where: { userId, tag },
