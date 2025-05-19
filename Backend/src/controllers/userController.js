@@ -57,6 +57,7 @@ export const createUser = async (req, res) => {
 export const getUserbyId = async (req, res) => {
     const { id: profileUserId } = req.params; 
     const currentUserId = req.user?.id; 
+    let subscriptionId = null;
 
     try {
         const isOwner = currentUserId === profileUserId;
@@ -69,15 +70,16 @@ export const getUserbyId = async (req, res) => {
     
         if (!isOwner && abonnement) {
             const subscription = await Subscription.findOne({
-            where: {
-                abonnementId: abonnement.id,
-                consumerId: currentUserId,
-                isActive: true,
-            },
+                where: {
+                    abonnementId: abonnement.id,
+                    consumerId: currentUserId,
+                    isActive: true,
+                },
             });
-    
+
             if (subscription) {
-            hasActiveSubscription = true;
+                hasActiveSubscription = true;
+                subscriptionId = subscription.id; 
             }
         }
     
@@ -111,6 +113,7 @@ export const getUserbyId = async (req, res) => {
         res.json({
             user,
             hasActiveSubscription,
+            subscriptionId, 
         });
     } catch (error) {
         console.error("Error fetching user:", error);

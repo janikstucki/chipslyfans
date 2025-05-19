@@ -113,6 +113,7 @@ const router = useRouter();
 const user = ref(null);
 const currentUserId = ref(null);
 const isSubscribed = ref(false);
+const subscriptionId = ref(null);
 const route = useRoute();
 const loading = ref(true);
 const loadingError = ref(false);
@@ -140,10 +141,29 @@ const abonnementId = "5c4c684e-2080-11f0-80e8-0a0027000012"; // Beispiel-ID
 
 
 
-const handleUnsubscribe = () => {
-    isSubscribed.value = false;
+const handleUnsubscribe = async () => {
+    if (!subscriptionId.value) {
+        console.warn("⚠️ Keine Subscription-ID gefunden");
+        return;
+    }
 
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/subscription/cancel/${subscriptionId.value}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+
+    if (response.ok) {
+        isSubscribed.value = false;
+        subscriptionId.value = null;
+        console.log("✅ Abo erfolgreich gekündigt");
+    } else {
+        console.error("❌ Fehler beim Kündigen des Abos");
+    }
 };
+
 
 function onPostClick(postId){
     router.push({ name: 'PostDetail', params: { id: postId } })
@@ -163,6 +183,7 @@ onMounted(async () => {
         if (res.ok && data) {
             user.value = data.user;
             isSubscribed.value = data.hasActiveSubscription;
+            subscriptionId.value = data.subscriptionId;
             console.log('Benutzer:', user.value);
             console.log('Abo aktiv?', isSubscribed.value);
         }
