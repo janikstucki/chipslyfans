@@ -15,7 +15,7 @@
             <!-- Header -->
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-full overflow-hidden bg-indigo-500 flex items-center justify-center text-white font-bold"
-                   @click.stop="onUserClick(post.author.id)">
+                    @click.stop="onUserClick(post.author.id)">
                 <template v-if="post.author.profilepicture">
                   <img 
                     :src="post.author.profilepicture" 
