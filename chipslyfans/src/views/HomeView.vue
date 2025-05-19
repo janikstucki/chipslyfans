@@ -10,11 +10,12 @@
               v-for="post in displayedPosts"
               :key="post.id"
               class="bg-white shadow-sm rounded-lg p-4 mb-6 hover:shadow-md transition"
-              @click="navigateToPost(post.id)"
+              @click="!isClickOnProfile && navigateToPost(post.id)"
             >
             <!-- Header -->
-            <div  class="flex items-center gap-3 cursor-pointer">
-              <div class="w-10 h-10 rounded-full overflow-hidden bg-indigo-500 flex items-center justify-center text-white font-bold">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full overflow-hidden bg-indigo-500 flex items-center justify-center text-white font-bold"
+                   @click.stop="onUserClick(post.author.id)">
                 <template v-if="post.author.profilepicture">
                   <img 
                     :src="post.author.profilepicture" 
@@ -26,8 +27,8 @@
                   {{ post.author.username.charAt(0).toUpperCase() }}
                 </template>
               </div>
-              <div>
-                <h3 class="font-semibold">{{ post.author.username }}</h3>
+              <div @click.stop="onUserClick(post.author.id)">
+                <h3 class="font-semibold cursor-pointer">{{ post.author.username }}</h3>  
                 <p class="text-sm text-gray-500">{{ formatDate(post.createdAt) }}</p>
               </div>
             </div>
@@ -209,87 +210,7 @@ import {
 } from '@heroicons/vue/24/solid'
 
 const beitraege = ref([
-  {
-    id: 1,
-    autor: '@Chipsly#69420',
-    datum: 'Vor 2 Stunden',
-    inhalt: 'Lorem ipsum dolor sit amet, consectetur sadipscing elit, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat!',
-    likes: '24k',
-    kommentare: 323,
-    geteilt: 42
-  },
-  {
-    id: 2,
-    autor: '@Chipsly#69420',
-    datum: 'Gestern',
-    inhalt: 'Neuer Beitrag mit tollen Inhalten! Schaut euch das an!',
-    likes: '14k',
-    kommentare: 124,
-    geteilt: 18
-  },
-  {
-    id: 3,
-    autor: '@Chipsly#69420',
-    datum: 'Vor 3 Tagen',
-    inhalt: 'Danke für all die Unterstützung! Ihr seid die Besten! 💖',
-    likes: '32k',
-    kommentare: 512,
-    geteilt: 87
-  },
-  {
-    id: 4,
-    autor: '@User123',
-    datum: 'Heute',
-    inhalt: 'Ich liebe diese Plattform! So tolle Inhalte!',
-    likes: '8k',
-    kommentare: 42,
-    geteilt: 5
-  },
-  {
-    id: 5,
-    autor: '@FanGirl',
-    datum: 'Vor 1 Stunde',
-    inhalt: 'Kann nicht aufhören diese Beiträge zu liken!',
-    likes: '12k',
-    kommentare: 87,
-    geteilt: 12
-  },
-  {
-    id: 6,
-    autor: '@Chipsly#69420',
-    datum: 'Vor 2 Stunden',
-    inhalt: 'Lorem ipsum dolor sit amet, consectetur sadipscing elit, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat!',
-    likes: '24k',
-    kommentare: 323,
-    geteilt: 42
-  },
-  {
-    id: 7,
-    autor: '@Chipsly#69420',
-    datum: 'Vor 2 Stunden',
-    inhalt: 'Lorem ipsum dolor sit amet, consectetur sadipscing elit, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat!',
-    likes: '24k',
-    kommentare: 323,
-    geteilt: 42
-  },
-  {
-    id: 8,
-    autor: '@Chipsly#69420',
-    datum: 'Vor 2 Stunden',
-    inhalt: 'Lorem ipsum dolor sit amet, consectetur sadipscing elit, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat!',
-    likes: '24k',
-    kommentare: 323,
-    geteilt: 42
-  },
-  {
-    id: 9,
-    autor: '@Chipsly#69420',
-    datum: 'Vor 2 Stunden',
-    inhalt: 'Lorem ipsum dolor sit amet, consectetur sadipscing elit, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat!',
-    likes: '24k',
-    kommentare: 323,
-    geteilt: 42
-  },
+  
 ])
 const posts = ref([]);
 const displayedPosts = ref([])
@@ -317,6 +238,22 @@ onMounted(async () => {
     sidebarRef.value.addEventListener('scroll', handleScroll)
   }
 })
+
+const isClickOnProfile = ref(false)
+
+function onUserClick(userId) {
+  isClickOnProfile.value = true
+  router.push({ name: 'UserDetail', params: { id: userId } })
+  // Reset nach kurzer Verzögerung
+  setTimeout(() => {
+    isClickOnProfile.value = false
+  }, 10)
+}
+
+// function navigateToPost(postId) {
+//   if (isClickOnProfile.value) return
+//   router.push({ name: 'PostDetail', params: { id: postId } })
+// }
 
 
 function handleScroll() {
