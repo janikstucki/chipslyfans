@@ -1,28 +1,35 @@
 import { Interaction, User, Post } from "../models/index.js";
 import { Op } from 'sequelize';
 
-export function likePost(req, res) {
+export async function likePost(req, res) {
   const { userId, postId } = req.body;
 
-  Interaction.findOrCreate({
-    where: {
-      userId: userId,
-      postId: postId,
-      type: 'like'
-    }
-  })
-    .then(([interaction, created]) => {
-      if (created) {
-        return res.status(201).json({ message: 'Post liked successfully' });
-      } else {
-        return res.status(200).json({ message: 'Post already liked' });
-      }
-    })
-    .catch(error => {
-      console.error(error);
-      return res.status(500).json({ message: 'Error liking post' });
+  try {
+    const [interaction, created] = await Interaction.findOrCreate({
+      where: { userId, postId, type: 'like' }
     });
+
+    if (created) {
+      const post = await Post.findByPk(postId);
+
+      // Beispiel: Tags zählen oder mitschreiben in eine User-Interest-Tabelle
+      const tags = post.tags?.slice(0, 3) || [];
+
+      console.log(`Top Tags des Posts: ${tags.join(', ')}`);
+
+      // Optional: Speichere Top Tags in einer neuen Tabelle UserTagInterest
+      // await UserTagInterest.addOrIncrement(userId, tags)
+
+      return res.status(201).json({ message: 'Post liked successfully', tags });
+    } else {
+      return res.status(200).json({ message: 'Post already liked' });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Error liking post' });
+  }
 }
+
 
 export function commentPost(req, res) {
     const { userId, postId, comment } = req.body;
