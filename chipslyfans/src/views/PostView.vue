@@ -121,165 +121,167 @@ onMounted(() => {
 </script>
 
 <template>
-    <div v-if="post" class="w-full max-w-2xl mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-6">
+    <div  class="w-full max-w-2xl mx-auto bg-white shadow-md rounded-lg overflow-hidden mt-6">
         <!-- Header -->
-        <div @click="onUserClick(post.author.id)" class="flex items-center justify-between px-6 py-4 border-b">
-            <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-lg">
-                    {{ post.author.username.charAt(0).toUpperCase() }}
+        <div v-if="post">
+            <div @click="onUserClick(post.author.id)" class="flex items-center justify-between px-6 py-4 border-b">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-lg">
+                        {{ post.author.username.charAt(0).toUpperCase() }}
+                    </div>
+                    <div>
+                        <p class="font-semibold">{{ post.author.username }}</p>
+                        <p class="text-sm text-gray-500">{{ formatDate(post.createdAt) }}</p>
+                    </div>
                 </div>
-                <div>
-                    <p class="font-semibold">{{ post.author.username }}</p>
-                    <p class="text-sm text-gray-500">{{ formatDate(post.createdAt) }}</p>
+            </div>
+        
+            <!-- Bild oder Karussell -->
+            <div v-if="post.images && post.images.length" class="relative w-full h-[300px] bg-gray-100 overflow-hidden rounded-md">
+                <img
+                    :src="post.images[currentImageIndex].url"
+                    alt="Post Bild"
+                    @click="openImageModal(post.images[currentImageIndex].url)"
+                    class="object-cover w-full h-full transition-all duration-300 cursor-zoom-in"/>
+
+                <!-- Prev -->
+                <button
+                    v-if="post.images.length > 1 && currentImageIndex > 0"
+                    @click="prevImage"
+                    class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition">
+                    <ChevronLeftIcon class="h-5 w-5" />
+                </button>
+
+                <!-- Next -->
+                <button
+                    v-if="post.images.length > 1 && currentImageIndex < post.images.length - 1"
+                    @click="nextImage"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition">
+                    <ChevronRightIcon class="h-5 w-5" />
+                </button>
+
+                <!-- Count -->
+                <div
+                    v-if="post.images.length > 1"
+                    class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs bg-black/50 text-white px-2 py-0.5 rounded">
+                    {{ currentImageIndex + 1 }} / {{ post.images.length }}
                 </div>
             </div>
-        </div>
-    
-        <!-- Bild oder Karussell -->
-        <div v-if="post.images && post.images.length" class="relative w-full h-[300px] bg-gray-100 overflow-hidden rounded-md">
-            <img
-                :src="post.images[currentImageIndex].url"
-                alt="Post Bild"
-                @click="openImageModal(post.images[currentImageIndex].url)"
-                class="object-cover w-full h-full transition-all duration-300 cursor-zoom-in"/>
+            <!-- Body -->
+            <div class="px-6 py-4">
+                <h2 class="text-lg font-bold mb-2">{{ post.title }}</h2>
+                <p class="text-gray-700 mb-4">{{ post.content }}</p>
+        
+                <!-- Tags -->
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <span v-for="(tag, index) in post.tags" :key="index" class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">
+                        #{{ tag }}
+                    </span>
+                </div>
+        
+                <!-- Actions -->
+                <div class="flex items-center justify-between text-gray-600 border-t border-b py-3 px-4">
+                    <!-- Like -->
+                    <button class="flex items-center space-x-2 hover:text-blue-600">
+                        <HeartIcon class="h-5 w-5" />
+                        <span>{{ post.likes.likeCount }}</span>
+                    </button>
 
-            <!-- Prev -->
-            <button
-                v-if="post.images.length > 1 && currentImageIndex > 0"
-                @click="prevImage"
-                class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition">
-                <ChevronLeftIcon class="h-5 w-5" />
-            </button>
+                    <!-- Kommentieren -->
+                    <button class="flex items-center space-x-2 hover:text-blue-600">
+                        <ChatBubbleLeftEllipsisIcon class="h-5 w-5" />
+                        <span>Kommentieren</span>
+                    </button>
 
-            <!-- Next -->
-            <button
-                v-if="post.images.length > 1 && currentImageIndex < post.images.length - 1"
-                @click="nextImage"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition">
-                <ChevronRightIcon class="h-5 w-5" />
-            </button>
+                    
+                    <ShareBtn/>
+                    
+                    
 
-            <!-- Count -->
-            <div
-                v-if="post.images.length > 1"
-                class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs bg-black/50 text-white px-2 py-0.5 rounded">
-                {{ currentImageIndex + 1 }} / {{ post.images.length }}
+                    <!-- Speichern -->
+                    <button class="flex items-center space-x-2 hover:text-blue-600">
+                        <BookmarkIcon class="h-5 w-5" />
+                        <span>Speichern</span>
+                    </button>
+                </div>
             </div>
-        </div>
-        <!-- Body -->
-        <div class="px-6 py-4">
-            <h2 class="text-lg font-bold mb-2">{{ post.title }}</h2>
-            <p class="text-gray-700 mb-4">{{ post.content }}</p>
-    
-            <!-- Tags -->
-            <div class="flex flex-wrap gap-2 mb-4">
-                <span v-for="(tag, index) in post.tags" :key="index" class="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">
-                    #{{ tag }}
-                </span>
+        
+            <div class="px-6 py-4">
+        <h3 class="font-semibold text-sm text-gray-600 mb-2">Kommentare</h3>
+        
+        <!-- Liste der existierenden Kommentare -->
+        <div v-if="comments.length" class="space-y-4 mb-6">
+        <div 
+            v-for="c in comments" 
+            :key="c.id" 
+            class="bg-white p-4 rounded-lg shadow-sm"
+        >
+            <div class="flex items-center mb-2">
+            <img 
+                :src="c.author.profilepicture || fallbackimage" 
+                alt="Profil" 
+                class="w-6 h-6 rounded-full mr-2 object-cover"
+            />
+            <span class="font-semibold text-sm">{{ c.author.username }}</span>
+            <span class="text-xs text-gray-500 ml-2">{{ formatDate(c.createdAt) }}</span>
             </div>
-    
-            <!-- Actions -->
-            <div class="flex items-center justify-between text-gray-600 border-t border-b py-3 px-4">
-                <!-- Like -->
-                <button class="flex items-center space-x-2 hover:text-blue-600">
-                    <HeartIcon class="h-5 w-5" />
-                    <span>{{ post.likes.likeCount }}</span>
-                </button>
-
-                <!-- Kommentieren -->
-                <button class="flex items-center space-x-2 hover:text-blue-600">
-                    <ChatBubbleLeftEllipsisIcon class="h-5 w-5" />
-                    <span>Kommentieren</span>
-                </button>
-
-                
-                 <ShareBtn/>
-                
-                
-
-                <!-- Speichern -->
-                <button class="flex items-center space-x-2 hover:text-blue-600">
-                    <BookmarkIcon class="h-5 w-5" />
-                    <span>Speichern</span>
-                </button>
-            </div>
+            <p class="text-gray-800 text-sm">{{ c.text }}</p>
         </div>
-    
-         <div class="px-6 py-4">
-    <h3 class="font-semibold text-sm text-gray-600 mb-2">Kommentare</h3>
-    
-    <!-- Liste der existierenden Kommentare -->
-    <div v-if="comments.length" class="space-y-4 mb-6">
-      <div 
-        v-for="c in comments" 
-        :key="c.id" 
-        class="bg-white p-4 rounded-lg shadow-sm"
-      >
-        <div class="flex items-center mb-2">
-          <img 
-            :src="c.author.profilepicture || fallbackimage" 
-            alt="Profil" 
-            class="w-6 h-6 rounded-full mr-2 object-cover"
-          />
-          <span class="font-semibold text-sm">{{ c.author.username }}</span>
-          <span class="text-xs text-gray-500 ml-2">{{ formatDate(c.createdAt) }}</span>
         </div>
-        <p class="text-gray-800 text-sm">{{ c.text }}</p>
-      </div>
+        <div v-else class="text-gray-500 italic mb-6">
+        Noch keine Kommentare – sei der Erste! 😊
+        </div>
+
+        <!-- Neues Kommentar schreiben -->
+        <textarea
+        v-model="commentText"
+        rows="4"
+        class="w-full min-h-20 px-4 py-3 bg-gray-100 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
+        placeholder="Schreib deinen Kommentar..."
+        ></textarea>
+
+        <div class="flex justify-end mt-4">
+        <button
+            class="bg-gradient-to-l from-blue-700 to-indigo-400 text-white py-2 px-6 rounded-lg font-medium hover:from-blue-600 hover:to-indigo-300 transform transition-all duration-300 ease-in-out disabled:opacity-50"
+            :disabled="commentText.length < 1"
+            @click="submitComment"
+        >
+            Veröffentlichen
+        </button>
+        </div>
     </div>
-    <div v-else class="text-gray-500 italic mb-6">
-      Noch keine Kommentare – sei der Erste! 😊
-    </div>
+        </div>
+        <div v-if="!post">
+            <!-- Bild -->
+            <div class="w-full h-[300px] bg-gray-200"></div>
+            <!-- Body -->
+            <div class="px-6 py-4 space-y-4">
+                <div class="w-2/3 h-5 bg-gray-300 rounded"></div>
+                <div class="h-4 bg-gray-200 rounded w-full"></div>
+                <div class="h-4 bg-gray-200 rounded w-5/6"></div>
 
-    <!-- Neues Kommentar schreiben -->
-    <textarea
-      v-model="commentText"
-      rows="4"
-      class="w-full min-h-20 px-4 py-3 bg-gray-100 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
-      placeholder="Schreib deinen Kommentar..."
-    ></textarea>
+                <!-- Tags -->
+                <div class="flex gap-2 mt-4">
+                    <div class="h-6 w-16 bg-gray-200 rounded-full"></div>
+                    <div class="h-6 w-20 bg-gray-200 rounded-full"></div>
+                </div>
 
-    <div class="flex justify-end mt-4">
-      <button
-        class="bg-gradient-to-l from-blue-700 to-indigo-400 text-white py-2 px-6 rounded-lg font-medium hover:from-blue-600 hover:to-indigo-300 transform transition-all duration-300 ease-in-out disabled:opacity-50"
-        :disabled="commentText.length < 1"
-        @click="submitComment"
-      >
-        Veröffentlichen
-      </button>
-    </div>
-  </div>
-
-        <!-- Bild -->
-        <div class="w-full h-[300px] bg-gray-200"></div>
-
-        <!-- Body -->
-        <div class="px-6 py-4 space-y-4">
-            <div class="w-2/3 h-5 bg-gray-300 rounded"></div>
-            <div class="h-4 bg-gray-200 rounded w-full"></div>
-            <div class="h-4 bg-gray-200 rounded w-5/6"></div>
-
-            <!-- Tags -->
-            <div class="flex gap-2 mt-4">
-                <div class="h-6 w-16 bg-gray-200 rounded-full"></div>
-                <div class="h-6 w-20 bg-gray-200 rounded-full"></div>
+                <!-- Actions -->
+                <div class="flex justify-between border-t border-b py-3 px-2 text-gray-400">
+                    <div class="h-5 w-14 bg-gray-300 rounded"></div>
+                    <div class="h-5 w-20 bg-gray-300 rounded"></div>
+                    <div class="h-5 w-16 bg-gray-300 rounded"></div>
+                    <div class="h-5 w-20 bg-gray-300 rounded"></div>
+                </div>
             </div>
 
-            <!-- Actions -->
-            <div class="flex justify-between border-t border-b py-3 px-2 text-gray-400">
-                <div class="h-5 w-14 bg-gray-300 rounded"></div>
-                <div class="h-5 w-20 bg-gray-300 rounded"></div>
-                <div class="h-5 w-16 bg-gray-300 rounded"></div>
-                <div class="h-5 w-20 bg-gray-300 rounded"></div>
+            <!-- Kommentarplatzhalter -->
+            <div class="px-6 py-4 space-y-2">
+                <div class="h-4 w-24 bg-gray-300 rounded"></div>
+                <div class="h-3 w-2/3 bg-gray-200 rounded"></div>
             </div>
         </div>
-
-        <!-- Kommentarplatzhalter -->
-        <div class="px-6 py-4 space-y-2">
-            <div class="h-4 w-24 bg-gray-300 rounded"></div>
-            <div class="h-3 w-2/3 bg-gray-200 rounded"></div>
-        </div>
-        </div>
+    </div>
     <!-- Fullscreen Image -->
     <transition name="fade">
         <div
