@@ -1,3 +1,5 @@
+import { UserTagInterest } from '../models/index.js';
+
 export async function updateUserTagInterests(userId, tags) {
   for (const tag of tags) {
     const [entry, created] = await UserTagInterest.findOrCreate({

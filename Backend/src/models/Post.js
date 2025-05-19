@@ -1,7 +1,5 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../config/db.js";
-import { User } from "./User.js";
-
 
 export const Post = sequelize.define("Post", {
     id: {
@@ -45,7 +43,7 @@ export const Post = sequelize.define("Post", {
     },
     tags: {
         type: DataTypes.JSON,
-        defaultValue: []
+        allowNull: true,
     },
     taggedUsers: {
         type: DataTypes.JSON,
