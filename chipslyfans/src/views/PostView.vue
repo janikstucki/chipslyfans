@@ -12,6 +12,14 @@
         ChevronRightIcon,
         ArrowUturnRightIcon
     } from '@heroicons/vue/24/outline'
+
+
+    import {
+        HeartIcon as HeartIconSolid,
+
+    } from '@heroicons/vue/24/solid'
+
+
     import ShareBtn from '../components/ShareBtn.vue'
     
 
@@ -20,6 +28,8 @@
     const currentImageIndex = ref(0)
     const showImageModal = ref(false)
     const fullImageUrl = ref('')
+    const userId = ref(null)
+    const hasLiked = ref(false)
     
 
     function nextImage() {
@@ -33,6 +43,7 @@
             currentImageIndex.value--
         }
     }
+    
     
     function openImageModal(url) {
         fullImageUrl.value = url
@@ -99,24 +110,51 @@ function onUserClick(userId) {
 }
     
 onMounted(async () => {
-    const postId = route.params.id
-    try {
-        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/posts/${postId}`, {
-            method: 'GET',
-            credentials: 'include'
-        })
-        const data = await res.json()
-
-        if (res.ok && data.success) {
-            post.value = data.data
-            console.log(post.value.author.id)
-        } else {
-        console.warn('Post nicht gefunden oder Fehler:', data)
-        }
-    } catch (err) {
-        console.error('Fehler beim Laden des Posts:', err)
+  try {
+    const authRes = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/protected`, {
+      credentials: 'include'
+    })
+    const authData = await authRes.json()
+    if (authRes.ok && authData.user) {
+      userId.value = authData.user.id
     }
+
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/posts/${postId}`, {
+      method: 'GET',
+      credentials: 'include'
+    })
+    const data = await res.json()
+
+    if (res.ok && data.success) {
+      post.value = data.data
+      hasLiked.value = post.value.likes?.likedBy?.includes(userId.value)
+    } else {
+      console.warn('Post nicht gefunden oder Fehler:', data)
+    }
+  } catch (err) {
+    console.error('Fehler beim Laden des Posts oder Auth:', err)
+  }
 })
+
+
+async function toggleLike() {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/interactions/like/${post.value.id}`, {
+      method: 'POST',
+      credentials: 'include'
+    })
+    const data = await res.json()
+    if (res.ok) {
+      post.value.likes.likeCount = data.likes.likeCount
+      hasLiked.value = data.likes.likedBy.includes(userId.value)
+    } else {
+      console.error('Fehler beim Liken:', data.message)
+    }
+  } catch (err) {
+    console.error('Fehler beim Like Request:', err)
+  }
+}
+
 
 
 let touchStartX = 0
@@ -206,8 +244,10 @@ function endTouch() {
                 <!-- Actions -->
                 <div class="flex items-center justify-between text-gray-600 border-t border-b py-3 px-4">
                     <!-- Like -->
-                    <button class="flex items-center space-x-2 hover:text-blue-600">
-                        <HeartIcon class="h-5 w-5" />
+                    <button @click="toggleLike" class="flex items-center space-x-2 hover:text-blue-600">
+                        <component
+                            :is="hasLiked ? HeartIconSolid : HeartIcon"
+                            :class="['h-5 w-5', hasLiked ? 'text-blue-600' : '']"/>
                         <span>{{ post.likes.likeCount }}</span>
                     </button>
 
