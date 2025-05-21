@@ -70,7 +70,6 @@ async function loadComments() {
 // Neuen Kommentar absenden
 async function submitComment() {
   try {
-    console.log('postId:', postId, 'text:', commentText.value);
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/comments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -95,29 +94,47 @@ onMounted(() => {
 });
 
 
-    function onUserClick(userId) {
-        router.push({ name: 'UserDetail', params: { id: userId } })
-    }
+function onUserClick(userId) {
+    router.push({ name: 'UserDetail', params: { id: userId } })
+}
     
-    onMounted(async () => {
-        const postId = route.params.id
-        try {
-            const res = await fetch(`${import.meta.env.VITE_BASE_URL}/posts/${postId}`, {
-                method: 'GET',
-                credentials: 'include'
-            })
-            const data = await res.json()
-    
-            if (res.ok && data.success) {
-                post.value = data.data
-                console.log(post.value.author.id)
-            } else {
-            console.warn('Post nicht gefunden oder Fehler:', data)
-            }
-        } catch (err) {
-            console.error('Fehler beim Laden des Posts:', err)
+onMounted(async () => {
+    const postId = route.params.id
+    try {
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/posts/${postId}`, {
+            method: 'GET',
+            credentials: 'include'
+        })
+        const data = await res.json()
+
+        if (res.ok && data.success) {
+            post.value = data.data
+            console.log(post.value.author.id)
+        } else {
+        console.warn('Post nicht gefunden oder Fehler:', data)
         }
-    })
+    } catch (err) {
+        console.error('Fehler beim Laden des Posts:', err)
+    }
+})
+
+
+let touchStartX = 0
+let touchEndX = 0
+function startTouch(e) {
+    touchStartX = e.changedTouches[0].clientX
+}
+function moveTouch(e) {
+    touchEndX = e.changedTouches[0].clientX
+}
+function endTouch() {
+    const diff = touchStartX - touchEndX
+    if (Math.abs(diff) > 50) {
+        if (diff > 0) nextImage()
+        else prevImage()
+    }
+}
+
 </script>
 
 <template>
@@ -137,36 +154,43 @@ onMounted(() => {
             </div>
         
             <!-- Bild oder Karussell -->
-            <div v-if="post.images && post.images.length" class="relative w-full h-[300px] bg-gray-100 overflow-hidden rounded-md">
-                <img
-                    :src="post.images[currentImageIndex].url"
-                    alt="Post Bild"
-                    @click="openImageModal(post.images[currentImageIndex].url)"
-                    class="object-cover w-full h-full transition-all duration-300 cursor-zoom-in"/>
+            <div v-if="post.images && post.images.length"
+                class="image-wrapper"
+                @touchstart="startTouch($event)"
+                @touchmove="moveTouch($event)"
+                @touchend="endTouch">
+                <div class="slider-container" :style="{ transform: `translateX(-${currentImageIndex * 100}%)` }">
+                    <div v-for="(img, index) in post.images" :key="index" class="slide">
+                        <img
+                            :src="img.url"
+                            @click="openImageModal(img.url)"
+                            class="object-cover w-full h-full cursor-zoom-in rounded"/>
+                    </div>
+                </div>
 
-                <!-- Prev -->
+                <!-- Prev Button -->
                 <button
-                    v-if="post.images.length > 1 && currentImageIndex > 0"
-                    @click="prevImage"
-                    class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition">
+                    v-if="currentImageIndex > 0"
+                    @click.stop="prevImage"
+                    class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md z-10">
                     <ChevronLeftIcon class="h-5 w-5" />
                 </button>
 
-                <!-- Next -->
+                <!-- Next Button -->
                 <button
-                    v-if="post.images.length > 1 && currentImageIndex < post.images.length - 1"
-                    @click="nextImage"
-                    class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition">
+                    v-if="currentImageIndex < post.images.length - 1"
+                    @click.stop="nextImage"
+                    class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md z-10">
                     <ChevronRightIcon class="h-5 w-5" />
                 </button>
 
-                <!-- Count -->
+                <!-- Indicator -->
                 <div
-                    v-if="post.images.length > 1"
                     class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs bg-black/50 text-white px-2 py-0.5 rounded">
                     {{ currentImageIndex + 1 }} / {{ post.images.length }}
                 </div>
             </div>
+
             <!-- Body -->
             <div class="px-6 py-4">
                 <h2 class="text-lg font-bold mb-2">{{ post.title }}</h2>
@@ -309,4 +333,29 @@ onMounted(() => {
 .fade-leave-to {
     opacity: 0;
 }
+
+.image-wrapper {
+    position: relative;
+    overflow: hidden;
+    height: 18rem;
+    margin-top: 1rem;
+    border-radius: 0.5rem;
+}
+
+.slider-container {
+    display: flex;
+    transition: transform 0.5s ease;
+    width: 100%;
+    height: 100%;
+}
+
+.slide {
+    min-width: 100%;
+    height: 100%;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 </style>
