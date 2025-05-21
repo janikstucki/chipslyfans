@@ -42,35 +42,40 @@
             </p>
 
             <!-- Image Carousel -->
-            <div v-if="post.images && post.images.length" class="relative mt-3">
-              <img
-                :src="post.images[post.currentImageIndex || 0].url"
-                @click.stop="openImageModal(post.images[post.currentImageIndex || 0].url)"
-                class="rounded-md object-cover w-full h-60 cursor-zoom-in"/>
-              <button
-                v-if="post.images.length > 1 && post.currentImageIndex > 0"
-                @click.stop="prevImage(post)"
-                class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition">
-                <ChevronLeftIcon class="h-5 w-5" />
-              </button>
-
-              <!-- Next Button -->
-              <button
-                v-if="post.images.length > 1 && post.currentImageIndex < post.images.length - 1"
-                @click.stop="nextImage(post)"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md transition">
-                <ChevronRightIcon class="h-5 w-5" />
-              </button>
-              <div
-                v-if="post.images.length > 1"
-                class="absolute bottom-2 left-1/2 transform -translate-x-1/2 text-xs text-white bg-black/50 px-2 py-0.5 rounded">
-                {{ (post.currentImageIndex || 0) + 1 }} / {{ post.images.length }}
+            <!-- Image Carousel -->
+<div
+            v-if="post.images && post.images.length"
+            class="image-wrapper mt-3"
+            @touchstart="startTouch($event, post)"
+            @touchmove="moveTouch($event, post)"
+            @touchend="endTouch(post)">
+            <div class="slider-container" :style="{ transform: `translateX(-${post.currentImageIndex * 100}%)` }">
+              <div v-for="(img, index) in post.images" :key="index" class="slide">
+                <img
+                  :src="img.url"
+                  @click.stop="openImageModal(img.url)"
+                  class="object-cover w-full h-full cursor-zoom-in rounded"
+                />
               </div>
-              <div
-                v-if="!isAuth"
-                class="preview-blur absolute inset-0 rounded-md"
-              ></div>
             </div>
+
+            <!-- Prev -->
+            <button
+              v-if="post.currentImageIndex > 0"
+              @click.stop="changeImage(post, 'prev')"
+              class="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md z-10">
+              <ChevronLeftIcon class="h-5 w-5" />
+            </button>
+
+            <!-- Next -->
+            <button
+              v-if="post.currentImageIndex < post.images.length - 1"
+              @click.stop="changeImage(post, 'next')"
+              class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md z-10">
+              <ChevronRightIcon class="h-5 w-5" />
+            </button>
+          </div>
+
 
             <!-- Actions -->
             <div class="flex items-center justify-between text-gray-600 border-t border-b py-3 px-4">
@@ -91,7 +96,7 @@
                   <span>Kommentieren</span>
               </button>
               <!-- Teilen -->
-               <ShareBtn/>
+              <ShareBtn/>
               <!-- Speichern -->
               <button @click.stop="savePost(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
                   <BookmarkIcon class="h-5 w-5" />
@@ -361,6 +366,40 @@ function sharePost(postId) {
 function savePost(saveId){
 
 }
+
+
+
+function changeImage(post, direction) {
+  const maxIndex = post.images.length - 1
+  const current = post.currentImageIndex || 0
+
+  if (direction === 'next' && current < maxIndex) {
+    post.currentImageIndex++
+  } else if (direction === 'prev' && current > 0) {
+    post.currentImageIndex--
+  }
+}
+
+let touchStartX = 0
+let touchEndX = 0
+
+function startTouch(e, post) {
+  touchStartX = e.changedTouches[0].clientX
+}
+
+function moveTouch(e, post) {
+  touchEndX = e.changedTouches[0].clientX
+}
+
+function endTouch(post) {
+  const diff = touchStartX - touchEndX
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) changeImage(post, 'next')
+    else changeImage(post, 'prev')
+  }
+}
+
+
 </script>
 
 <style scoped>
@@ -389,7 +428,12 @@ function savePost(saveId){
 .new-posts {
   height: 120px;
 }
-
+.image-wrapper img {
+  pointer-events: none;
+}
+.image-slide.active img {
+  pointer-events: auto;
+}
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -420,4 +464,36 @@ function savePost(saveId){
 .fade-leave-to {
     opacity: 0;
 }
+.image-wrapper {
+  position: relative;
+  overflow: hidden;
+  height: 15rem;
+}
+
+.image-wrapper button {
+  z-index: 5; /* Damit Buttons über den Slides liegen */
+}
+
+.image-wrapper {
+  position: relative;
+  overflow: hidden;
+  height: 15rem;
+}
+
+.slider-container {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.5s ease;
+}
+
+.slide {
+  min-width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 </style>
