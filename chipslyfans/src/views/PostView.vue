@@ -72,6 +72,7 @@ async function loadComments() {
   try {
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/comments/post/${postId}`);
     comments.value = await res.json();
+    console.log('Kommentare:', comments.value);
   } catch (err) {
     console.error('Fehler beim Laden der Kommentare:', err);
   }
@@ -277,22 +278,32 @@ function endTouch() {
         
         <!-- Liste der existierenden Kommentare -->
         <div v-if="comments.length" class="space-y-4 mb-6">
-        <div 
-            v-for="c in comments" 
-            :key="c.id" 
-            class="bg-white p-4 rounded-lg shadow-sm"
-        >
-            <div class="flex items-center mb-2">
-            <img 
-                :src="c.author.profilepicture || fallbackimage" 
-                alt="Profil" 
-                class="w-6 h-6 rounded-full mr-2 object-cover"
-            />
-            <span class="font-semibold text-sm">{{ c.author.username }}</span>
-            <span class="text-xs text-gray-500 ml-2">{{ formatDate(c.createdAt) }}</span>
+            <div 
+                v-for="c in comments" 
+                :key="c.id" 
+                class="bg-white p-4 rounded-lg shadow-sm"
+            >
+                <div class="flex items-center gap-3 mb-2">
+                    <div
+                        class="w-10 h-10 rounded-full overflow-hidden bg-indigo-500 flex items-center justify-center text-white font-bold shrink-0"
+                        @click.stop="onUserClick(c.author.id)">
+                        <template v-if="c.author.profilepicture">
+                            <img
+                                :src="c.author.profilepicture"
+                                alt="Profilbild"
+                                class="w-full h-full object-cover"/>
+                            </template>
+                        <template v-else>
+                            {{ c.author.username.charAt(0).toUpperCase() }}
+                        </template>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-semibold text-sm leading-none">{{ c.author.username }}</span>
+                        <span class="text-xs text-gray-500">{{ formatDate(c.createdAt) }}</span>
+                    </div>
+                </div>
+                <p class="text-gray-800 text-sm">{{ c.text }}</p>
             </div>
-            <p class="text-gray-800 text-sm">{{ c.text }}</p>
-        </div>
         </div>
         <div v-else class="text-gray-500 italic mb-6">
         Noch keine Kommentare – sei der Erste! 😊

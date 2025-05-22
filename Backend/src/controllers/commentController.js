@@ -16,7 +16,7 @@ export const getCommentsByPostId = async (req, res) => {
 };
 
 export const deleteComment = async (req, res) => {
-  try {
+  try { 
     const comment = await Comment.findByPk(req.params.id);
 
     if (!comment || comment.authorId !== req.user.id) {
