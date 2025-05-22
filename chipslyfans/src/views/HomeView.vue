@@ -80,13 +80,10 @@
             <!-- Actions -->
             <div class="flex items-center justify-between text-gray-600 border-t border-b py-3 px-4">
               <!-- Like -->
-              <button @click.stop="likePost(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
+              <button @click.stop="toggleLike(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
                 <component
-                  :is="post.likes.likedBy?.includes(userId) ? HeartIconSolid : HeartIcon"
-                  :class="[
-                    'h-5 w-5',
-                    post.likes.likedBy?.includes(userId) ? 'text-blue-600' : ''
-                  ]"
+                  :is="post.hasLiked ? HeartIconSolid : HeartIcon"
+                  :class="['h-5 w-5', post.hasLiked ? 'text-blue-600' : '']"
                 />
                 <span>{{ post.likes.likeCount }}</span>
               </button>
@@ -209,10 +206,11 @@ import {
   ChevronRightIcon,
   ArrowUturnRightIcon
 } from '@heroicons/vue/24/outline'
-
 import {
-  HeartIcon as HeartIconSolid,
+    HeartIcon as HeartIconSolid,
 } from '@heroicons/vue/24/solid'
+
+
 
 const beitraege = ref([
   
@@ -226,6 +224,7 @@ const sidebarRef = ref(null)
 const showImageModal = ref(false)
 const fullImageUrl = ref('')
 const userId = ref(null);
+const hasLiked = ref(false)
 
 const isAuth = ref(null)
 
@@ -296,12 +295,12 @@ function loadMorePosts() {
   const end = currentPage.value * pageSize
   const nextPosts = posts.value.slice(start, end).map(post => ({
     ...post,
-    currentImageIndex: 0
+    currentImageIndex: 0,
+    hasLiked: post.likes?.likedBy?.includes(userId.value) || false
   }))
 
   displayedPosts.value.push(...nextPosts)
   currentPage.value++
-
   isLoadingPosts.value = false
 }
 
@@ -342,24 +341,27 @@ function prevImage(post) {
   post.currentImageIndex = (post.currentImageIndex || 0) - 1
 }
 
-
-async function likePost(postId) {
+async function toggleLike(postId) {
   try {
     const res = await fetch(`${import.meta.env.VITE_BASE_URL}/interactions/like/${postId}`, {
       method: 'POST',
       credentials: 'include'
-    });
-
-    const data = await res.json();
+    })
+    const data = await res.json()
     if (res.ok) {
-      console.log('Like-Status aktualisiert:', data.likes);
+      const updatedPost = displayedPosts.value.find(p => p.id === postId)
+      if (updatedPost) {
+        updatedPost.likes.likeCount = data.likes.likeCount
+        updatedPost.hasLiked = data.likes.likedBy.includes(userId.value)
+      }
     } else {
-      console.error('Fehler:', data.message);
+      console.error('Fehler beim Liken:', data.message)
     }
   } catch (err) {
-    console.error('Fehler beim Liken:', err);
+    console.error('Fehler beim Like Request:', err)
   }
 }
+
 function sharePost(postId) {
 
 }

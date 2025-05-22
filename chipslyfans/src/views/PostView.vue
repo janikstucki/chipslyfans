@@ -16,7 +16,6 @@
 
     import {
         HeartIcon as HeartIconSolid,
-
     } from '@heroicons/vue/24/solid'
 
 
