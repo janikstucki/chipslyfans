@@ -156,6 +156,7 @@ onMounted(async () => {
     const data = await res.json()
 
     if (res.ok && data.success) {
+      post.value = data.data
       hasLiked.value = post.value.likes?.likedBy?.includes(userId.value)
     } else {
       console.warn('Post nicht gefunden oder Fehler:', data)
