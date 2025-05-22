@@ -228,7 +228,6 @@ onMounted(async () => {
 
   const { data } = await useFetch('/posts')
   posts.value = data
-  console.log(posts.value)
   loadMorePosts()
 
   await nextTick() 

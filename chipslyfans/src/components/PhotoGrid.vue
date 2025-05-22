@@ -2,33 +2,33 @@
   <div>
     <!-- Grid Layout ab sm -->
     <div v-if="!isMobile">
-      <div v-if="count === 1" class="grid grid-cols-1">
+      <div v-if="count === 1" class="grid grid-cols-1 h-max-40">
         <img :src="images?.[0]?.url" class="w-full h-auto object-cover rounded cursor-pointer" @click="$emit('zoom', images[0].url)" />
       </div>
 
-      <div v-else-if="count === 2" class="grid grid-cols-2 gap-1">
+      <div v-else-if="count === 2" class="grid grid-cols-2 gap-1 h-max-40">
         <img v-for="(image, index) in images" :key="index" :src="image.url" class="w-full h-64 object-cover rounded cursor-pointer" @click="$emit('zoom', image.url)" />
       </div>
 
-      <div v-else-if="count === 3" class="grid grid-cols-3 gap-1">
+      <div v-else-if="count === 3" class="grid grid-cols-3 gap-1 h-max-40">
         <img :src="images?.[0]?.url" class="col-span-2 row-span-2 w-full h-full object-cover rounded cursor-pointer" @click="$emit('zoom', images[0].url)" />
         <div class="grid grid-rows-2 gap-1">
           <img v-for="(image, index) in images.slice(1)" :key="index" :src="image.url" class="w-full h-full object-cover rounded cursor-pointer" @click="$emit('zoom', image.url)" />
         </div>
       </div>
 
-      <div v-else-if="count === 4" class="grid grid-cols-2 gap-1">
+      <div v-else-if="count === 4" class="grid grid-cols-2 gap-1 h-max-40">
         <img v-for="(image, index) in images" :key="index" :src="image.url" class="w-full h-48 object-cover rounded cursor-pointer" @click="$emit('zoom', image.url)" />
       </div>
 
-      <div v-else-if="count === 5" class="grid grid-cols-3 gap-1">
+      <div v-else-if="count === 5" class="grid grid-cols-3 gap-1 h-max-40">
         <img :src="images?.[0]?.url" class="col-span-2 row-span-2 w-full h-full object-cover rounded cursor-pointer" @click="$emit('zoom', images[0].url)" />
         <div class="grid grid-rows-2 gap-1">
           <img v-for="(image, index) in images.slice(1)" :key="index" :src="image.url" class="w-full h-full object-cover rounded cursor-pointer" @click="$emit('zoom', image.url)" />
         </div>
       </div>
 
-      <div v-else class="grid grid-cols-3 gap-1">
+      <div v-else class="grid grid-cols-3 gap-1 h-max-40">
         <div v-for="(image, index) in visibleImages" :key="index" class="relative h-40 cursor-pointer" @click="$emit('zoom', image.url)">
           <img :src="image.url" class="w-full h-full object-cover rounded" />
           <div v-if="showMore(index)" class="absolute inset-0 bg-black/60 text-white flex items-center justify-center text-xl font-bold">
