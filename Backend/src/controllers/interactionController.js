@@ -1,34 +1,39 @@
 import { Op } from 'sequelize';
 import { updateUserTagInterests } from "../utils/tagUtils.js";
 import { Comment } from '../models/Comment.js';
-import { Post } from '../models/Post.js';
-import { Interaction } from '../models/Interaction.js';
+import { Post, User, Interaction } from '../models/index.js';
+
 import { UserTagInterest } from '../models/userTagInterests.js';
 
 
 
 
 export const getUserInteractions = async (req, res) => {
-    try {
-        const userId = req.user.id;
+  try {
+    const userId = req.user.id;
 
-        const interactions = await Interaction.findAll({
-            where: { userId },
-            include: [
-                {
-                    model: Post,
-                    as: 'post',
-                    attributes: ['title']
-                }
-            ],
-            order: [['createdAt', 'DESC']],
-        });
+    const interactions = await Interaction.findAll({
+      where: { userId },
+      include: [
+        {
+          model: Post,
+          as: 'post',
+          attributes: ['title']
+        },
+        {
+          model: User,
+          as: 'user', // oder 'author', je nachdem wie es heißt in deiner Relation
+          attributes: ['id', 'username', 'profilepicture']
+        }
+      ],
+      order: [['createdAt', 'DESC']],
+    });
 
-        res.status(200).json(interactions);
-    } catch (err) {
-        console.error('❌ Fehler beim Laden der Interaktionen:', err);
-        res.status(500).json({ error: 'Fehler beim Laden der Interaktionen' });
-    }
+    res.status(200).json(interactions);
+  } catch (err) {
+    console.error('❌ Fehler beim Laden der Interaktionen:', err);
+    res.status(500).json({ error: 'Fehler beim Laden der Interaktionen' });
+  }
 };
 
 export const toggleLike = async (req, res) => {

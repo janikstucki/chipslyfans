@@ -8,11 +8,12 @@
           :key="b.id"
           class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100 cursor-pointer transition">
           
-          <div class="flex gap-3 items-center">
+          <div class="flex gap-3 items-center" @click="$router.push({ name: 'UserDetail', params: { id: b.userId } })">
             <!-- Avatar -->
-            <div class="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center text-white font-bold">
-              {{ b.autor.charAt(1) }}
-            </div>
+              <div class="w-10 h-10 rounded-full overflow-hidden bg-indigo-500 flex items-center justify-center text-white font-bold">
+                <img v-if="b.profilbild" :src="b.profilbild" class="w-full h-full object-cover" />
+                <span v-else>{{ b.autor.charAt(0).toUpperCase() }}</span>
+              </div>
 
             <!-- Inhalt -->
             <div class="flex-1">
@@ -33,6 +34,7 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import {
   BanknotesIcon,
   HeartIcon,
@@ -40,6 +42,11 @@ import {
   BookmarkIcon,
   ChatBubbleLeftRightIcon
 } from '@heroicons/vue/24/outline';
+
+
+
+const router = useRoute();
+
 
 const benachrichtigungen = ref([]);
 
@@ -58,7 +65,7 @@ onMounted(async () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      credentials: 'include' // falls Auth-Cookie verwendet wird
+      credentials: 'include' 
     });
 
     if (!res.ok) throw new Error('Fehler beim Laden');
@@ -67,13 +74,18 @@ onMounted(async () => {
 
     benachrichtigungen.value = data.map((i) => ({
       id: i.id,
-      autor: '@Chipsly#' + i.userId.slice(0, 5),
+      autor: i.user?.username || 'Unbekannt',
+      profilbild: i.user?.profilepicture || null,
+      userId: i.user?.id || '',
       datum: new Date(i.createdAt).toLocaleString('de-CH'),
       inhalt: getText(i),
       art: i.type,
       Icon: iconMap[i.type] || null,
-      post: i.post // fallback, falls du Titel später brauchst
+      post: i.post
     }));
+
+    // Sortieren nach Datum
+    benachrichtigungen.value.sort((a, b) => new Date(b.datum) - new Date(a.datum));
   } catch (err) {
     console.error('Fehler beim Laden:', err);
   }
