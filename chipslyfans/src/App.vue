@@ -34,8 +34,13 @@ function toggleSidebar() {
 
 function handleResize() {
   isMobile.value = window.innerWidth < 1024
+
   if (isMobile.value) {
-    isExpanded.value = false // immer schmal!
+    isExpanded.value = false         // Sidebar schmal
+    isSidebarVisibleMobile.value = false // Overlay zu
+  } else {
+    isSidebarVisibleMobile.value = false // Reset mobile state
+    isExpanded.value = true         // Desktop starten wir expanded
   }
 }
 
@@ -50,15 +55,15 @@ const checkScreenSize = () => {
 
 const isAuth = ref(null)
 onMounted(async () => {
-  checkScreenSize()
-  window.addEventListener('resize', checkScreenSize)
+  handleResize()
+  window.addEventListener('resize', handleResize)
   authStore.checkAuth();
-   isAuth.value = await isAuthenticated.value
+  isAuth.value = await isAuthenticated.value
   console.log(await isAuthenticated.value)
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', checkScreenSize)
+  window.removeEventListener('resize', handleResize)
 })
 
 
@@ -313,5 +318,8 @@ const isAuthenticated = computed(async () => {
 
 .mt-auto {
   margin-top: auto;
+}
+.opacity-0 {
+  transition: opacity 0.2s ease;
 }
 </style>
