@@ -83,28 +83,58 @@ async function loadComments() {
 
 // Neuen Kommentar absenden
 async function submitComment() {
-    try {
-        if (commentText.value.trim() === '') {
-        return; // Kommentar ist leer
-        }
-        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/interactions/comment`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({ postId, text: commentText.value }),
-        });
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Kommentar fehlgeschlagen');
-        }
-        const newComment = await response.json();
-        comments.value.unshift(newComment);      // Neuester Kommentar ganz oben einfügen
-        commentText.value = ''; 
-        window.location.reload    
-    } catch (err) {
-        console.error('❌ Fehler beim Kommentar:', err);
+  try {
+    const trimmed = commentText.value.trim()
+    if (!trimmed) return;
+
+    // 👇 Provisorischer Kommentar erstellen
+    const tempId = `temp-${Date.now()}`
+    const provisionalComment = {
+      id: tempId,
+      text: trimmed,
+      createdAt: new Date().toISOString(),
+      author: {
+        id: userId.value,
+        username: 'Du',
+        profilepicture: null
+      },
+      pending: true
     }
+
+    // Direkt anzeigen
+    comments.value.unshift(provisionalComment)
+    commentText.value = ''
+
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/interactions/comment`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ postId, text: trimmed }),
+    })
+
+    if (!response.ok) {
+      throw new Error('Fehler beim Senden')
+    }
+
+    const savedComment = await response.json()
+
+    // Ersetze provisorischen Kommentar
+    const index = comments.value.findIndex(c => c.id === tempId)
+    if (index !== -1) {
+      comments.value[index] = savedComment
+    }
+
+  } catch (err) {
+    console.error('❌ Kommentar fehlgeschlagen:', err)
+
+    // Entferne provisorischen Kommentar wieder
+    comments.value = comments.value.filter(c => !c.id.startsWith('temp'))
+
+    // Optional: Feedback anzeigen
+    alert('Kommentar konnte nicht gespeichert werden.')
+  }
 }
+
 
 onMounted(() => {
   loadComments();
