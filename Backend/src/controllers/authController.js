@@ -87,7 +87,6 @@ export const success = async (req, res) => {
 
 export const protectedRoute = async (req, res) => {
     try {
-        console.log("[DEBUG] Empfangene Cookies:", req.cookies);
         const token = req.cookies.jwt;
         if (!token) {
             console.log("❌ Kein Token gefunden");
