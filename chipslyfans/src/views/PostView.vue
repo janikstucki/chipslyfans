@@ -1,13 +1,14 @@
 <!-- src/views/PostDetail.vue -->
 <script setup>
-    import { ref, onMounted } from 'vue'
-    import { useRoute, useRouter } from 'vue-router'
-    import { formatDate } from "../utils/formatDate.js"
+    import { ref, onMounted } from 'vue';
+    import { useRoute, useRouter } from 'vue-router';
+    import { useI18n } from 'vue-i18n';
+    import { formatDate as formatDateUtil } from '../utils/formatDate.js'
     import {
         HeartIcon,
         ChatBubbleLeftEllipsisIcon,
         ShareIcon,
-        BookmarkIcon,
+        BookmarkIcon,   
         ChevronLeftIcon,
         ChevronRightIcon,
         ArrowUturnRightIcon
@@ -29,6 +30,8 @@
     const fullImageUrl = ref('')
     const userId = ref(null)
     const hasLiked = ref(false)
+
+    const { t } = useI18n()
     
 
     function nextImage() {
@@ -130,6 +133,7 @@ onMounted(async () => {
 
     if (res.ok && data.success) {
       post.value = data.data
+      console.log('Post:', post.value)
       hasLiked.value = post.value.likes?.likedBy?.includes(userId.value)
     } else {
       console.warn('Post nicht gefunden oder Fehler:', data)
@@ -175,6 +179,9 @@ function endTouch() {
         else prevImage()
     }
 }
+function formatDate(dateString) {
+  return formatDateUtil(dateString, t)
+}
 
 </script>
 
@@ -189,7 +196,7 @@ function endTouch() {
                     </div>
                     <div>
                         <p class="font-semibold">{{ post.author.username }}</p>
-                        <p class="text-sm text-gray-500">{{ formatDate(post.createdAt) }}</p>
+                        <span class="text-xs text-gray-500">{{ formatDate(post.createdAt) }}</span>
                     </div>
                 </div>
             </div>

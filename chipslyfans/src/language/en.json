@@ -140,5 +140,23 @@
         "success_title": "Successfully Subscribed!",
         "success_message": "Thank you for your trust. Your subscription is now active and you have access to all exclusive content.",
         "back_to_home": "Back to Home"
+    },
+    "time":{
+        "seconds":{
+            "one":"{n} second ago",
+            "other":"{n} seconds ago"
+        },
+        "minutes":{
+            "one":"{n} minute ago",
+            "other":"{n} minutes ago"
+        },
+        "hours":{
+            "one":"{n} hour ago",
+            "other":"{n} hours ago"
+        },
+        "days":{
+            "one":"{n} day ago",
+            "other":"{n} days ago"
+        }
     }
 }

@@ -193,8 +193,9 @@ import fallbackimage from '../assets/images/fallback.jpg'
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFetch } from '../helpers/getPosts';
-import { formatDate } from '../utils/formatDate.js';
 import { useAuthStore } from '../store/auth.js';
+import { useI18n } from 'vue-i18n'
+import { formatDate as formatDateUtil } from '../utils/formatDate.js'
 const authStore = useAuthStore();
  import ShareBtn from '../components/ShareBtn.vue';
 import { 
@@ -210,6 +211,11 @@ import {
     HeartIcon as HeartIconSolid,
 } from '@heroicons/vue/24/solid'
 
+const { t } = useI18n()
+
+function formatDate(dateString) {
+  return formatDateUtil(dateString, t)
+}
 
 
 const beitraege = ref([

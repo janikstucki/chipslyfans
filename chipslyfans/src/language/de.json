@@ -119,5 +119,23 @@
                 "pblsh_post": "Beitrag veröffentlichen"
             }
         }
+    },
+    "time": {
+        "seconds": {
+            "one": "vor {n} Sekunde",
+            "other": "vor {n} Sekunden"
+        },
+        "minutes": {
+            "one": "vor {n} Minute",
+            "other": "vor {n} Minuten"
+        },
+        "hours": {
+            "one": "vor {n} Stunde",
+            "other": "vor {n} Stunden"
+        },
+        "days": {
+            "one": "vor {n} Tag",
+            "other": "vor {n} Tagen"
+        }
     }
 }
