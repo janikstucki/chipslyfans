@@ -271,44 +271,6 @@ export const postController = {
       handleError(res, error);
     }
   },
-
-  // createPost: async (req, res) => {
-  //   try {
-  //     const { 
-  //       title,
-  //       content,
-  //       taggedPeople,
-  //       visibility,
-  //       tags,
-  //       scheduleDate,
-  //       sendNotification
-  //     } = JSON.parse(req.body.data);
-  
-  //     // User-ID aus der Authentifizierung holen
-  //     const authorId = req.user.id; 
-  
-  //     // Pfade der hochgeladenen Bilder aus req.files extrahieren
-  //     const imagePaths = req.files?.map(file => file.path) || [];
-  
-  //     // Einen neuen Post erstellen
-  //     const newPost = await Post.create({
-  //       title,
-  //       content,
-  //       images: imagePaths, // Bilderpfade hier speichern
-  //       taggedUsers: taggedPeople,
-  //       visibility,
-  //       tags,
-  //       scheduleDate: scheduleDate || new Date(),
-  //       sendNotification,
-  //       authorId
-  //     });
-  
-  //     res.status(201).json(newPost); // Antwort mit dem neuen Post
-  //   } catch (error) {
-  //     console.error('Error creating post:', error);
-  //     res.status(500).json({ message: 'Internal server error' });
-  //   }
-  // },
   createPost: async (req, res) => {
     try {
       const imageUrls = req.files?.map(file => ({
