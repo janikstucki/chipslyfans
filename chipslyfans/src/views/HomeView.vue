@@ -131,7 +131,7 @@
                 <span>{{ post.likes.likeCount }}</span>
               </button>
               <!-- Kommentieren -->
-              <button class="flex items-center space-x-2 hover:text-blue-600 hidden [@media(min-width:420px)]:flex">
+              <button class="hidden xs:flex items-center space-x-2 hover:text-blue-600">
                   <ChatBubbleLeftEllipsisIcon class="h-5 w-5 shrink-0" />
                   <span>Kommentieren</span>
               </button>
