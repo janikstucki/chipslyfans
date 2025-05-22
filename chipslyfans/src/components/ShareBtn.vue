@@ -3,7 +3,7 @@ import { ShareIcon } from '@heroicons/vue/24/outline'
 import { ref } from 'vue'
 
 const props = defineProps({
-    postLink: String
+    postId: String
 })
 
 const isTooltipOpen = ref(false)
@@ -15,6 +15,17 @@ const toggleTooltip = () => {
 const closeTooltip = () => {
   isTooltipOpen.value = false
 }
+
+const copyLink = async () => {
+    postLink = `${window.location.origin}/post/${props.postId}`
+  try {
+    await navigator.clipboard.writeText(postLink);
+    closeTooltip();
+    alert('Link kopiert!');
+  } catch (err) {
+    console.error('Kopieren fehlgeschlagen:', err);
+  }
+};
 </script>
 
 <template>
@@ -37,11 +48,11 @@ const closeTooltip = () => {
             <div class="bg-white p-3 rounded-3xl shadow-lg flex gap-3">
                 <!-- Twitter/X -->
                 <div class="p-2 bg-white rounded-full shadow-md">
-                    <a href="#" @click="closeTooltip">
-                        <svg class="h-6 w-6 fill-gray-700" viewBox="0 0 520 520">
-                            <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z"/>
+                    <button @click="copyLink">
+                        <svg class="h-6 w-6 fill-gray-700" viewBox="0 0 24 24">
+                            <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
                         </svg>
-                    </a>
+                    </button>
                 </div>
                 
                 <!-- Facebook -->

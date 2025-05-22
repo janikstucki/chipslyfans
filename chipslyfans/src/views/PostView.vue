@@ -298,7 +298,7 @@ function formatDate(dateString) {
                     </button>
 
                     
-                    <ShareBtn/>
+                    <ShareBtn :postLink="`${post.id}`" />
                     
                     
 

@@ -42,13 +42,12 @@
             </p>
 
             <!-- Image Carousel -->
-            <!-- Image Carousel -->
-<div
-            v-if="post.images && post.images.length"
-            class="image-wrapper mt-3"
-            @touchstart="startTouch($event, post)"
-            @touchmove="moveTouch($event, post)"
-            @touchend="endTouch(post)">
+            <div
+              v-if="post.images && post.images.length"
+              class="image-wrapper mt-3"
+              @touchstart="startTouch($event, post)"
+              @touchmove="moveTouch($event, post)"
+              @touchend="endTouch(post)">
             <div class="slider-container" :style="{ transform: `translateX(-${post.currentImageIndex * 100}%)` }">
               <div v-for="(img, index) in post.images" :key="index" class="slide">
                 <img
