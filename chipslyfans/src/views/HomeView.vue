@@ -86,7 +86,7 @@
             </p>
 
             <!-- Image Carousel -->
-            <div
+            <!-- <div
               v-if="post.images && post.images.length"
               class="image-wrapper mt-3"
               @touchstart="startTouch($event, post)"
@@ -102,7 +102,6 @@
               </div>
             </div>
 
-            <!-- Prev -->
             <button
               v-if="post.currentImageIndex > 0"
               @click.stop="changeImage(post, 'prev')"
@@ -110,14 +109,18 @@
               <ChevronLeftIcon class="h-5 w-5" />
             </button>
 
-            <!-- Next -->
             <button
               v-if="post.currentImageIndex < post.images.length - 1"
               @click.stop="changeImage(post, 'next')"
               class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black text-white rounded-full p-2 shadow-md z-10">
               <ChevronRightIcon class="h-5 w-5" />
             </button>
-          </div>
+          </div> -->
+          <PhotoGrid
+            v-if="post.images && post.images.length"
+            :images="post.images"
+            @zoom="openImageModal"/>
+
 
 
             <!-- Actions -->
@@ -174,8 +177,12 @@ import { useFetch } from '../helpers/getPosts';
 import { useAuthStore } from '../store/auth.js';
 import { useI18n } from 'vue-i18n'
 import { formatDate as formatDateUtil } from '../utils/formatDate.js'
+
+
+
 const authStore = useAuthStore();
-  import ShareBtn from '../components/ShareBtn.vue';
+import ShareBtn from '../components/ShareBtn.vue';
+import PhotoGrid from '../components/PhotoGrid.vue'
 import { 
   BookmarkIcon,
   HeartIcon,
