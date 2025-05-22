@@ -1,7 +1,8 @@
-import { Interaction, User, Post } from "../models/index.js";
 import { Op } from 'sequelize';
-import { UserTagInterest } from "../models/index.js";
 import { updateUserTagInterests } from "../utils/tagUtils.js";
+import { Comment } from '../models/Comment.js';
+import { Post } from '../models/Post.js';
+import { UserTagInterest } from '../models/userTagInterests.js';
 
 export const toggleLike = async (req, res) => {
     try {
@@ -36,4 +37,35 @@ export const toggleLike = async (req, res) => {
         console.error('[toggleLike] Fehler:', error);
         return res.status(500).json({ message: 'Fehler beim Liken des Posts' });
     }
+};
+
+
+
+
+export const addComment = async (req, res) => {
+  try {
+    const { postId, text } = req.body;
+    const userId = req.user?.id;
+
+    console.log("📩 addComment: ", { postId, text, userId });
+
+    if (!userId) {
+      return res.status(401).json({ error: "Nicht authentifiziert" });
+    }
+
+    const comment = await Comment.create({
+      authorId: userId,
+      postId,
+      text,
+    });
+
+    const post = await Post.findByPk(postId);
+    const tags = post.tags?.slice?.(0, 3) || [];
+    await updateUserTagInterests(userId, tags);
+
+    res.status(201).json(comment);
+  } catch (err) {
+    console.error("❌ Fehler bei addComment:", err);
+    res.status(500).json({ error: "Kommentar konnte nicht erstellt werden." });
+  }
 };

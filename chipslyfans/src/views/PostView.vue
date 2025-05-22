@@ -79,24 +79,27 @@ async function loadComments() {
 
 // Neuen Kommentar absenden
 async function submitComment() {
-  try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/comments`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({ postId, text: commentText.value }),
-    });
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Kommentar fehlgeschlagen');
+    try {
+        if (commentText.value.trim() === '') {
+        return; // Kommentar ist leer
+        }
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/interactions/comment`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ postId, text: commentText.value }),
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Kommentar fehlgeschlagen');
+        }
+        const newComment = await response.json();
+        comments.value.unshift(newComment);      // Neuester Kommentar ganz oben einfügen
+        commentText.value = ''; 
+        window.location.reload    
+    } catch (err) {
+        console.error('❌ Fehler beim Kommentar:', err);
     }
-    const newComment = await response.json();
-    comments.value.unshift(newComment);      // Neuester Kommentar ganz oben einfügen
-    commentText.value = ''; 
-    window.location.reload    
-} catch (err) {
-    console.error('❌ Fehler beim Kommentar:', err);
-  }
 }
 
 onMounted(() => {

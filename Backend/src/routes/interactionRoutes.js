@@ -1,10 +1,11 @@
 import express from 'express';
-import { toggleLike } from '../controllers/interactionController.js';
+import { toggleLike, addComment } from '../controllers/interactionController.js';
 import {authenticate} from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
 router.post('/like/:id', authenticate, toggleLike);
+router.post('/comment', authenticate, addComment);
 // router.post('/comment', commentPost);
 // router.post('/subscribe', subscribe);
 // router.post('/share', sharePost);

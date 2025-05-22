@@ -45,5 +45,5 @@ export {
   Payment,
   Comment,
   Interaction,
-  UserTagInterest 
+  UserTagInterest,
 };
