@@ -56,13 +56,7 @@
         fullImageUrl.value = ''
     }
 
-// Props definieren
-const props = defineProps({
-  postId: {
-    type: String,
-    required: true
-  }
-});
+
 
     const route = useRoute()
 const postId = route.params.id;
@@ -162,8 +156,6 @@ onMounted(async () => {
     const data = await res.json()
 
     if (res.ok && data.success) {
-      post.value = data.data
-      console.log('Post:', post.value)
       hasLiked.value = post.value.likes?.likedBy?.includes(userId.value)
     } else {
       console.warn('Post nicht gefunden oder Fehler:', data)
