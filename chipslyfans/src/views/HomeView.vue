@@ -1,9 +1,53 @@
 <template>
+<div class="w-full bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-30">
+
+  <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-6 max-w-7xl mx-auto">
+    <!-- Title -->
+    <h2 class="text-xl font-bold whitespace-nowrap">{{ $t('root.title') }}</h2>
+
+    <!-- Search Desktop -->
+    <div class="relative flex-1 hidden sm:block">
+      <input
+        type="text"
+        v-model="searchQuery"
+        :placeholder="$t('root.search_bar')"
+        class="w-full bg-gray-100 rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+      />
+      <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    </div>
+
+    <!-- Search Icon Mobile -->
+    <div class="sm:hidden ml-auto">
+      <button @click="toggleMobileSearch" class="text-gray-600 hover:text-indigo-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Dropdown Input -->
+    <transition name="fade">
+      <div v-if="isMobileSearchOpen" class="w-full sm:hidden mt-3">
+        <input
+          type="text"
+          v-model="searchQuery"
+          :placeholder="$t('root.search_bar')"
+          class="w-full bg-gray-100 rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+        />
+      </div>
+    </transition>
+  </div>
+</div>
+
   <div class="app-container flex h-screen bg-gray-100">
     <!-- Sidebar (links) -->
-    <div ref="sidebarRef" class="sidebar w-3/4 bg-white border-r border-gray-200 overflow-y-auto">
+    <div ref="sidebarRef" class="sidebar  bg-white border-r border-gray-200 overflow-y-auto">
       <div class="p-6">
-        <h2 class="text-xl font-bold mb-4">{{ $t('root.title') }}</h2>
         <div class="space-y-4">
           <!-- Feed -->
           <div  
@@ -77,99 +121,34 @@
 
 
             <!-- Actions -->
-            <div class="flex items-center justify-between text-gray-600 border-t border-b py-3 px-4">
+            <div class="grid grid-cols-2 sm:flex sm:justify-between gap-y-2 text-gray-600 border-t border-b py-3 px-4">
               <!-- Like -->
               <button @click.stop="toggleLike(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
                 <component
                   :is="post.hasLiked ? HeartIconSolid : HeartIcon"
-                  :class="['h-5 w-5', post.hasLiked ? 'text-blue-600' : '']"
+                  :class="['h-5 w-5 shrink-0', post.hasLiked ? 'text-blue-600' : '']"
                 />
                 <span>{{ post.likes.likeCount }}</span>
               </button>
               <!-- Kommentieren -->
-              <button class="flex items-center space-x-2 hover:text-blue-600">
-                  <ChatBubbleLeftEllipsisIcon class="h-5 w-5" />
+              <button class="flex items-center space-x-2 hover:text-blue-600 hidden [@media(min-width:420px)]:flex">
+                  <ChatBubbleLeftEllipsisIcon class="h-5 w-5 shrink-0" />
                   <span>Kommentieren</span>
               </button>
               <!-- Teilen -->
               <ShareBtn/>
               <!-- Speichern -->
               <button @click.stop="savePost(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
-                  <BookmarkIcon class="h-5 w-5" />
+                  <BookmarkIcon class="h-5 w-5 shrink-0" />
                   <span>Speichern</span>
               </button>
-          </div>
-        </div>
-      </div>
-    </div>
-    </div>
-
-    <!-- Main Content (rechts) -->
-    <div class="main-content flex-1 flex flex-col">
-      <!-- Suchbereich oben -->
-      <div class="search-area bg-white p-4 border-b border-gray-200">
-        <div class="relative max-w-md mx-auto">
-          <input
-            type="text"
-            v-model="searchQuery"
-            :placeholder="$t('root.search_bar')"
-            class="w-full bg-gray-100 rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-600 "
-          >
-          <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-          </svg>
-        </div>
-      </div>
-
-      <!-- Ausgewählter Beitrag oder Platzhalter -->
-      <div class="selected-post flex-1 p-6 overflow-y-auto">
-        <div v-if="selectedBeitrag" class="bg-white rounded-lg shadow p-6">
-          <div class="flex items-center space-x-3 mb-4">
-            <div class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xl font-bold">
-              {{ selectedBeitrag.autor.charAt(0) }}
             </div>
-            <div>
-              <h3 class="font-bold">{{ selectedBeitrag.autor }}</h3>
-              <p class="text-gray-500 text-sm">{{ selectedBeitrag.datum }}</p>
-            </div>
-          </div>
-          <p class="mb-4">{{ selectedBeitrag.inhalt }}</p>
-          <div class="flex space-x-4 text-gray-500 border-t border-gray-200 pt-4">
-            <button class="flex items-center space-x-1 hover:text-indigo-600">
-              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-              </svg>
-              <span>{{ selectedBeitrag.likes }}</span>
-            </button>
-            <button class="flex items-center space-x-1 hover:text-indigo-600">
-              <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-              </svg>
-              <span>{{ selectedBeitrag.kommentare }} Kommentare</span>
-            </button>
-          </div>
-        </div>
-        <div v-else class="flex items-center justify-center h-full text-gray-400">
-          <p>{{ $t('root.search_info') }}</p>
-        </div>
-      </div>
-
-      <!-- Neue Beiträge unten -->
-      <div class="new-posts bg-white border-t border-gray-200 p-4">
-        <h3 class="font-medium mb-3">{{ $t('root.search_most_searched_title') }}</h3>
-        <div class="grid grid-cols-3 gap-2">
-          <div 
-            v-for="(beitrag, index) in filteredBeitraege.slice(0, 3)" 
-            :key="'new-'+index"
-            class="bg-gray-100 rounded-md p-2 cursor-pointer hover:bg-gray-200 transition"
-            @click="selectBeitrag(beitrag)"
-          >
-            <p class="text-sm line-clamp-2">{{ beitrag.inhalt }}</p>
           </div>
         </div>
       </div>
     </div>
   </div>
+
   <transition name="fade">
     <div
       v-if="showImageModal"
@@ -189,7 +168,7 @@
 
 <script setup>
 import fallbackimage from '../assets/images/fallback.jpg'
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useFetch } from '../helpers/getPosts';
 import { useAuthStore } from '../store/auth.js';
@@ -231,9 +210,13 @@ const fullImageUrl = ref('')
 const userId = ref(null);
 const hasLiked = ref(false)
 
+const isMobile = ref(window.innerWidth < 768)
+const isMobileSearchOpen = ref(false)
+
 const isAuth = ref(null)
 
 onMounted(async () => {
+  window.addEventListener('resize', handleResize)
   authStore.checkAuth()
   isAuth.value = await checkAuthStatus()
 
@@ -248,6 +231,11 @@ onMounted(async () => {
   }
 })
 
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+})
+
+
 const isClickOnProfile = ref(false)
 
 function onUserClick(userId) {
@@ -257,6 +245,14 @@ function onUserClick(userId) {
   setTimeout(() => {
     isClickOnProfile.value = false
   }, 10)
+}
+
+function toggleMobileSearch() {
+  isMobileSearchOpen.value = !isMobileSearchOpen.value
+}
+
+function handleResize() {
+  isMobile.value = window.innerWidth < 768
 }
 
 
@@ -415,14 +411,10 @@ function endTouch(post) {
 }
 
 .sidebar {
-  width: 75%;
+  width: 100%;
 }
 
-.main-content {
-  display: flex;
-  flex-direction: column;
-  width: 25%;
-}
+
 
 .search-area {
   height: auto;
