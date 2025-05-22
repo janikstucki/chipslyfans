@@ -24,6 +24,10 @@ const isExpanded = ref(true)
 const isMobile = ref(false)
 const authStore = useAuthStore();
 const isSidebarVisibleMobile = ref(false)
+const route = useRoute();
+const userId = ref('')
+const showNavbar = computed(() => route.path !== '/login');
+const isAuth = ref(null)
 
 
 function toggleSidebar() {
@@ -44,16 +48,6 @@ function handleResize() {
   }
 }
 
-
-const createNewPost = () => {
-  console.log('Create new post clicked')
-}
-
-const checkScreenSize = () => {
-  isMobile.value = window.innerWidth < 1024
-}
-
-const isAuth = ref(null)
 onMounted(async () => {
   handleResize()
   window.addEventListener('resize', handleResize)
@@ -92,8 +86,7 @@ async function logout() {
     }
 }
 
-const route = useRoute();
-const showNavbar = computed(() => route.path !== '/login');
+
 
 
 const isAuthenticated = computed(async () => {
@@ -106,6 +99,7 @@ const isAuthenticated = computed(async () => {
 
         const data = await res.json();
         if (res && res.ok && data?.user) {
+        userId.value = data.user.id
         console.log("Benutzer ist authentifiziert:", data.user);
         return true;
         } else {
@@ -207,7 +201,7 @@ const isAuthenticated = computed(async () => {
           </router-link>
 
           <router-link 
-            to="/profil" 
+            :to="`/user/${userId}`" 
             class="flex items-center mx-3 my-1 p-3 rounded-lg transition-all duration-200 group hover:bg-gray-100"
             active-class="bg-gray-100 text-blue-600"
           >

@@ -186,7 +186,6 @@ export const getPosts = async (req, res) => {
       return res.status(200).json(finalPosts.map(formatPost));
     }
 
-    // 🧠 FALL 3: Nicht eingeloggt – zeige einfachste Standard-Posts
     const publicPosts = await Post.findAll({
       where: {
         scheduleDate: { [Op.lte]: new Date() }
