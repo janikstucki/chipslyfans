@@ -159,7 +159,7 @@
       class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center px-4">
       <div class="relative max-w-full max-h-full">
         <button
-          @click="closeImageModal"
+          @click.stop="closeImageModal"
           class="absolute top-2 right-2 text-white bg-black/70 rounded-full p-2 hover:bg-black">
           <ArrowUturnRightIcon class="h-5 w-5"/>
         </button>
