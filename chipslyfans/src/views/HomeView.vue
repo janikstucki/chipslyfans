@@ -123,7 +123,7 @@
 
 
             <!-- Actions -->
-            <div class="flex items-center justify-between text-gray-600 border-t border-b py-3 px-4">
+            <div class="grid grid-cols-2 sm:flex sm:justify-between gap-y-2 text-gray-600 border-t border-b py-3 px-4">
               <!-- Like -->
               <button @click.stop="toggleLike(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
                 <component
