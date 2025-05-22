@@ -2,7 +2,28 @@ import { Op } from 'sequelize';
 import { updateUserTagInterests } from "../utils/tagUtils.js";
 import { Comment } from '../models/Comment.js';
 import { Post } from '../models/Post.js';
+import { Interaction } from '../models/Interaction.js';
 import { UserTagInterest } from '../models/userTagInterests.js';
+
+
+
+
+export const getUserInteractions = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const interactions = await Interaction.findAll({
+            where: { userId },
+            order: [['createdAt', 'DESC']],
+        });
+
+        res.status(200).json(interactions);
+    } catch (err) {
+        console.error('❌ Fehler beim Laden der Interaktionen:', err);
+        res.status(500).json({ error: 'Fehler beim Laden der Interaktionen' });
+    }
+};
+
 
 export const toggleLike = async (req, res) => {
     try {
@@ -18,9 +39,19 @@ export const toggleLike = async (req, res) => {
         const likedBy = likes.likedBy || [];
         const alreadyLiked = likedBy.includes(userId);
 
-        if (alreadyLiked){
-            likes.likedBy = likedBy.filter(id => id !== userId);
-            likes.likeCount = Math.max(0, (likes.likeCount || 0) - 1);
+        if (!alreadyLiked) {
+            likes.likedBy = [...likedBy, userId];
+            likes.likeCount = (likes.likeCount || 0) + 1;
+
+            const tags = post.tags?.slice(0, 3) || [];
+            await updateUserTagInterests(userId, tags);
+
+            await Interaction.create({
+                userId,
+                postId,
+                type: 'like',
+                tags
+            });
         } else {
             likes.likedBy = [...likedBy, userId];
             likes.likeCount = (likes.likeCount || 0) + 1;
@@ -57,6 +88,12 @@ export const addComment = async (req, res) => {
       authorId: userId,
       postId,
       text,
+    });
+    await Interaction.create({
+        userId,
+        postId,
+        type: 'comment',
+        tags
     });
 
     const post = await Post.findByPk(postId);

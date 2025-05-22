@@ -4,6 +4,8 @@ import {authenticate} from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
+router.get('/my', authenticate, getUserInteractions);
+
 router.post('/like/:id', authenticate, toggleLike);
 router.post('/comment', authenticate, addComment);
 // router.post('/comment', commentPost);
