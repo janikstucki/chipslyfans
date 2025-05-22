@@ -1,7 +1,6 @@
 <template>
 <div class="w-full bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-30">
-  <!-- TOP BAR -->
-<div class="w-full bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-30">
+
   <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-6 max-w-7xl mx-auto">
     <!-- Title -->
     <h2 class="text-xl font-bold whitespace-nowrap">{{ $t('root.title') }}</h2>
@@ -43,7 +42,6 @@
       </div>
     </transition>
   </div>
-</div>
 </div>
 
   <div class="app-container flex h-screen bg-gray-100">
