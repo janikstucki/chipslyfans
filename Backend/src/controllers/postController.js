@@ -106,10 +106,12 @@ export const likePost = async (req, res) => {
 
 export const getPosts = async (req, res) => {
   try {
-    const userId = req.user?.id;
+    const userId = req.user?.id || null;
+    const offset = parseInt(req.query.offset) || 0;
+    const limit = parseInt(req.query.limit) || 10;
 
-    // kein eingeloggter User
-    if (!userId) {
+    // 🧠 FALL 1: Pagination aktiv – unabhängig vom User, z.B. beim Scrollen
+    if (req.query.offset) {
       const posts = await Post.findAll({
         where: {
           scheduleDate: { [Op.lte]: new Date() }
@@ -121,70 +123,92 @@ export const getPosts = async (req, res) => {
             attributes: ['id', 'username', 'profilepicture']
           }
         ],
-        order: [Sequelize.literal('RAND()')], 
-        limit: 10
+        order: [['createdAt', 'DESC']],
+        offset,
+        limit
       });
 
       return res.status(200).json(posts.map(formatPost));
     }
 
-    const userInterests = await UserTagInterest.findAll({
-      where: { userId },
-      order: [['weight', 'DESC']],
+    // 🧠 FALL 2: Initialer Feed – nur einmal beim ersten Laden
+    if (userId) {
+      const userInterests = await UserTagInterest.findAll({
+        where: { userId },
+        order: [['weight', 'DESC']],
+        limit: 10
+      });
+
+      const interestTags = userInterests.map(entry => entry.tag);
+
+      const matchingPosts = await Post.findAll({
+        where: {
+          tags: { [Op.overlap]: interestTags },
+          scheduleDate: { [Op.lte]: new Date() }
+        },
+        include: [{
+          model: User,
+          as: 'author',
+          attributes: ['id', 'username', 'profilepicture']
+        }],
+        order: [['createdAt', 'DESC']],
+        limit: 40
+      });
+
+      const otherPosts = await Post.findAll({
+        where: {
+          [Op.and]: [
+            { scheduleDate: { [Op.lte]: new Date() } },
+            {
+              [Op.or]: [
+                { tags: { [Op.notIn]: interestTags } },
+                { tags: null }
+              ]
+            }
+          ]
+        },
+        include: [{
+          model: User,
+          as: 'author',
+          attributes: ['id', 'username', 'profilepicture']
+        }],
+        order: [['createdAt', 'DESC']],
+        limit: 20
+      });
+
+      const finalPosts = [
+        ...matchingPosts.slice(0, 8),
+        ...otherPosts.slice(0, 2)
+      ];
+
+      finalPosts.sort(() => Math.random() - 0.5); // mischen
+
+      return res.status(200).json(finalPosts.map(formatPost));
+    }
+
+    // 🧠 FALL 3: Nicht eingeloggt – zeige einfachste Standard-Posts
+    const publicPosts = await Post.findAll({
+      where: {
+        scheduleDate: { [Op.lte]: new Date() }
+      },
+      include: [
+        {
+          model: User,
+          as: 'author',
+          attributes: ['id', 'username', 'profilepicture']
+        }
+      ],
+      order: [['createdAt', 'DESC']],
       limit: 10
     });
 
-    const interestTags = userInterests.map(entry => entry.tag);
-
-    const matchingPosts = await Post.findAll({
-      where: {
-        tags: { [Op.overlap]: interestTags },
-        scheduleDate: { [Op.lte]: new Date() }
-      },
-      include: [{
-        model: User,
-        as: 'author',
-        attributes: ['id', 'username', 'profilepicture']
-      }],
-      order: [['createdAt', 'DESC']],
-      limit: 40
-    });
-
-    const otherPosts = await Post.findAll({
-      where: {
-        [Op.and]: [
-          { scheduleDate: { [Op.lte]: new Date() } },
-          {
-            [Op.or]: [
-              { tags: { [Op.notIn]: interestTags } },
-              { tags: null }
-            ]
-          }
-        ]
-      },
-      include: [{
-        model: User,
-        as: 'author',
-        attributes: ['id', 'username', 'profilepicture']
-      }],
-      order: [['createdAt', 'DESC']],
-      limit: 20
-    });
-
-    const finalPosts = [
-      ...matchingPosts.slice(0, 8),
-      ...otherPosts.slice(0, 2)
-    ];
-
-    // mischen
-    finalPosts.sort(() => Math.random() - 0.5);
-
-    res.status(200).json(finalPosts.map(formatPost));
+    return res.status(200).json(publicPosts.map(formatPost));
   } catch (error) {
-    console.error('Fehler beim Erstellen des Feeds:', error);
-    res.status(500).json({ message: 'Feed konnte nicht geladen werden.' });
+    console.error('Fehler beim Laden der Posts:', error);
+    res.status(500).json({ message: 'Posts konnten nicht geladen werden.' });
   }
 };
+
 
 // Formatierung
 function formatPost(post) {

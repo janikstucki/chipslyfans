@@ -121,7 +121,7 @@
 
 
             <!-- Actions -->
-            <div class="grid grid-cols-2 sm:flex sm:justify-between gap-y-2 text-gray-600 border-t border-b py-3 px-4">
+            <div class="grid grid-cols-2 xs:grid-cols-4 sm:flex sm:justify-between gap-y-2 text-gray-600 border-t border-b py-3 px-4">
               <!-- Like -->
               <button @click.stop="toggleLike(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
                 <component
@@ -175,7 +175,7 @@ import { useAuthStore } from '../store/auth.js';
 import { useI18n } from 'vue-i18n'
 import { formatDate as formatDateUtil } from '../utils/formatDate.js'
 const authStore = useAuthStore();
- import ShareBtn from '../components/ShareBtn.vue';
+  import ShareBtn from '../components/ShareBtn.vue';
 import { 
   BookmarkIcon,
   HeartIcon,
@@ -208,8 +208,7 @@ const sidebarRef = ref(null)
 const showImageModal = ref(false)
 const fullImageUrl = ref('')
 const userId = ref(null);
-const hasLiked = ref(false)
-
+const allLoaded = ref(false)
 const isMobile = ref(window.innerWidth < 768)
 const isMobileSearchOpen = ref(false)
 
@@ -260,10 +259,8 @@ function handleScroll() {
   const container = sidebarRef.value
   if (
     container &&
-    container.scrollTop + container.clientHeight >= container.scrollHeight - 50 &&
-    displayedPosts.value.length < posts.value.length
+    container.scrollTop + container.clientHeight >= container.scrollHeight - 50
   ) {
-    console.log("scroll")
     loadMorePosts()
   }
 }
@@ -288,21 +285,36 @@ async function checkAuthStatus() {
   }
 }
 
-function loadMorePosts() {
-  if (isLoadingPosts.value) return
+async function loadMorePosts() {
+  if (isLoadingPosts.value || allLoaded.value) return
   isLoadingPosts.value = true
 
-  const start = (currentPage.value - 1) * pageSize
-  const end = currentPage.value * pageSize
-  const nextPosts = posts.value.slice(start, end).map(post => ({
-    ...post,
-    currentImageIndex: 0,
-    hasLiked: post.likes?.likedBy?.includes(userId.value) || false
-  }))
+  try {
+    const offset = displayedPosts.value.length
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/posts?offset=${offset}&limit=${pageSize}`)
+    const data = await res.json()
 
-  displayedPosts.value.push(...nextPosts)
-  currentPage.value++
-  isLoadingPosts.value = false
+    if (Array.isArray(data) && data.length > 0) {
+      const newPosts = data.map(post => ({
+        ...post,
+        currentImageIndex: 0,
+        hasLiked: post.likes?.likedBy?.includes(userId.value) || false
+      }))
+      displayedPosts.value.push(...newPosts)
+
+      // 👇 Wenn weniger als pageSize zurückkommt, gibt es keine weiteren Posts mehr
+      if (data.length < pageSize) {
+        allLoaded.value = true
+      }
+    } else {
+      // 👇 Wenn gar keine mehr zurückkommen
+      allLoaded.value = true
+    }
+  } catch (e) {
+    console.error("Fehler beim Nachladen:", e)
+  } finally {
+    isLoadingPosts.value = false
+  }
 }
 
 
