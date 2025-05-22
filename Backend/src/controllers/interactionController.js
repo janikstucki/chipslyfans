@@ -40,17 +40,18 @@ export const toggleLike = async (req, res) => {
         const alreadyLiked = likedBy.includes(userId);
 
         if (!alreadyLiked) {
-            likes.likedBy = [...likedBy, userId];
-            likes.likeCount = (likes.likeCount || 0) + 1;
+            likes.likedBy = likedBy.filter(id => id !== userId);
+            likes.likeCount = Math.max(0, (likes.likeCount || 0) - 1);
+
+            await Interaction.destroy({
+                where: { userId, postId, type: 'like' }
+            });
 
             const tags = post.tags?.slice(0, 3) || [];
             await updateUserTagInterests(userId, tags);
-
-            await Interaction.create({
-                userId,
-                postId,
-                type: 'like',
-                tags
+            await Interaction.findOrCreate({
+                where: { userId, postId, type: 'like' },
+                defaults: { tags }
             });
         } else {
             likes.likedBy = [...likedBy, userId];
