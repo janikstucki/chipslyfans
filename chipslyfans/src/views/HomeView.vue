@@ -1,9 +1,55 @@
 <template>
+<div class="w-full bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-30">
+  <!-- TOP BAR -->
+<div class="w-full bg-white border-b border-gray-200 px-4 py-3 sticky top-0 z-30">
+  <div class="flex flex-wrap sm:flex-nowrap items-center gap-3 sm:gap-6 max-w-7xl mx-auto">
+    <!-- Title -->
+    <h2 class="text-xl font-bold whitespace-nowrap">{{ $t('root.title') }}</h2>
+
+    <!-- Search Desktop -->
+    <div class="relative flex-1 hidden sm:block">
+      <input
+        type="text"
+        v-model="searchQuery"
+        :placeholder="$t('root.search_bar')"
+        class="w-full bg-gray-100 rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+      />
+      <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+      </svg>
+    </div>
+
+    <!-- Search Icon Mobile -->
+    <div class="sm:hidden ml-auto">
+      <button @click="toggleMobileSearch" class="text-gray-600 hover:text-indigo-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile Dropdown Input -->
+    <transition name="fade">
+      <div v-if="isMobileSearchOpen" class="w-full sm:hidden mt-3">
+        <input
+          type="text"
+          v-model="searchQuery"
+          :placeholder="$t('root.search_bar')"
+          class="w-full bg-gray-100 rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+        />
+      </div>
+    </transition>
+  </div>
+</div>
+</div>
+
   <div class="app-container flex h-screen bg-gray-100">
     <!-- Sidebar (links) -->
-    <div ref="sidebarRef" class="sidebar w-3/4 bg-white border-r border-gray-200 overflow-y-auto">
+    <div ref="sidebarRef" class="sidebar  bg-white border-r border-gray-200 overflow-y-auto">
       <div class="p-6">
-        <h2 class="text-xl font-bold mb-4">{{ $t('root.title') }}</h2>
         <div class="space-y-4">
           <!-- Feed -->
           <div  
@@ -102,50 +148,8 @@
         </div>
       </div>
     </div>
-    </div>
-      <!-- Suchbereich oben -->
-        <div class="search-area bg-white p-4 border-b border-gray-200">
-          <!-- Desktop-Version -->
-          <div class="relative max-w-md mx-auto hidden sm:block">
-            <input
-              type="text"
-              v-model="searchQuery"
-              :placeholder="$t('root.search_bar')"
-              class="w-full bg-gray-100 rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-600"
-            >
-            <svg class="absolute left-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-
-          <!-- Mobile-Version -->
-          <div class="sm:hidden flex justify-end items-center">
-            <button @click="toggleMobileSearch" class="text-gray-500 hover:text-indigo-600">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
-          </div>
-
-          <!-- Mobile Input Dropdown -->
-          <transition name="fade">
-            <div v-if="isMobileSearchOpen" class="mt-3">
-              <input
-                type="text"
-                v-model="searchQuery"
-                :placeholder="$t('root.search_bar')"
-                class="w-full bg-gray-100 rounded-full py-2 px-4 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-600"
-              >
-            </div>
-          </transition>
-        </div>
-        </div>
-
-
-
+  </div>
+</div>
 
   <transition name="fade">
     <div
@@ -409,14 +413,10 @@ function endTouch(post) {
 }
 
 .sidebar {
-  width: 75%;
+  width: 100%;
 }
 
-.main-content {
-  display: flex;
-  flex-direction: column;
-  width: 25%;
-}
+
 
 .search-area {
   height: auto;
