@@ -128,28 +128,28 @@
               <button @click.stop="toggleLike(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
                 <component
                   :is="post.hasLiked ? HeartIconSolid : HeartIcon"
-                  :class="['h-5 w-5', post.hasLiked ? 'text-blue-600' : '']"
+                  :class="['h-5 w-5 shrink-0', post.hasLiked ? 'text-blue-600' : '']"
                 />
                 <span>{{ post.likes.likeCount }}</span>
               </button>
               <!-- Kommentieren -->
-              <button class="flex items-center space-x-2 hover:text-blue-600">
-                  <ChatBubbleLeftEllipsisIcon class="h-5 w-5" />
+              <button class="flex items-center space-x-2 hover:text-blue-600 hidden [@media(min-width:420px)]:flex">
+                  <ChatBubbleLeftEllipsisIcon class="h-5 w-5 shrink-0" />
                   <span>Kommentieren</span>
               </button>
               <!-- Teilen -->
               <ShareBtn/>
               <!-- Speichern -->
               <button @click.stop="savePost(post.id)" class="flex items-center space-x-2 hover:text-blue-600">
-                  <BookmarkIcon class="h-5 w-5" />
+                  <BookmarkIcon class="h-5 w-5 shrink-0" />
                   <span>Speichern</span>
               </button>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 
   <transition name="fade">
     <div
