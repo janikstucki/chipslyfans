@@ -14,6 +14,13 @@ export const getUserInteractions = async (req, res) => {
 
         const interactions = await Interaction.findAll({
             where: { userId },
+            include: [
+                {
+                    model: Post,
+                    as: 'post',
+                    attributes: ['title']
+                }
+            ],
             order: [['createdAt', 'DESC']],
         });
 

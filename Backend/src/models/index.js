@@ -32,6 +32,9 @@ Comment.belongsTo(Post, { foreignKey: "postId", as: "post" });
 User.hasMany(Interaction, { foreignKey: "userId", as: "interactions" });
 Interaction.belongsTo(User, { foreignKey: "userId", as: "user" });
 
+Interaction.belongsTo(Post, { foreignKey: 'postId', as: 'post' });
+Post.hasMany(Interaction, { foreignKey: 'postId', as: 'interactions' });
+
 User.hasMany(UserTagInterest, { foreignKey: 'userId', as: 'tagInterests' });
 UserTagInterest.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 

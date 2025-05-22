@@ -1,5 +1,5 @@
 import express from 'express';
-import { toggleLike, addComment } from '../controllers/interactionController.js';
+import { toggleLike, addComment, getUserInteractions } from '../controllers/interactionController.js';
 import {authenticate} from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
