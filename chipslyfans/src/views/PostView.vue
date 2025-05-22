@@ -349,6 +349,7 @@ function formatDate(dateString) {
         <!-- Neues Kommentar schreiben -->
         <textarea
         v-model="commentText"
+        @keyup.enter="submitComment"
         rows="4"
         class="w-full min-h-20 px-4 py-3 bg-gray-100 border border-gray-400 rounded-lg text-black focus:outline-none focus:ring-2 focus:ring-indigo-600"
         placeholder="Schreib deinen Kommentar..."
