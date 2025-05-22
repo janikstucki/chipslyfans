@@ -23,10 +23,22 @@ import router from './router';
 const isExpanded = ref(true)
 const isMobile = ref(false)
 const authStore = useAuthStore();
+const isSidebarVisibleMobile = ref(false)
 
-const toggleSidebar = () => {
-  isExpanded.value = !isExpanded.value
+
+function toggleSidebar() {
+  if (!isMobile.value) {
+    isExpanded.value = !isExpanded.value
+  }
 }
+
+function handleResize() {
+  isMobile.value = window.innerWidth < 1024
+  if (isMobile.value) {
+    isExpanded.value = false // immer schmal!
+  }
+}
+
 
 const createNewPost = () => {
   console.log('Create new post clicked')
@@ -109,20 +121,30 @@ const isAuthenticated = computed(async () => {
     <div class="flex h-full bg-gray-100" v-if="showNavbar">
     <!-- Sidebar -->
       <aside 
-        class="sidebar bg-white border-r border-gray-200 transition-all duration-300 fixed top-0 bottom-0 z-50"
-        :class="{
-          'w-64': isExpanded,
-          'w-20': !isExpanded,
-          'shadow-lg': isMobileOpen
-        }"
-      >
+        class="sidebar bg-white border-r border-gray-200 transition-all duration-300 z-50 h-full"
+        :class="[
+          isMobile
+            ? isSidebarVisibleMobile ? 'fixed top-0 left-0 w-64 shadow-xl' : 'w-20'
+            : isExpanded ? 'w-64' : 'w-20',
+          !isMobile ? 'fixed top-0 bottom-0' : ''
+        ]">
         <!-- Toggle Button -->
         <button 
+          v-if="!isMobile"
           @click="toggleSidebar"
-          class="absolute -right-3 top-5 bg-white rounded-full p-1 shadow-md border border-gray-200 hover:bg-gray-100 z-10"
-        >
+          class="absolute -right-3 top-5 bg-white rounded-full p-1 shadow-md border border-gray-200 hover:bg-gray-100 z-10">
           <ChevronRightIcon v-if="!isExpanded" class="h-4 w-4 text-gray-600" />
           <ChevronLeftIcon v-else class="h-4 w-4 text-gray-600" />
+        </button>
+
+        <!-- Mobile-Toggle (oben links oder in Header je nach Geschmack) -->
+        <button
+          v-if="isMobile"
+          @click="isSidebarVisibleMobile = !isSidebarVisibleMobile"
+          class="fixed top-4 left-4 z-50 bg-white p-2 rounded-full shadow-md border hover:bg-gray-100"
+        >
+          <ChevronRightIcon v-if="!isSidebarVisibleMobile" class="h-5 w-5 text-gray-600" />
+          <ChevronLeftIcon v-else class="h-5 w-5 text-gray-600" />
         </button>
 
         <!-- Logo -->
@@ -140,7 +162,7 @@ const isAuthenticated = computed(async () => {
             active-class="bg-gray-100 text-blue-600"
           >
             <HomeIcon class="h-6 w-6 flex-shrink-0" />
-            <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">{{ $t('nav.start') }}</span>
+            <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': (!isExpanded && !isSidebarVisibleMobile) }">{{ $t('nav.start') }}</span>
           </router-link>
 
           <router-link 
@@ -149,7 +171,7 @@ const isAuthenticated = computed(async () => {
             active-class="bg-gray-100 text-blue-600"
           >
             <EnvelopeIcon class="h-6 w-6 flex-shrink-0" />
-            <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">{{ $t('nav.inbox') }}</span>
+            <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': (!isExpanded && !isSidebarVisibleMobile) }">{{ $t('nav.inbox') }}</span>
           </router-link>
 
           <router-link 
@@ -158,7 +180,7 @@ const isAuthenticated = computed(async () => {
             active-class="bg-gray-100 text-blue-600"
           >
             <ChatBubbleLeftRightIcon class="h-6 w-6 flex-shrink-0" />
-            <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">{{ $t('nav.messages') }}</span>
+            <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': (!isExpanded && !isSidebarVisibleMobile) }">{{ $t('nav.messages') }}</span>
           </router-link>
 
           <router-link 
@@ -167,7 +189,7 @@ const isAuthenticated = computed(async () => {
             active-class="bg-gray-100 text-blue-600"
           >
             <BookmarkIcon class="h-6 w-6 flex-shrink-0" />
-            <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">{{ $t('nav.collection') }}</span>
+            <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': (!isExpanded && !isSidebarVisibleMobile) }">{{ $t('nav.collection') }}</span>
           </router-link>
 
           <router-link 
@@ -176,7 +198,7 @@ const isAuthenticated = computed(async () => {
             active-class="bg-gray-100 text-blue-600"
           >
             <UserGroupIcon class="h-6 w-6 flex-shrink-0" />
-            <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">{{ $t('nav.abonements') }}</span>
+            <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': (!isExpanded && !isSidebarVisibleMobile) }">{{ $t('nav.abonements') }}</span>
           </router-link>
 
           <router-link 
@@ -185,7 +207,7 @@ const isAuthenticated = computed(async () => {
             active-class="bg-gray-100 text-blue-600"
           >
             <UserIcon class="h-6 w-6 flex-shrink-0" />
-            <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">{{ $t('nav.profile') }}</span>
+            <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': (!isExpanded && !isSidebarVisibleMobile) }">{{ $t('nav.profile') }}</span>
           </router-link>
 
           <router-link 
@@ -194,7 +216,7 @@ const isAuthenticated = computed(async () => {
             active-class="bg-gray-100 text-blue-600"
           >
             <EllipsisHorizontalIcon class="h-6 w-6 flex-shrink-0" />
-            <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': !isExpanded }">{{ $t('nav.more') }}</span>
+            <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': (!isExpanded && !isSidebarVisibleMobile) }">{{ $t('nav.more') }}</span>
           </router-link>
 
           <div class="px-3 mt-6 transition-all duration-300" :class="{'mx-0': !isExpanded, 'mx-3': isExpanded}">
@@ -233,14 +255,20 @@ const isAuthenticated = computed(async () => {
           </button>
         </div>
       </aside>
+      <div
+  v-if="isSidebarVisibleMobile"
+  @click="isSidebarVisibleMobile = false"
+  class="fixed inset-0 bg-black/30 z-40 sm:hidden"
+></div>
     </div>
 
     <main 
       v-if="showNavbar"
       class="flex-1 overflow-auto transition-all duration-300"
       :class="{
+        'ml-64': isExpanded && !isMobile,
         'ml-20': !isExpanded && !isMobile,
-        'ml-64': isExpanded && !isMobile
+        'ml-0': isMobile
       }"
     >
       <router-view />
