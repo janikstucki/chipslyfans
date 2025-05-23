@@ -40,11 +40,37 @@ const routes = [
 
     },
     {
-        path: '/user/:id/settings',
-        name: 'Settings',
-        component: Settings,
-        props: true,
-        meta: { requiresAuth: true}
+    path: '/user/:id/settings',
+    component: Settings,
+    props: true,
+    meta: { requiresAuth: true },
+    children: [
+        {
+            path: '', // default child route
+            name: 'SettingsProfile',
+            component: () => import('../views/settings/SettingsProfile.vue'),
+        },
+        {
+            path: 'security',
+            name: 'SettingsSecurity',
+            component: () => import('../views/settings/SettingsSecurity.vue'),
+        },
+        {
+            path: 'notifications',
+            name: 'SettingsNotifications',
+            component: () => import('../views/settings/SettingsNotifications.vue'),
+        },
+        {
+            path: 'billing',
+            name: 'SettingsBilling',
+            component: () => import('../views/settings/SettingsBilling.vue'),
+        },
+        {
+            path: 'delete-account',
+            name: 'SettingsDelete',
+            component: () => import('../views/settings/SettingsDelete.vue'),
+        },
+    ]
     },
     {
         path: '/login',
