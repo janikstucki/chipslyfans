@@ -6,18 +6,20 @@
         <div 
           v-for="b in benachrichtigungen"
           :key="b.id"
-          class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100 cursor-pointer transition">
+          class="bg-gray-50 p-4 rounded-lg hover:bg-gray-100 cursor-pointer transition" @click="readNotification(b.id)">
           
-          <div class="flex gap-3 items-center" @click="$router.push({ name: 'UserDetail', params: { id: b.userId } })">
+          <div class="flex gap-3 items-center">
             <!-- Avatar -->
-              <div class="w-10 h-10 rounded-full overflow-hidden bg-indigo-500 flex items-center justify-center text-white font-bold">
+              <div 
+                class="w-10 h-10 rounded-full overflow-hidden bg-indigo-500 flex items-center justify-center text-white font-bold"
+                @click.stop="$router.push({ name: 'UserDetail', params: { id: b.userId } })">
                 <img v-if="b.profilbild" :src="b.profilbild" class="w-full h-full object-cover" />
                 <span v-else>{{ b.autor.charAt(0).toUpperCase() }}</span>
               </div>
 
             <!-- Inhalt -->
             <div class="flex-1">
-              <div class="flex items-baseline gap-2">
+              <div class="flex items-baseline gap-2" @click.stop="$router.push({ name: 'UserDetail', params: { id: b.userId } })">
                 <span class="font-medium text-gray-900">{{ b.autor }}</span>
                 <span class="text-sm text-gray-500">{{ formatDate(b.datum) }}</span>
               </div>
@@ -45,7 +47,13 @@
             </div>
 
             <!-- Icon -->
-            <component :is="b.Icon" class="w-6 h-6 text-gray-600" v-if="b.Icon" />
+            <div class="relative">
+              <component :is="b.Icon" class="w-6 h-6 text-gray-600" v-if="b.Icon" />
+              <span
+                v-if="!b.isRead"
+                class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-pulse"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -98,6 +106,7 @@ onMounted(async () => {
     if (!res.ok) throw new Error('Fehler beim Laden');
 
     const data = await res.json();
+    console.log('Benachrichtigungen:', data);
 
     benachrichtigungen.value = data.map((i) => ({
       id: i.id,
@@ -108,7 +117,8 @@ onMounted(async () => {
       inhalt: getText(i),
       art: i.type,
       Icon: iconMap[i.type] || null,
-      post: i.post
+      post: i.post,
+      isRead: i.isRead,
     }));
 
     // Sortieren nach Datum
@@ -131,6 +141,24 @@ function getText(i) {
       return `Hat deinen Beitrag "${i.post?.title || 'ohne Titel'}" geteilt`;
     default:
       return 'Unbekannte Aktion';
+  }
+}
+
+async function readNotification(id) {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/interactions/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      credentials: 'include' 
+    });
+
+    if (!res.ok) throw new Error('Fehler beim Lesen der Benachrichtigung');
+
+    // Hier kannst du die Benachrichtigung aus dem Array entfernen oder den Status aktualisieren
+  } catch (err) {
+    console.error('Fehler beim Lesen der Benachrichtigung:', err);
   }
 }
 </script>

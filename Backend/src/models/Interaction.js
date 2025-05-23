@@ -28,6 +28,11 @@ export const Interaction = sequelize.define("Interaction", {
         set(val) {
             this.setDataValue('tags', JSON.stringify(val));
         }
+    },
+    isRead: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     tableName: "interactions",

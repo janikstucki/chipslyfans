@@ -36,6 +36,34 @@ export const getUserInteractions = async (req, res) => {
   }
 };
 
+
+export const markInteractionAsRead = async (req, res) => {
+  const userId = req.user.id;
+  const { id } = req.params;
+
+  try {
+    const interaction = await Interaction.findOne({
+      where: {
+        id,
+        userId
+      }
+    });
+
+    if (!interaction) {
+      return res.status(404).json({ error: 'Interaktion nicht gefunden' });
+    }
+
+    // Markiere als gelesen
+    interaction.isRead = true;
+    await interaction.save();
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error('❌ Fehler beim Markieren als gelesen:', err);
+    return res.status(500).json({ error: 'Fehler beim Aktualisieren der Benachrichtigung' });
+  }
+};
+
 export const toggleLike = async (req, res) => {
   try {
     const postId = req.params.id;
