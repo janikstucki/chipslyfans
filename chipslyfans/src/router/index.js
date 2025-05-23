@@ -7,6 +7,7 @@ const Subscriptions = () => import(/* webpackChunkName: "Subscriptions" */ '../v
 const Postfach = () => import(/* webpackChunkName: "Notifications" */ '../views/NotificationsView.vue');
 const PostDetail = () => import(/* webpackChunkName: "PostView" */ '../views/PostView.vue');
 const UserDetail = () => import(/* webpackChunkName: "UserView" */ '../views/UserView.vue');
+const Settings = () => import(/* webpackChunkName: "Settings" */ '../views/SettingsView.vue');
 const NewPost = () => import(/* webpackChunkName: "NewPostView" */ '../views/NewPostView.vue')
 const PaymentSuccess = () => import(/* webpackChunkName: "PaymentSuccess" */ '../views/PaymentSuccess.vue')
 
