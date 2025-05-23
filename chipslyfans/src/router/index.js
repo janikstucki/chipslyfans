@@ -43,7 +43,7 @@ const routes = [
     path: '/user/:id/settings',
     component: Settings,
     props: true,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, fullScreen: true },
     children: [
         {
             path: '', // default child route

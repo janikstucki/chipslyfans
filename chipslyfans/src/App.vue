@@ -26,7 +26,9 @@ const authStore = useAuthStore();
 const isSidebarVisibleMobile = ref(false)
 const route = useRoute();
 const userId = ref('')
-const showNavbar = computed(() => route.path !== '/login');
+const showNavbar = computed(() => {
+  return route.path !== '/login' && !route.path.includes('/settings');
+});
 const isAuth = ref(null)
 
 
