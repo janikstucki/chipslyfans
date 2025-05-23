@@ -40,6 +40,13 @@ const routes = [
 
     },
     {
+        path: '/user/:id/settings',
+        name: 'Settings',
+        component: Settings,
+        props: true,
+        meta: { requiresAuth: true}
+    },
+    {
         path: '/login',
         name: 'Login',
         component: Login,
