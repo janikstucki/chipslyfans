@@ -98,20 +98,22 @@ export const addComment = async (req, res) => {
       return res.status(401).json({ error: "Nicht authentifiziert" });
     }
 
+    const post = await Post.findByPk(postId);
+    const tags = post?.tags?.slice?.(0, 3) || [];
+
     const comment = await Comment.create({
       authorId: userId,
       postId,
       text,
     });
+
     await Interaction.create({
-        userId,
-        postId,
-        type: 'comment',
-        tags
+      userId,
+      postId,
+      type: 'comment',
+      tags
     });
 
-    const post = await Post.findByPk(postId);
-    const tags = post.tags?.slice?.(0, 3) || [];
     await updateUserTagInterests(userId, tags);
 
     res.status(201).json(comment);
@@ -120,3 +122,4 @@ export const addComment = async (req, res) => {
     res.status(500).json({ error: "Kommentar konnte nicht erstellt werden." });
   }
 };
+
