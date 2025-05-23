@@ -153,6 +153,9 @@ async function readNotification(id) {
       },
       credentials: 'include' 
     });
+    benachrichtigungen.value = benachrichtigungen.value.map(b =>
+      b.id === id ? { ...b, isRead: true } : b
+    );
 
     if (!res.ok) throw new Error('Fehler beim Lesen der Benachrichtigung');
 
