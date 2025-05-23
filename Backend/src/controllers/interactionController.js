@@ -18,11 +18,11 @@ export const getUserInteractions = async (req, res) => {
         {
           model: Post,
           as: 'post',
-          attributes: ['title']
+          attributes: ['id','title']
         },
         {
           model: User,
-          as: 'user', // oder 'author', je nachdem wie es heißt in deiner Relation
+          as: 'user', 
           attributes: ['id', 'username', 'profilepicture']
         }
       ],

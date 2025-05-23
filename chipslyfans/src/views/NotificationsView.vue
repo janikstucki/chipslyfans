@@ -19,9 +19,29 @@
             <div class="flex-1">
               <div class="flex items-baseline gap-2">
                 <span class="font-medium text-gray-900">{{ b.autor }}</span>
-                <span class="text-sm text-gray-500">{{ b.datum }}</span>
+                <span class="text-sm text-gray-500">{{ formatDate(b.datum) }}</span>
               </div>
-              <p class="mt-1 text-gray-600">{{ b.inhalt }}</p>
+              <p class="mt-1 text-gray-600">
+                <template v-if="b.art === 'like' || b.art === 'comment' || b.art === 'visit' || b.art === 'share'">
+                  <span>
+                    Hat deinen Beitrag 
+                    <router-link
+                      :to="`/post/${b.post?.id}`"
+                      class="text-blue-600 hover:underline font-medium"
+                      @click.stop
+                    >
+                      "{{ b.post?.title || 'ohne Titel' }}"
+                    </router-link>
+                    {{ b.art === 'like' ? ' geliked' :
+                      b.art === 'comment' ? ' kommentiert' :
+                      b.art === 'visit' ? ' besucht' :
+                      b.art === 'share' ? ' geteilt' : '' }}
+                  </span>
+                </template>
+                <template v-else>
+                  {{ b.inhalt }}
+                </template>
+              </p>
             </div>
 
             <!-- Icon -->
@@ -35,6 +55,8 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { formatDate as formatDateUtil } from '../utils/formatDate.js'
+import { useI18n } from 'vue-i18n'
 import {
   BanknotesIcon,
   HeartIcon,
@@ -46,6 +68,11 @@ import {
 
 
 const router = useRoute();
+const { t } = useI18n();
+
+function formatDate(dateString) {
+  return formatDateUtil(dateString, t)
+}
 
 
 const benachrichtigungen = ref([]);
@@ -77,7 +104,7 @@ onMounted(async () => {
       autor: i.user?.username || 'Unbekannt',
       profilbild: i.user?.profilepicture || null,
       userId: i.user?.id || '',
-      datum: new Date(i.createdAt).toLocaleString('de-CH'),
+      datum: i.createdAt,
       inhalt: getText(i),
       art: i.type,
       Icon: iconMap[i.type] || null,
@@ -86,6 +113,7 @@ onMounted(async () => {
 
     // Sortieren nach Datum
     benachrichtigungen.value.sort((a, b) => new Date(b.datum) - new Date(a.datum));
+    console.log(benachrichtigungen.value);
   } catch (err) {
     console.error('Fehler beim Laden:', err);
   }
