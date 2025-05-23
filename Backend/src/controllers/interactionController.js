@@ -120,8 +120,6 @@ export const addComment = async (req, res) => {
     const { postId, text } = req.body;
     const userId = req.user?.id;
 
-    console.log("📩 addComment: ", { postId, text, userId });
-
     if (!userId) {
       return res.status(401).json({ error: "Nicht authentifiziert" });
     }
