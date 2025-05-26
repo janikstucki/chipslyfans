@@ -50,7 +50,7 @@ const initials = computed(() => {
       <!-- Profilkopf -->
       <div class="bg-white shadow rounded-lg p-6 flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <div class="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-white text-lg font-bold uppercase">
+          <div class="w-16 h-16 rounded-full bg-indigo-500 flex items-center justify-center text-white text-lg font-bold uppercase">
             <template v-if="user.profilepicture">
               <img
                 class="w-16 h-16 rounded-full object-cover"
