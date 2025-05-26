@@ -4,7 +4,9 @@ import { useRoute } from 'vue-router';
 import { PencilIcon, CheckIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 
 const isLoading = ref(true);
-const isEditing = ref(false);
+const isEditingHead = ref(false);
+const isEditingPersonal = ref(false);
+const isEditingAdress = ref(false);
 const fallbackImage = null;
 
 const user = ref(null);
@@ -61,7 +63,7 @@ async function saveChanges() {
 
 function cancelEdit() {
   editedUser.value = { ...user.value }; // Änderungen verwerfen
-  isEditing.value = false;
+  isEditingHead.value = false;
 }
 </script>
 
@@ -88,7 +90,7 @@ function cancelEdit() {
           </div>
           <div>
             <h3 class="text-lg font-bold">
-              <template v-if="isEditing">
+              <template v-if="isEditingHead">
                 <input v-model="editedUser.firstname" class="border rounded px-2 py-1" />
                 <input v-model="editedUser.lastname" class="border rounded px-2 py-1 ml-2" />
               </template>
@@ -100,7 +102,7 @@ function cancelEdit() {
           </div>
         </div>
         <div class="flex gap-2">
-          <button v-if="!isEditing" @click="isEditing = true" class="text-blue-600 font-medium hover:underline flex items-center gap-1">
+          <button v-if="!isEditing" @click="isEditingHead = true" class="text-blue-600 font-medium hover:underline flex items-center gap-1">
             Edit <PencilIcon class="w-4 h-4" />
           </button>
           <template v-else>
