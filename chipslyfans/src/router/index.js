@@ -42,6 +42,7 @@ const routes = [
     {
     path: '/user/:id/settings',
     component: Settings,
+    name: 'Settings',
     props: true,
     meta: { requiresAuth: true, fullScreen: true },
     children: [
