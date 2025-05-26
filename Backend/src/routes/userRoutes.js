@@ -68,6 +68,6 @@ router.get('/payment-status/:sessionId', authenticate, async (req, res) => {
 // Settings-Routen
 
 router.get('/settings/:id/general', authenticate, getGeneralSettings);
-router.patch('settings/:id/general', authenticate, patchGeneralSettings);
+router.patch('/settings/:id/general', authenticate, patchGeneralSettings);
 
 export default router;
