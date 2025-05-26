@@ -114,7 +114,10 @@ export const getPosts = async (req, res) => {
     if (req.query.offset) {
       const posts = await Post.findAll({
         where: {
-          scheduleDate: { [Op.lte]: new Date() }
+          [Op.or]: [
+            { scheduleDate: { [Op.lte]: new Date() } },
+            { scheduleDate: null }
+          ]
         },
         include: [
           {
@@ -145,8 +148,13 @@ export const getPosts = async (req, res) => {
       if (interestTags.length > 0) {
         matchingPosts = await Post.findAll({
           where: {
-            tags: { [Op.overlap]: interestTags },
-            scheduleDate: { [Op.lte]: new Date() }
+            [Op.or]: interestTags.map(tag => ({
+              tags: { [Op.like]: `%${tag}%` }
+            })),
+            [Op.or]: [
+              { scheduleDate: { [Op.lte]: new Date() } },
+              { scheduleDate: null }
+            ]
           },
           include: [{
             model: User,
@@ -160,15 +168,17 @@ export const getPosts = async (req, res) => {
 
       const otherPosts = await Post.findAll({
         where: {
-          scheduleDate: { [Op.lte]: new Date() },
+          [Op.or]: [
+            { scheduleDate: { [Op.lte]: new Date() } },
+            { scheduleDate: null }
+          ],
           ...(interestTags.length > 0
             ? {
-                [Op.or]: [
-                  { tags: { [Op.notIn]: interestTags } },
-                  { tags: null }
-                ]
+                [Op.and]: interestTags.map(tag => ({
+                  tags: { [Op.notLike]: `%${tag}%` }
+                }))
               }
-            : {}) 
+            : {})
         },
         include: [{
           model: User,
@@ -181,7 +191,7 @@ export const getPosts = async (req, res) => {
 
       const finalPosts = [
         ...matchingPosts.slice(0, 8),
-        ...otherPosts.slice(0, matchingPosts.length > 0 ? 2 : 10)  // fallback: zieh mehr andere Posts
+        ...otherPosts.slice(0, matchingPosts.length > 0 ? 2 : 10)
       ];
 
       finalPosts.sort(() => Math.random() - 0.5); // mischen
@@ -189,7 +199,10 @@ export const getPosts = async (req, res) => {
       if (finalPosts.length === 0) {
         const fallbackPosts = await Post.findAll({
           where: {
-            scheduleDate: { [Op.lte]: new Date() }
+            [Op.or]: [
+              { scheduleDate: { [Op.lte]: new Date() } },
+              { scheduleDate: null }
+            ]
           },
           include: [{
             model: User,
@@ -205,9 +218,13 @@ export const getPosts = async (req, res) => {
       return res.status(200).json(finalPosts.map(formatPost));
     }
 
+    // 🧠 FALL 3: Öffentliche Posts für anonyme Nutzer
     const publicPosts = await Post.findAll({
       where: {
-        scheduleDate: { [Op.lte]: new Date() }
+        [Op.or]: [
+          { scheduleDate: { [Op.lte]: new Date() } },
+          { scheduleDate: null }
+        ]
       },
       include: [
         {
@@ -226,6 +243,7 @@ export const getPosts = async (req, res) => {
     res.status(500).json({ message: 'Posts konnten nicht geladen werden.' });
   }
 };
+
 
 
 // Formatierung
