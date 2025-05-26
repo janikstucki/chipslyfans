@@ -22,6 +22,24 @@ export const createUser = async (req, res) => {
             lastname,
             birthdate
         } = req.body;
+        const defaultSettings = {
+            notifications: {
+                likes: true,
+                comments: true,
+                subscriptions: true,
+                messages: true,
+                postVisit: true,
+                mentions: true,
+                loginAlerts: true,
+            },
+            privacy: {
+                profileVisibility: 'public',
+                profilepictureVisibility: 'public',
+            },
+            security: {
+                twoFactorAuth: false,
+            }
+        };
     
         // Passwort hashen
         const salt = bcrypt.genSaltSync(10);
@@ -45,6 +63,7 @@ export const createUser = async (req, res) => {
             lastname,
             birthdate,
             profilepicture: profileImageUrl,
+            settings: defaultSettings
         });
     
         res.status(201).json({ success: true, user: newUser });
@@ -135,3 +154,21 @@ export const deleteUser = async (req, res) => {
         res.status(500).json({ message: 'Error deleting user', error });
     }
 }
+
+export const getUserSettings = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const user = await User.findByPk(userId, {
+            attributes: ['id', 'username', 'email', 'profilepicture', 'firstname', 'lastname'],
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Error fetching user settings:', error);
+        res.status(500).json({ message: 'Error fetching user settings' });
+    }
+};

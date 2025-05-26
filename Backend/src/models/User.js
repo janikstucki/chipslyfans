@@ -44,14 +44,22 @@ export const User = sequelize.define("User", {
         type: DataTypes.DATEONLY, 
         allowNull: true,
     },
-    interest: {
-        type: DataTypes.JSON,
-        allowNull: true
-    },
     login_site:{
         type: DataTypes.STRING(20),
         allowNull: false,
         defaultValue: "chipslyfans"
+    },
+    country:{
+        type: DataTypes.STRING(50),
+        allowNull: true,
+    },
+    city_state:{
+        type: DataTypes.STRING(50),
+        allowNull: true,
+    },
+    settings:{
+        type: DataTypes.JSON,
+        allowNull: true,
     }
 }, {
     tableName: "users",

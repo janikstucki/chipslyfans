@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import express from 'express';
 import Stripe from 'stripe';
-import { getUsers, createUser, deleteUser, getUserbyId } from '../controllers/userController.js';
+import { getUsers, createUser, deleteUser, getUserbyId, getUserSettings } from '../controllers/userController.js';
 import upload from "../middlewares/multer.js";
 import { authenticate } from '../middlewares/authMiddleware.js';
 import { Abonnement, Subscription } from '../models/index.js';
@@ -19,6 +19,8 @@ router.post('/', upload.single('profilepicture'), createUser);
 router.delete('/:id', deleteUser);
 
 router.get('/profile/:id',authenticate , getUserbyId);
+
+router.get('/settings/:id', authenticate, getUserSettings);
 
 router.post('/subscribe', authenticate, async (req, res) => {
     const { abonnementId } = req.body;
