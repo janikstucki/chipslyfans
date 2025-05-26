@@ -141,12 +141,18 @@ function cancelEdit(section) {
             Edit <PencilIcon class="w-4 h-4" />
           </button>
           <template v-else>
-            <button @click="saveChanges('head')" class="text-green-600 font-medium hover:underline flex items-center gap-1">
-              Save <CheckIcon class="w-4 h-4" />
-            </button>
-            <button @click="cancelEdit('head')" class="text-red-600 font-medium hover:underline flex items-center gap-1">
-              Cancel <XMarkIcon class="w-4 h-4" />
-            </button>
+            <div v-if="isSavingHead" class="flex items-center">
+              <div class="w-5 h-5 border-2 border-t-blue-500 border-gray-300 rounded-full animate-spin"></div>
+              <span class="ml-2 text-blue-600 text-sm">Saving...</span>
+            </div>
+            <template v-else>
+              <button @click="saveChanges('head')" class="text-green-600 font-medium hover:underline flex items-center gap-1">
+                Save <CheckIcon class="w-4 h-4" />
+              </button>
+              <button @click="cancelEdit('head')" class="text-red-600 font-medium hover:underline flex items-center gap-1">
+                Cancel <XMarkIcon class="w-4 h-4" />
+              </button>
+            </template>
           </template>
         </div>
       </div>
@@ -160,12 +166,18 @@ function cancelEdit(section) {
               Edit <PencilIcon class="w-4 h-4" />
             </button>
             <template v-else>
-              <button @click="saveChanges('personal')" class="text-green-600 font-medium hover:underline flex items-center gap-1">
-                Save <CheckIcon class="w-4 h-4" />
-              </button>
-              <button @click="cancelEdit('personal')" class="text-red-600 font-medium hover:underline flex items-center gap-1">
-                Cancel <XMarkIcon class="w-4 h-4" />
-              </button>
+              <div v-if="isSavingPersonal" class="flex items-center">
+                <div class="w-5 h-5 border-2 border-t-blue-500 border-gray-300 rounded-full animate-spin"></div>
+                <span class="ml-2 text-blue-600 text-sm">Saving...</span>
+              </div>
+              <template v-else>
+                <button @click="saveChanges('personal')" class="text-green-600 font-medium hover:underline flex items-center gap-1">
+                  Save <CheckIcon class="w-4 h-4" />
+                </button>
+                <button @click="cancelEdit('personal')" class="text-red-600 font-medium hover:underline flex items-center gap-1">
+                  Cancel <XMarkIcon class="w-4 h-4" />
+                </button>
+              </template>
             </template>
           </div>
         </div>
@@ -213,12 +225,18 @@ function cancelEdit(section) {
               Edit <PencilIcon class="w-4 h-4" />
             </button>
             <template v-else>
-              <button @click="saveChanges('address')" class="text-green-600 font-medium hover:underline flex items-center gap-1">
-                Save <CheckIcon class="w-4 h-4" />
-              </button>
-              <button @click="cancelEdit('address')" class="text-red-600 font-medium hover:underline flex items-center gap-1">
-                Cancel <XMarkIcon class="w-4 h-4" />
-              </button>
+              <div v-if="isSavingAddress" class="flex items-center">
+                <div class="w-5 h-5 border-2 border-t-blue-500 border-gray-300 rounded-full animate-spin"></div>
+                <span class="ml-2 text-blue-600 text-sm">Saving...</span>
+              </div>
+              <template v-else>
+                <button @click="saveChanges('address')" class="text-green-600 font-medium hover:underline flex items-center gap-1">
+                  Save <CheckIcon class="w-4 h-4" />
+                </button>
+                <button @click="cancelEdit('address')" class="text-red-600 font-medium hover:underline flex items-center gap-1">
+                  Cancel <XMarkIcon class="w-4 h-4" />
+                </button>
+              </template>
             </template>
           </div>
         </div>
