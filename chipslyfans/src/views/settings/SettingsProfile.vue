@@ -1,26 +1,27 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { PencilIcon } from '@heroicons/vue/24/outline';
+import { PencilIcon, CheckIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 
 const isLoading = ref(true);
+const isEditing = ref(false);
 const fallbackImage = null;
 
 const user = ref(null);
+const editedUser = ref({});
 
-const route = useRoute()
+const route = useRoute();
 
-
-
-
-onMounted(async() => {
+onMounted(async () => {
   const userid = route.params.id;
   const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users/settings/${userid}/general`, {
     method: 'GET',
     credentials: 'include'
   });
   if (response.ok) {
-    user.value = await response.json();
+    const data = await response.json();
+    user.value = data;
+    editedUser.value = { ...data }; // Kopie für Editing
     isLoading.value = false;
   } else {
     console.error('Failed to fetch user data');
@@ -36,7 +37,34 @@ const initials = computed(() => {
   const last = user.value.lastname ? user.value.lastname[0] : '';
   return first + last;
 });
+
+async function saveChanges() {
+  const userid = route.params.id;
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users/settings/${userid}/general`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(editedUser.value)
+    });
+    if (response.ok) {
+      user.value = { ...editedUser.value }; // Übernehme Änderungen
+      isEditing.value = false;
+      console.log('Changes saved!');
+    } else {
+      console.error('Failed to save changes');
+    }
+  } catch (error) {
+    console.error('Error saving changes:', error);
+  }
+}
+
+function cancelEdit() {
+  editedUser.value = { ...user.value }; // Änderungen verwerfen
+  isEditing.value = false;
+}
 </script>
+
 
 <template>
   <div class="space-y-8">
@@ -52,70 +80,108 @@ const initials = computed(() => {
         <div class="flex items-center gap-4">
           <div class="w-16 h-16 rounded-full bg-indigo-500 flex items-center justify-center text-white text-lg font-bold uppercase">
             <template v-if="user.profilepicture">
-              <img
-                class="w-16 h-16 rounded-full object-cover"
-                :src="user.profilepicture"
-                alt="Avatar"
-                @error="onImageError"
-              />
+              <img class="w-16 h-16 rounded-full object-cover" :src="user.profilepicture" alt="Avatar" @error="onImageError" />
             </template>
             <template v-else>
               {{ initials }}
             </template>
           </div>
           <div>
-            <h3 class="text-lg font-bold">{{ user.firstname }} {{ user.lastname }}</h3>
+            <h3 class="text-lg font-bold">
+              <template v-if="isEditing">
+                <input v-model="editedUser.firstname" class="border rounded px-2 py-1" />
+                <input v-model="editedUser.lastname" class="border rounded px-2 py-1 ml-2" />
+              </template>
+              <template v-else>
+                {{ user.firstname }} {{ user.lastname }}
+              </template>
+            </h3>
             <p class="text-gray-500">@{{ user.username }}</p>
           </div>
         </div>
-        <button class="text-blue-600 font-medium hover:underline flex items-center gap-1">
-          Edit
-          <PencilIcon class="w-4 h-4" />
-        </button>
+        <div class="flex gap-2">
+          <button v-if="!isEditing" @click="isEditing = true" class="text-blue-600 font-medium hover:underline flex items-center gap-1">
+            Edit <PencilIcon class="w-4 h-4" />
+          </button>
+          <template v-else>
+            <button @click="saveChanges" class="text-green-600 font-medium hover:underline flex items-center gap-1">
+              Save <CheckIcon class="w-4 h-4" />
+            </button>
+            <button @click="cancelEdit" class="text-red-600 font-medium hover:underline flex items-center gap-1">
+              Cancel <XMarkIcon class="w-4 h-4" />
+            </button>
+          </template>
+        </div>
       </div>
 
-      <!-- Persönliche Infos -->
       <div class="bg-white shadow rounded-lg p-6">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-semibold">Personal Information</h3>
-          <button class="text-blue-600 font-medium hover:underline flex items-center gap-1">
-            Edit
-            <PencilIcon class="w-4 h-4" />
-          </button>
+          <div class="flex gap-2">
+            <button v-if="!isEditing" @click="isEditing = true" class="text-blue-600 font-medium hover:underline flex items-center gap-1">
+              Edit <PencilIcon class="w-4 h-4" />
+            </button>
+            <template v-else>
+              <button @click="saveChanges" class="text-green-600 font-medium hover:underline flex items-center gap-1">
+                Save ✔
+              </button>
+              <button @click="cancelEdit" class="text-red-600 font-medium hover:underline flex items-center gap-1">
+                Cancel ✖
+              </button>
+            </template>
+          </div>
         </div>
+        
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <label class="text-sm text-gray-500">Username</label>
-            <p class="text-gray-900">{{ user.username }}</p>
+            <template v-if="!isEditing">
+              <p class="text-gray-900">{{ user.username }}</p>
+            </template>
+            <template v-else>
+              <input v-model="editedUser.username" class="border rounded px-2 py-1 w-full" />
+            </template>
           </div>
+
           <div>
             <label class="text-sm text-gray-500">First Name</label>
-            <p class="text-gray-900">{{ user.firstname }}</p>
+            <template v-if="!isEditing">
+              <p class="text-gray-900">{{ user.firstname }}</p>
+            </template>
+            <template v-else>
+              <input v-model="editedUser.firstname" class="border rounded px-2 py-1 w-full" />
+            </template>
           </div>
+
           <div>
             <label class="text-sm text-gray-500">Last Name</label>
-            <p class="text-gray-900">{{ user.lastname }}</p>
+            <template v-if="!isEditing">
+              <p class="text-gray-900">{{ user.lastname }}</p>
+            </template>
+            <template v-else>
+              <input v-model="editedUser.lastname" class="border rounded px-2 py-1 w-full" />
+            </template>
           </div>
+
           <div>
             <label class="text-sm text-gray-500">Email</label>
-            <p class="text-gray-900">{{ user.email }}</p>
+            <template v-if="!isEditing">
+              <p class="text-gray-900">{{ user.email }}</p>
+            </template>
+            <template v-else>
+              <input v-model="editedUser.email" type="email" class="border rounded px-2 py-1 w-full" />
+            </template>
           </div>
+
           <div>
             <label class="text-sm text-gray-500">Birthdate</label>
-            <p class="text-gray-900">{{ user.birthdate }}</p>
+            <template v-if="!isEditing">
+              <p class="text-gray-900">{{ user.birthdate }}</p>
+            </template>
+            <template v-else>
+              <input v-model="editedUser.birthdate" type="date" class="border rounded px-2 py-1 w-full" />
+            </template>
           </div>
-          <!-- <div class="sm:col-span-2">
-            <label class="text-sm text-gray-500">Interests</label>
-            <p class="text-gray-900">
-              <span
-                v-for="(item, index) in user.interest"
-                :key="index"
-                class="inline-block bg-gray-100 text-sm px-2 py-1 rounded-full mr-2"
-              >
-                {{ item }}
-              </span>
-            </p>
-          </div> -->
         </div>
       </div>
 
