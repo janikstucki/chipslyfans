@@ -104,7 +104,7 @@ const initials = computed(() => {
             <label class="text-sm text-gray-500">Birthdate</label>
             <p class="text-gray-900">{{ user.birthdate }}</p>
           </div>
-          <div class="sm:col-span-2">
+          <!-- <div class="sm:col-span-2">
             <label class="text-sm text-gray-500">Interests</label>
             <p class="text-gray-900">
               <span
@@ -115,7 +115,7 @@ const initials = computed(() => {
                 {{ item }}
               </span>
             </p>
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -131,11 +131,13 @@ const initials = computed(() => {
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <label class="text-sm text-gray-500">Country</label>
-            <p class="text-gray-900">{{ user.country }}</p>
+            <p v-if="user.country" class="text-gray-900">{{ user.country }}</p>
+            <p v-else class="text-gray-900">Not specified</p>
           </div>
           <div>
             <label class="text-sm text-gray-500">City/State</label>
-            <p class="text-gray-900">{{ user.city_state }}</p>
+            <p v-if="user.city_state" class="text-gray-900">{{ user.city_state }}</p>
+            <p v-else class="text-gray-900">Not specified</p>
           </div>
         </div>
       </div>
