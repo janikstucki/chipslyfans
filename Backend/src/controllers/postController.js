@@ -141,31 +141,34 @@ export const getPosts = async (req, res) => {
 
       const interestTags = userInterests.map(entry => entry.tag);
 
-      const matchingPosts = await Post.findAll({
-        where: {
-          tags: { [Op.overlap]: interestTags },
-          scheduleDate: { [Op.lte]: new Date() }
-        },
-        include: [{
-          model: User,
-          as: 'author',
-          attributes: ['id', 'username', 'profilepicture']
-        }],
-        order: [['createdAt', 'DESC']],
-        limit: 40
-      });
+      let matchingPosts = [];
+      if (interestTags.length > 0) {
+        matchingPosts = await Post.findAll({
+          where: {
+            tags: { [Op.overlap]: interestTags },
+            scheduleDate: { [Op.lte]: new Date() }
+          },
+          include: [{
+            model: User,
+            as: 'author',
+            attributes: ['id', 'username', 'profilepicture']
+          }],
+          order: [['createdAt', 'DESC']],
+          limit: 40
+        });
+      }
 
       const otherPosts = await Post.findAll({
         where: {
-          [Op.and]: [
-            { scheduleDate: { [Op.lte]: new Date() } },
-            {
-              [Op.or]: [
-                { tags: { [Op.notIn]: interestTags } },
-                { tags: null }
-              ]
-            }
-          ]
+          scheduleDate: { [Op.lte]: new Date() },
+          ...(interestTags.length > 0
+            ? {
+                [Op.or]: [
+                  { tags: { [Op.notIn]: interestTags } },
+                  { tags: null }
+                ]
+              }
+            : {}) 
         },
         include: [{
           model: User,
@@ -178,10 +181,26 @@ export const getPosts = async (req, res) => {
 
       const finalPosts = [
         ...matchingPosts.slice(0, 8),
-        ...otherPosts.slice(0, 2)
+        ...otherPosts.slice(0, matchingPosts.length > 0 ? 2 : 10)  // fallback: zieh mehr andere Posts
       ];
 
       finalPosts.sort(() => Math.random() - 0.5); // mischen
+
+      if (finalPosts.length === 0) {
+        const fallbackPosts = await Post.findAll({
+          where: {
+            scheduleDate: { [Op.lte]: new Date() }
+          },
+          include: [{
+            model: User,
+            as: 'author',
+            attributes: ['id', 'username', 'profilepicture']
+          }],
+          order: [['createdAt', 'DESC']],
+          limit: 10
+        });
+        return res.status(200).json(fallbackPosts.map(formatPost));
+      }
 
       return res.status(200).json(finalPosts.map(formatPost));
     }
