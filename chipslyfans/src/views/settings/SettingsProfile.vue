@@ -7,6 +7,9 @@ const isLoading = ref(true);
 const isEditingHead = ref(false);
 const isEditingPersonal = ref(false);
 const isEditingAddress = ref(false);
+const isSavingHead = ref(false);
+const isSavingPersonal = ref(false);
+const isSavingAddress = ref(false);
 const fallbackImage = null;
 
 const user = ref(null);
@@ -50,6 +53,19 @@ async function saveChanges(section) {
     }
   }
 
+  if (Object.keys(payload).length === 0) {
+    console.log('No changes to save');
+    if (section === 'head') isEditingHead.value = false;
+    if (section === 'personal') isEditingPersonal.value = false;
+    if (section === 'address') isEditingAddress.value = false;
+    return;
+  }
+
+  // Set saving state
+  if (section === 'head') isSavingHead.value = true;
+  if (section === 'personal') isSavingPersonal.value = true;
+  if (section === 'address') isSavingAddress.value = true;
+
   try {
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users/settings/${userid}/general`, {
       method: 'PATCH',
@@ -59,7 +75,8 @@ async function saveChanges(section) {
     });
     if (response.ok) {
       const updated = await response.json();
-      user.value = updated.user; // aktualisiere local state mit Backend-Werten
+      user.value = updated.user; 
+      editedUser.value = { ...updated.user };
       if (section === 'head') isEditingHead.value = false;
       if (section === 'personal') isEditingPersonal.value = false;
       if (section === 'address') isEditingAddress.value = false;
@@ -69,6 +86,11 @@ async function saveChanges(section) {
     }
   } catch (error) {
     console.error('Error saving changes:', error);
+  } finally {
+    // Always reset saving state
+    if (section === 'head') isSavingHead.value = false;
+    if (section === 'personal') isSavingPersonal.value = false;
+    if (section === 'address') isSavingAddress.value = false;
   }
 }
 
