@@ -1,27 +1,40 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { PencilIcon } from '@heroicons/vue/24/outline';
 
 const isLoading = ref(true);
+const fallbackImage = null;
 
 const user = ref(null);
 
-onMounted(() => {
-  // Simuliere ein API-Loading (z. B. 2 Sekunden)
-  // setTimeout(() => {
-  //   user.value = {
-  //     profilepicture: 'https://randomuser.me/api/portraits/men/75.jpg',
-  //     username: 'rafiqurrahman',
-  //     email: 'rafiqurrahman51@gmail.com',
-  //     firstname: 'Rafiqur',
-  //     lastname: 'Rahman',
-  //     birthdate: '1995-06-15',
-  //     interest: ['coding', 'design', 'coffee'],
-  //     country: 'United Kingdom',
-  //     city: 'Leeds, East London',
-  //   };
-  //   isLoading.value = false;
-  // }, 2000);
+const route = useRoute()
+
+
+
+
+onMounted(async() => {
+  const userid = route.params.id;
+  const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users/settings/${userid}/general`, {
+    method: 'GET',
+    credentials: 'include'
+  });
+  if (response.ok) {
+    user.value = await response.json();
+    isLoading.value = false;
+  } else {
+    console.error('Failed to fetch user data');
+  }
+});
+
+function onImageError(event) {
+  event.target.src = fallbackImage;
+}
+
+const initials = computed(() => {
+  const first = user.value.firstname ? user.value.firstname[0] : '';
+  const last = user.value.lastname ? user.value.lastname[0] : '';
+  return first + last;
 });
 </script>
 
@@ -37,7 +50,19 @@ onMounted(() => {
       <!-- Profilkopf -->
       <div class="bg-white shadow rounded-lg p-6 flex items-center justify-between">
         <div class="flex items-center gap-4">
-          <img class="w-16 h-16 rounded-full object-cover" :src="user.profilepicture" alt="Avatar" />
+          <div class="w-16 h-16 rounded-full bg-gray-300 flex items-center justify-center text-white text-lg font-bold uppercase">
+            <template v-if="user.profilepicture">
+              <img
+                class="w-16 h-16 rounded-full object-cover"
+                :src="user.profilepicture"
+                alt="Avatar"
+                @error="onImageError"
+              />
+            </template>
+            <template v-else>
+              {{ initials }}
+            </template>
+          </div>
           <div>
             <h3 class="text-lg font-bold">{{ user.firstname }} {{ user.lastname }}</h3>
             <p class="text-gray-500">@{{ user.username }}</p>
@@ -110,7 +135,7 @@ onMounted(() => {
           </div>
           <div>
             <label class="text-sm text-gray-500">City/State</label>
-            <p class="text-gray-900">{{ user.city }}</p>
+            <p class="text-gray-900">{{ user.city_state }}</p>
           </div>
         </div>
       </div>

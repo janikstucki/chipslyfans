@@ -58,7 +58,7 @@
 
 
 
-    const route = useRoute()
+const route = useRoute()
 const postId = route.params.id;
 
 const comments = ref([]);
