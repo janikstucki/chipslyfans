@@ -6,7 +6,7 @@ import { PencilIcon, CheckIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 const isLoading = ref(true);
 const isEditingHead = ref(false);
 const isEditingPersonal = ref(false);
-const isEditingAdress = ref(false);
+const isEditingAddress = ref(false);
 const fallbackImage = null;
 
 const user = ref(null);
@@ -40,18 +40,20 @@ const initials = computed(() => {
   return first + last;
 });
 
-async function saveChanges() {
+async function saveChanges(section) {
   const userid = route.params.id;
   try {
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users/settings/${userid}/general`, {
-      method: 'PUT',
+      method: 'PATCH', // hier PATCH statt PUT
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
       body: JSON.stringify(editedUser.value)
     });
     if (response.ok) {
-      user.value = { ...editedUser.value }; // Übernehme Änderungen
-      isEditing.value = false;
+      user.value = { ...editedUser.value };
+      if (section === 'head') isEditingHead.value = false;
+      if (section === 'personal') isEditingPersonal.value = false;
+      if (section === 'address') isEditingAddress.value = false;
       console.log('Changes saved!');
     } else {
       console.error('Failed to save changes');
@@ -61,9 +63,11 @@ async function saveChanges() {
   }
 }
 
-function cancelEdit() {
-  editedUser.value = { ...user.value }; // Änderungen verwerfen
-  isEditingHead.value = false;
+function cancelEdit(section) {
+  editedUser.value = { ...user.value };
+  if (section === 'head') isEditingHead.value = false;
+  if (section === 'personal') isEditingPersonal.value = false;
+  if (section === 'address') isEditingAddress.value = false;
 }
 </script>
 
@@ -102,42 +106,43 @@ function cancelEdit() {
           </div>
         </div>
         <div class="flex gap-2">
-          <button v-if="!isEditing" @click="isEditingHead = true" class="text-blue-600 font-medium hover:underline flex items-center gap-1">
+          <button v-if="!isEditingHead" @click="isEditingHead = true" class="text-blue-600 font-medium hover:underline flex items-center gap-1">
             Edit <PencilIcon class="w-4 h-4" />
           </button>
           <template v-else>
-            <button @click="saveChanges" class="text-green-600 font-medium hover:underline flex items-center gap-1">
+            <button @click="saveChanges('head')" class="text-green-600 font-medium hover:underline flex items-center gap-1">
               Save <CheckIcon class="w-4 h-4" />
             </button>
-            <button @click="cancelEdit" class="text-red-600 font-medium hover:underline flex items-center gap-1">
+            <button @click="cancelEdit('head')" class="text-red-600 font-medium hover:underline flex items-center gap-1">
               Cancel <XMarkIcon class="w-4 h-4" />
             </button>
           </template>
         </div>
       </div>
 
+
       <div class="bg-white shadow rounded-lg p-6">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-semibold">Personal Information</h3>
           <div class="flex gap-2">
-            <button v-if="!isEditing" @click="isEditing = true" class="text-blue-600 font-medium hover:underline flex items-center gap-1">
+            <button v-if="!isEditingPersonal" @click="isEditingPersonal = true" class="text-blue-600 font-medium hover:underline flex items-center gap-1">
               Edit <PencilIcon class="w-4 h-4" />
             </button>
             <template v-else>
-              <button @click="saveChanges" class="text-green-600 font-medium hover:underline flex items-center gap-1">
-                Save ✔
+              <button @click="saveChanges('personal')" class="text-green-600 font-medium hover:underline flex items-center gap-1">
+                Save <CheckIcon class="w-4 h-4" />
               </button>
-              <button @click="cancelEdit" class="text-red-600 font-medium hover:underline flex items-center gap-1">
-                Cancel ✖
+              <button @click="cancelEdit('personal')" class="text-red-600 font-medium hover:underline flex items-center gap-1">
+                Cancel <XMarkIcon class="w-4 h-4" />
               </button>
             </template>
           </div>
         </div>
-        
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <label class="text-sm text-gray-500">Username</label>
-            <template v-if="!isEditing">
+            <template v-if="!isEditingPersonal">
               <p class="text-gray-900">{{ user.username }}</p>
             </template>
             <template v-else>
@@ -146,28 +151,8 @@ function cancelEdit() {
           </div>
 
           <div>
-            <label class="text-sm text-gray-500">First Name</label>
-            <template v-if="!isEditing">
-              <p class="text-gray-900">{{ user.firstname }}</p>
-            </template>
-            <template v-else>
-              <input v-model="editedUser.firstname" class="border rounded px-2 py-1 w-full" />
-            </template>
-          </div>
-
-          <div>
-            <label class="text-sm text-gray-500">Last Name</label>
-            <template v-if="!isEditing">
-              <p class="text-gray-900">{{ user.lastname }}</p>
-            </template>
-            <template v-else>
-              <input v-model="editedUser.lastname" class="border rounded px-2 py-1 w-full" />
-            </template>
-          </div>
-
-          <div>
             <label class="text-sm text-gray-500">Email</label>
-            <template v-if="!isEditing">
+            <template v-if="!isEditingPersonal">
               <p class="text-gray-900">{{ user.email }}</p>
             </template>
             <template v-else>
@@ -177,7 +162,7 @@ function cancelEdit() {
 
           <div>
             <label class="text-sm text-gray-500">Birthdate</label>
-            <template v-if="!isEditing">
+            <template v-if="!isEditingPersonal">
               <p class="text-gray-900">{{ user.birthdate }}</p>
             </template>
             <template v-else>
@@ -187,25 +172,45 @@ function cancelEdit() {
         </div>
       </div>
 
+
       <!-- Adresse -->
       <div class="bg-white shadow rounded-lg p-6">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-semibold">Address</h3>
-          <button class="text-blue-600 font-medium hover:underline flex items-center gap-1">
-            Edit
-            <PencilIcon class="w-4 h-4" />
-          </button>
+          <div class="flex gap-2">
+            <button v-if="!isEditingAddress" @click="isEditingAddress = true" class="text-blue-600 font-medium hover:underline flex items-center gap-1">
+              Edit <PencilIcon class="w-4 h-4" />
+            </button>
+            <template v-else>
+              <button @click="saveChanges('address')" class="text-green-600 font-medium hover:underline flex items-center gap-1">
+                Save <CheckIcon class="w-4 h-4" />
+              </button>
+              <button @click="cancelEdit('address')" class="text-red-600 font-medium hover:underline flex items-center gap-1">
+                Cancel <XMarkIcon class="w-4 h-4" />
+              </button>
+            </template>
+          </div>
         </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
             <label class="text-sm text-gray-500">Country</label>
-            <p v-if="user.country" class="text-gray-900">{{ user.country }}</p>
-            <p v-else class="text-gray-900">Not specified</p>
+            <template v-if="!isEditingAddress">
+              <p class="text-gray-900">{{ user.country }}</p>
+            </template>
+            <template v-else>
+              <input v-model="editedUser.country" class="border rounded px-2 py-1 w-full" />
+            </template>
           </div>
+
           <div>
             <label class="text-sm text-gray-500">City/State</label>
-            <p v-if="user.city_state" class="text-gray-900">{{ user.city_state }}</p>
-            <p v-else class="text-gray-900">Not specified</p>
+            <template v-if="!isEditingAddress">
+              <p class="text-gray-900">{{ user.city_state }}</p>
+            </template>
+            <template v-else>
+              <input v-model="editedUser.city_state" class="border rounded px-2 py-1 w-full" />
+            </template>
           </div>
         </div>
       </div>
