@@ -202,3 +202,22 @@ export const getGeneralSettings = async (req, res) => {
         res.status(500).json({ message: 'Error fetching general settings' });
     }
 };
+
+export const patchGeneralSettings = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const updates = req.body; // nur die Felder, die vom Frontend geschickt wurden
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        await user.update(updates); // Sequelize patcht nur die mitgeschickten Felder
+
+        res.status(200).json({ message: 'User updated successfully', user });
+    } catch (error) {
+        console.error('Error patching general settings:', error);
+        res.status(500).json({ message: 'Error patching general settings' });
+    }
+};

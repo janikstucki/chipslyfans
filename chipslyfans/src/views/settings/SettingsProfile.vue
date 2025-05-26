@@ -42,12 +42,18 @@ const initials = computed(() => {
 
 async function saveChanges(section) {
   const userid = route.params.id;
+  const payload = {};
+  for (const key in editedUser.value) {
+    if (editedUser.value[key] !== user.value[key]) {
+      payload[key] = editedUser.value[key];
+    }
+  }
   try {
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/users/settings/${userid}/general`, {
       method: 'PATCH', // hier PATCH statt PUT
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify(editedUser.value)
+      body: JSON.stringify(payload)
     });
     if (response.ok) {
       user.value = { ...editedUser.value };
