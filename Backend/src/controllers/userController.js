@@ -172,3 +172,33 @@ export const getUserSettings = async (req, res) => {
         res.status(500).json({ message: 'Error fetching user settings' });
     }
 };
+
+
+export const getGeneralSettings = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const user = await User.findByPk(userId, {
+            attributes: [
+                'id', 
+                'username', 
+                'email', 
+                'profilepicture', 
+                'firstname', 
+                'lastname', 
+                'birthdate', 
+                'login_site', 
+                'country', 
+                'city_state'
+            ],
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(user.settings);
+    } catch (error) {
+        console.error('Error fetching general settings:', error);
+        res.status(500).json({ message: 'Error fetching general settings' });
+    }
+};
