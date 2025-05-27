@@ -43,13 +43,18 @@ async function toggleNotification(key) {
       credentials: 'include',
       body: JSON.stringify({ [key]: notifications.value[key] }),
     });
-    if (!response.ok) {
+    if (response.ok) {
+      const data = await response.json();
+      notifications.value = data.notifications; // hier aktualisieren wir den lokalen State mit der Backend-Antwort
+      console.log('Updated notifications:', notifications.value);
+    } else {
       console.error('Failed to update notification');
     }
   } catch (error) {
     console.error('Error updating notification:', error);
   }
 }
+
 </script>
 
 <template>
