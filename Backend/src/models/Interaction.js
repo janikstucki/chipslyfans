@@ -16,7 +16,16 @@ export const Interaction = sequelize.define("Interaction", {
         allowNull: false,
     },
     type: {
-        type: DataTypes.ENUM('visit','like', 'comment', 'share'),
+        type: DataTypes.ENUM(
+            'visit',
+            'like',
+            'comment',
+            'share',
+            'subscription',
+            'message',
+            'mention',
+            'login_alert'
+            ),
         allowNull: false,
     },
     tags: {

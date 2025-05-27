@@ -29,7 +29,7 @@ export const getUserInteractions = async (req, res) => {
       messages: 'message',
       postVisit: 'post_visit',
       mentions: 'mention',
-      loginAlerts: 'login_alert' // falls du sowas trackst
+      loginAlerts: 'login_alert' 
     };
 
     const allowedTypes = Object.keys(enabledNotifications)
@@ -39,7 +39,7 @@ export const getUserInteractions = async (req, res) => {
     const interactions = await Interaction.findAll({
       where: {
         userId,
-        type: allowedTypes // Sequelize macht WHERE type IN [...]
+        type: allowedTypes
       },
       include: [
         {
