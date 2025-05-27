@@ -70,7 +70,14 @@
     },
     "notifications": {
         "inbox": "Inbox",
-        "timestamp": {}
+        "like": "liked your post ",
+        "comment": "commented on your post ",
+        "visit": "visited your post ",
+        "share": "shared your post ",
+        "subscription": "subscribed to you",
+        "message": "sent you a message",
+        "mention": "mentioned you in a post",
+        "login_alert": "logged into your account"
     },
     "newpost": {
         "confirmation_box": {

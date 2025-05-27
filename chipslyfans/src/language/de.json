@@ -65,11 +65,16 @@
             }
         }
     },
-    "notifications":{
-        "inbox": "Postfach",
-        "timestamp": {
-            
-        }
+    "notifications": {
+        "inbox": "Posteingang",
+        "like": "hat deinen Beitrag \"{title}\" geliked",
+        "comment": "hat deinen Beitrag \"{title}\" kommentiert",
+        "visit": "hat deinen Beitrag \"{title}\" besucht",
+        "share": "hat deinen Beitrag \"{title}\" geteilt",
+        "subscription": "hat dich abonniert",
+        "message": "hat dir eine Nachricht gesendet",
+        "mention": "hat dich in einem Beitrag erwähnt",
+        "login_alert": "hat sich bei deinem Konto angemeldet"
     },
     "newpost": {
         "confirmation_box": {
