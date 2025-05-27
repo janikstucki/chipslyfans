@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import path from 'path';
 
 
-import { User, Post, UserTagInterest } from "../models/index.js";
+import { User, Post, UserTagInterest, Interaction } from "../models/index.js";
 
 import { Op, Sequelize } from 'sequelize';
 
@@ -110,10 +110,28 @@ export const getPosts = async (req, res) => {
     const offset = parseInt(req.query.offset) || 0;
     const limit = parseInt(req.query.limit) || 10;
 
+    let visitedPostIds = [];
+    if (userId) {
+      const visitedInteractions = await Interaction.findAll({
+        where: {
+          userId,
+          type: 'post_visit'
+        },
+        attributes: ['postId']
+      });
+
+      visitedPostIds = visitedInteractions.map(i => i.postId);
+      console.log('❗ Eingeloggter User:', userId, 'visitedPostIds:', visitedPostIds);
+    } else {
+      console.log('❗ Kein User eingeloggt → keine Filterung auf visitedPosts');
+    }
+    console.log('❗ userId:', userId);
+    console.log('Visited Post IDs:', visitedPostIds);
     // 🧠 FALL 1: Pagination aktiv – unabhängig vom User, z.B. beim Scrollen
     if (req.query.offset) {
       const posts = await Post.findAll({
         where: {
+          id: { [Op.notIn]: visitedPostIds },
           [Op.or]: [
             { scheduleDate: { [Op.lte]: new Date() } },
             { scheduleDate: null }
@@ -148,6 +166,7 @@ export const getPosts = async (req, res) => {
       if (interestTags.length > 0) {
         matchingPosts = await Post.findAll({
           where: {
+            id: { [Op.notIn]: visitedPostIds },
             [Op.or]: interestTags.map(tag => ({
               tags: { [Op.like]: `%${tag}%` }
             })),
@@ -168,6 +187,7 @@ export const getPosts = async (req, res) => {
 
       const otherPosts = await Post.findAll({
         where: {
+          id: { [Op.notIn]: visitedPostIds },
           [Op.or]: [
             { scheduleDate: { [Op.lte]: new Date() } },
             { scheduleDate: null }
@@ -199,6 +219,7 @@ export const getPosts = async (req, res) => {
       if (finalPosts.length === 0) {
         const fallbackPosts = await Post.findAll({
           where: {
+            id: { [Op.notIn]: visitedPostIds },
             [Op.or]: [
               { scheduleDate: { [Op.lte]: new Date() } },
               { scheduleDate: null }
@@ -221,6 +242,7 @@ export const getPosts = async (req, res) => {
     // 🧠 FALL 3: Öffentliche Posts für anonyme Nutzer
     const publicPosts = await Post.findAll({
       where: {
+        id: { [Op.notIn]: visitedPostIds },
         [Op.or]: [
           { scheduleDate: { [Op.lte]: new Date() } },
           { scheduleDate: null }
@@ -236,7 +258,7 @@ export const getPosts = async (req, res) => {
       order: [['createdAt', 'DESC']],
       limit: 10
     });
-
+    console.log('Post for HomeFeed');
     return res.status(200).json(publicPosts.map(formatPost));
   } catch (error) {
     console.error('Fehler beim Laden der Posts:', error);
@@ -284,7 +306,6 @@ export const getPostById = async (req, res) => {
         username: author?.username || 'Unbekannt'
       }
     };
-
     res.status(200).json({ success: true, data: formattedPost });
   } catch (error) {
     console.error('[getPostById] Fehler beim Laden des Beitrags:', error);
@@ -297,17 +318,6 @@ export const getPostById = async (req, res) => {
 // Controller-Funktionen
 export const postController = {
     uploadMiddleware: upload.array('images'),
-  getPosts: async (req, res) => {
-    try {
-      const posts = await Post.findAll({
-        order: [['createdAt', 'DESC']],
-        attributes: { exclude: ['updatedAt'] }
-      });
-      res.status(200).json({ success: true, data: posts });
-    } catch (error) {
-      handleError(res, error);
-    }
-  },
   createPost: async (req, res) => {
     try {
       const imageUrls = req.files?.map(file => ({

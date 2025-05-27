@@ -226,7 +226,12 @@ onMounted(async () => {
   authStore.checkAuth()
   isAuth.value = await checkAuthStatus()
 
-  const { data } = await useFetch('/posts')
+  console.log("Auth-Status:", isAuth.value)
+
+  const { data } = await fetch(`${import.meta.env.VITE_BASE_URL}/posts?offset=0&limit=${pageSize}`, {
+    method: 'GET',
+    credentials: 'include'
+  }).then(res => res.json())
   posts.value = data
   loadMorePosts()
 
@@ -297,7 +302,12 @@ async function loadMorePosts() {
 
   try {
     const offset = displayedPosts.value.length
-    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/posts?offset=${offset}&limit=${pageSize}`)
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/posts?offset=${offset}&limit=${pageSize}`,
+      {
+        method: 'GET',
+        credentials: 'include'
+      }
+    )
     const data = await res.json()
 
     if (Array.isArray(data) && data.length > 0) {
