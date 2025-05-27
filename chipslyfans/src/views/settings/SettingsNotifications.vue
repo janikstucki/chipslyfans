@@ -70,7 +70,7 @@ async function toggleNotification(key) {
           @click="toggleNotification(key)"
           :class="[
             'relative inline-flex h-6 w-11 items-center rounded-full transition',
-            value ? 'bg-green-500' : 'bg-gray-300'
+            value ? 'bg-gradient-to-br from-blue-700 to-indigo-400' : 'bg-gradient-to-br from-gray-200 via-gray-300 to-gray-400'
           ]"
         >
           <span
