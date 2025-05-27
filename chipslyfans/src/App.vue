@@ -43,6 +43,8 @@ const isAuth = ref(null)
 function changeLanguage(code) {
   locale.value = code
   languageDropdownOpen.value = false
+  // add language to cookies
+  document.cookie = `lang=${code}; path=/; max-age=31536000;` // 1 year
 }
 
 function closeOnClickOutside(e) {
@@ -73,6 +75,14 @@ onMounted(async () => {
   handleResize()
   window.addEventListener('resize', handleResize)
   document.addEventListener('click', closeOnClickOutside)
+  //get languages from cookies
+  const langCookie = document.cookie.split('; ').find(row => row.startsWith('lang='));
+  if (langCookie) {
+    const lang = langCookie.split('=')[1];
+    locale.value = lang;
+  } else {
+    locale.value = 'en'; // Default language
+  }
   authStore.checkAuth();
   isAuth.value = await isAuthenticated.value
   console.log(await isAuthenticated.value)
