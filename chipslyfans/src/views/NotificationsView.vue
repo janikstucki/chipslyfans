@@ -32,12 +32,21 @@
                 <span class="text-sm text-gray-500">{{ formatDate(b.datum) }}</span>
               </div>
               <p class="mt-1 text-gray-600">
-                <span>
-                  {{ $t(`notifications.${b.art}`, { title: b.post?.title || 'ohne Titel' }) }}
-                </span>
+                <template v-if="b.post">
+                  {{ $t(`notifications.${b.art}`) }}
+                  <router-link
+                    :to="`/post/${b.post.id}`"
+                    class="text-blue-600 hover:underline font-medium"
+                    @click.stop
+                  >
+                    "{{ b.post.title || 'untitled' }}"
+                  </router-link>
+                </template>
+                <template v-else>
+                  {{ $t(`notifications.${b.art}`) }}
+                </template>
               </p>
             </div>
-
             <!-- Icon -->
             <div class="relative">
               <component :is="b.Icon" class="w-6 h-6 text-gray-600" v-if="b.Icon" />
