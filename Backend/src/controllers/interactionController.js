@@ -12,21 +12,48 @@ export const getUserInteractions = async (req, res) => {
   try {
     const userId = req.user.id;
 
+    const user = await User.findByPk(userId, {
+      attributes: ['settings']
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const enabledNotifications = user.settings.notifications;
+
+    const notificationTypeMap = {
+      likes: 'like',
+      comments: 'comment',
+      subscriptions: 'subscription',
+      messages: 'message',
+      postVisit: 'post_visit',
+      mentions: 'mention',
+      loginAlerts: 'login_alert' // falls du sowas trackst
+    };
+
+    const allowedTypes = Object.keys(enabledNotifications)
+      .filter(key => enabledNotifications[key])
+      .map(key => notificationTypeMap[key]);
+
     const interactions = await Interaction.findAll({
-      where: { userId },
+      where: {
+        userId,
+        type: allowedTypes // Sequelize macht WHERE type IN [...]
+      },
       include: [
         {
           model: Post,
           as: 'post',
-          attributes: ['id','title']
+          attributes: ['id', 'title']
         },
         {
           model: User,
-          as: 'user', 
+          as: 'user',
           attributes: ['id', 'username', 'profilepicture']
         }
       ],
-      order: [['createdAt', 'DESC']],
+      order: [['createdAt', 'DESC']]
     });
 
     res.status(200).json(interactions);
