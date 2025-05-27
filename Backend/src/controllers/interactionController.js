@@ -194,6 +194,13 @@ export const addPostVisit = async (req, res) => {
       defaults: { tags }
     });
 
+    if (!created) {
+      interaction.tags = tags;
+      await interaction.save();
+    }
+
+    await updateUserTagInterests(userId, tags);
+
     res.status(201).json({ success: true, created });
   } catch (err) {
     console.error("❌ Fehler bei addPostVisit:", err);
