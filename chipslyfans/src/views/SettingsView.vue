@@ -16,9 +16,11 @@
             :key="item.label"
             :to="item.to"
             class="relative px-4 py-2 rounded-md font-medium text-center lg:text-left"
-            active-class="bg-blue-100 text-blue-700"
-          >
-            <span v-if="route.path.startsWith(item.to)" class="absolute inset-y-0 left-0 w-1 bg-blue-500 rounded-full"></span>
+            :class="{
+              'bg-blue-100 text-blue-700': isActiveTab(item),
+              'text-gray-700 hover:bg-gray-100': !isActiveTab(item)
+            }">
+            <span v-if="isActiveTab(item)" class="absolute inset-y-0 left-0 w-1 bg-blue-500 rounded-full"></span>
             {{ item.label }}
           </RouterLink>
         </nav>
@@ -47,9 +49,10 @@ const menu = [
   { label: 'Delete Account', to: `/user/${route.params.id}/settings/delete-account` }
 ];
 
-// function isActiveTab(path) {
-//   const currentPath = route.path.endsWith('/') ? route.path.slice(0, -1) : route.path;
-//   const base = currentPath.split('/').pop();
-//   return base === path || (path.endsWith('/settings') && base === 'settings');
-// }
+function isActiveTab(item) {
+  if (item.to.endsWith('/settings')) {
+    return route.path === item.to;
+  }
+  return route.path === item.to || route.path.startsWith(item.to + '/');
+}
 </script>
