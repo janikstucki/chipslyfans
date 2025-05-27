@@ -26,13 +26,14 @@
         </nav>
       </aside>
 
-      <!-- Content -->
+      <!-- Child View -->
       <section class="flex-1">
         <RouterView />
       </section>
     </div>
   </div>
 </template>
+
 <script setup>
 import { useRouter, useRoute } from 'vue-router';
 import { ArrowUturnLeftIcon } from '@heroicons/vue/24/outline';
@@ -41,19 +42,16 @@ const router = useRouter();
 const route = useRoute();
 
 const menu = [
-  { label: 'My Profile', to: '' },
-  { label: 'Security', to: 'security' },
-  { label: 'Notifications', to: 'notifications' },
-  { label: 'Billing', to: 'billing' },
-  { label: 'Delete Account', to: 'delete-account' }
+  { label: 'My Profile', to: `/user/${route.params.id}/settings` },
+  { label: 'Security', to: `/user/${route.params.id}/settings/security` },
+  { label: 'Notifications', to: `/user/${route.params.id}/settings/notifications` },
+  { label: 'Billing', to: `/user/${route.params.id}/settings/billing` },
+  { label: 'Delete Account', to: `/user/${route.params.id}/settings/delete-account` }
 ];
 
-// Helper to check active tab
 function isActiveTab(path) {
   const currentPath = route.path.endsWith('/') ? route.path.slice(0, -1) : route.path;
-  const base = currentPath.split('/').pop(); // last part of path
-  return base === path;
+  const base = currentPath.split('/').pop();
+  return base === path || (path.endsWith('/settings') && base === 'settings');
 }
 </script>
-
-
