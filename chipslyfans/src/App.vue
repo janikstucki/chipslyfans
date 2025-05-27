@@ -246,7 +246,7 @@ const isAuthenticated = computed(async () => {
     @click="languageDropdownOpen = !languageDropdownOpen"
     class="flex items-center w-full p-3 rounded-lg transition hover:bg-gray-100"
   >
-    <span class="text-lg">{{ languages.find(l => l.code === locale)?.flag }}</span>
+    <img :src="languages.find(l => l.code === locale)?.flag" alt="flag" class="h-5 w-5 rounded-full" />
     <span v-if="isExpanded" class="ml-3 text-sm">{{ languages.find(l => l.code === locale)?.name }}</span>
     <ChevronDownIcon v-if="isExpanded" class="ml-auto h-4 w-4 text-gray-500" />
   </button>
@@ -263,7 +263,7 @@ const isAuthenticated = computed(async () => {
                 @click="changeLanguage(lang.code)"
                 class="flex items-center p-2 rounded hover:bg-gray-100 cursor-pointer"
               >
-                <span class="text-lg">{{ lang.flag }}</span>
+                <img :src="lang.flag" alt="flag" class="h-5 w-5 rounded-full" />
                 <span class="ml-2 text-sm">{{ lang.name }}</span>
               </li>
             </ul>
