@@ -24,7 +24,8 @@ onMounted(async () => {
     });
     if (response.ok) {
       const data = await response.json();
-      notifications.value = data.notifications;
+      notifications.value = data;
+      console.log('Notifications fetched successfully:', notifications.value);
     } else {
       console.error('Failed to fetch notifications');
     }

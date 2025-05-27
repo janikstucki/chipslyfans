@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import express from 'express';
 import Stripe from 'stripe';
-import { getUsers, createUser, deleteUser, getUserbyId, getGeneralSettings, patchGeneralSettings} from '../controllers/userController.js';
+import { getUsers, createUser, deleteUser, getUserbyId, getGeneralSettings, patchGeneralSettings, getNotificationSettings, patchNotificationSettings} from '../controllers/userController.js';
 import upload from "../middlewares/multer.js";
 import { authenticate } from '../middlewares/authMiddleware.js';
 import { Abonnement, Subscription } from '../models/index.js';
@@ -69,5 +69,8 @@ router.get('/payment-status/:sessionId', authenticate, async (req, res) => {
 
 router.get('/settings/:id/general', authenticate, getGeneralSettings);
 router.patch('/settings/:id/general', authenticate, patchGeneralSettings);
+
+router.get('/settings/:id/notifications', authenticate, getNotificationSettings);
+router.patch('/settings/:id/notifications', authenticate, patchNotificationSettings);
 
 export default router;

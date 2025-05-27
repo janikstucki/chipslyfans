@@ -221,3 +221,42 @@ export const patchGeneralSettings = async (req, res) => {
         res.status(500).json({ message: 'Error patching general settings' });
     }
 };
+
+export const getNotificationSettings = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const user = await User.findByPk(userId, {
+            attributes: ['id', 'settings'],
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(user.settings.notifications);
+    } catch (error) {
+        console.error('Error fetching notification settings:', error);
+        res.status(500).json({ message: 'Error fetching notification settings' });
+    }
+}
+
+
+export const patchNotificationSettings = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const { notifications } = req.body; // nur die Benachrichtigungseinstellungen
+
+        const user = await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.settings.notifications = notifications; // Update der Benachrichtigungseinstellungen
+        await user.save();
+
+        res.status(200).json({ message: 'Notification settings updated successfully', notifications: user.settings.notifications });
+    } catch (error) {
+        console.error('Error patching notification settings:', error);
+        res.status(500).json({ message: 'Error patching notification settings' });
+    }
+};
