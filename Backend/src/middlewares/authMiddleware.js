@@ -8,26 +8,26 @@ dotenv.config();
 
 export const authenticate = async (req, res, next) => {
     try {
-      const token = req.cookies.jwt
-      
-      if (!token) {
-        return res.status(401).json({ message: 'Not authenticated' })
-      }
-  
-      const decoded = verifyToken(token) // Deine Token-Verifizierungsfunktion
-      const user = await User.findByPk(decoded.id)
-      
-      if (!user) {
-        return res.status(401).json({ message: 'User not found' })
-      }
-  
-      req.user = user // User-Objekt an Request anhängen
-      next()
+        const token = req.cookies.jwt
+        
+        if (!token) {
+            return res.status(401).json({ message: 'Not authenticated' })
+        }
+    
+        const decoded = verifyToken(token) // Deine Token-Verifizierungsfunktion
+        const user = await User.findByPk(decoded.id)
+        
+        if (!user) {
+            return res.status(401).json({ message: 'User not found' })
+        }
+    
+        req.user = user // User-Objekt an Request anhängen
+        next()
     } catch (error) {
-      console.error('Authentication error:', error)
-      res.status(401).json({ message: 'Invalid token' })
+        console.error('Authentication error:', error)
+        res.status(401).json({ message: 'Invalid token' })
     }
-  }
+}
 
 export const authMiddleware = async (req, res, next) => {
     const accessToken = req.cookies['auth_token'];
@@ -84,23 +84,44 @@ export const authMiddleware = async (req, res, next) => {
 };
 
 
-export const optionalAuthMiddleware = (req, res, next) => {
-    if (req.session && req.session.user) {
-        req.user = req.session.user;
-    }
-    else if (req.headers.authorization) {
-        const token = req.headers.authorization.split(' ')[1];
-        // hier dein Token validieren (z. B. mit jwt.verify)
-        try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded;
-        } catch (err) {
-        req.user = null;
+export const optionalAuthMiddleware = async (req, res, next) => {
+    try {
+        // Prüfe Cookie
+        const token = req.cookies.jwt;
+        if (token) {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const user = await User.findByPk(decoded.id);
+            if (user) {
+                req.user = user;
+                return next();
+            }
         }
-    }
-    else {
-        req.user = null;
-    }
 
-    next();
+        // Prüfe Authorization-Header
+        if (req.headers.authorization) {
+            const headerToken = req.headers.authorization.split(' ')[1];
+            const decoded = jwt.verify(headerToken, process.env.JWT_SECRET);
+            const user = await User.findByPk(decoded.id);
+            if (user) {
+                req.user = user;
+                return next();
+            }
+        }
+
+        // Prüfe Session (falls genutzt)
+        if (req.session && req.session.user) {
+            req.user = req.session.user;
+            return next();
+        }
+
+        // Wenn nichts gefunden → anonym
+        req.user = null;
+        next();
+
+    } catch (err) {
+        console.error('OptionalAuth error:', err);
+        req.user = null;
+        next();
+    }
 };
+
