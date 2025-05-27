@@ -113,7 +113,7 @@ function cancelEdit(section) {
     </div>
     <div v-else>
       <!-- Profilkopf -->
-      <div class="bg-white shadow rounded-lg p-6 flex items-center justify-between">
+      <div class="bg-white my-8 shadow rounded-lg p-6 flex items-center justify-between">
         <div class="flex items-center gap-4">
           <div class="w-16 h-16 rounded-full bg-indigo-500 flex items-center justify-center text-white text-lg font-bold uppercase">
             <template v-if="user.profilepicture">
@@ -158,7 +158,7 @@ function cancelEdit(section) {
       </div>
 
 
-      <div class="bg-white shadow rounded-lg p-6">
+      <div class="bg-white my-8 shadow rounded-lg p-6">
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-lg font-semibold">Personal Information</h3>
           <div class="flex gap-2">
