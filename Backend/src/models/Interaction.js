@@ -17,7 +17,8 @@ export const Interaction = sequelize.define("Interaction", {
     },
     type: {
         type: DataTypes.ENUM(
-            'visit',
+            'profile_visit',
+            'post_visit',
             'like',
             'comment',
             'share',

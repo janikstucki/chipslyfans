@@ -25,6 +25,8 @@ export const createUser = async (req, res) => {
         const defaultSettings = {
             notifications: {
                 likes: true,
+                post_visit: true,
+                profile_visit: true,
                 comments: true,
                 subscriptions: true,
                 messages: true,
