@@ -176,3 +176,29 @@ export const addComment = async (req, res) => {
   }
 };
 
+
+export const addPostVisit = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { postId } = req.body;
+
+    const post = await Post.findByPk(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    const tags = post.tags?.slice(0, 3) || []; 
+
+    const [interaction, created] = await Interaction.findOrCreate({
+      where: { userId, postId, type: 'post_visit' },
+      defaults: { tags }
+    });
+
+    res.status(201).json({ success: true, created });
+  } catch (err) {
+    console.error("❌ Fehler bei addPostVisit:", err);
+    res.status(500).json({ error: "Post-Visit konnte nicht gespeichert werden." });
+  }
+};
+
+

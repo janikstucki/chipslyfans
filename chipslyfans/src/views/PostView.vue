@@ -156,10 +156,14 @@ onMounted(async () => {
     const data = await res.json()
 
     if (res.ok && data.success) {
-      post.value = data.data
-      hasLiked.value = post.value.likes?.likedBy?.includes(userId.value)
+    post.value = data.data
+    hasLiked.value = post.value.likes?.likedBy?.includes(userId.value)
+
+    // Tracke, dass der User diesen Post besucht hat
+    await trackPostVisit();
+
     } else {
-      console.warn('Post nicht gefunden oder Fehler:', data)
+    console.warn('Post nicht gefunden oder Fehler:', data)
     }
   } catch (err) {
     console.error('Fehler beim Laden des Posts oder Auth:', err)
@@ -182,6 +186,26 @@ async function toggleLike() {
     }
   } catch (err) {
     console.error('Fehler beim Like Request:', err)
+  }
+}
+
+async function trackPostVisit() {
+  try {
+    const res = await fetch(`${import.meta.env.VITE_BASE_URL}/interactions/post-visit`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ postId }),
+    });
+
+    if (res.ok) {
+      console.log('✅ Post-Visit erfolgreich getrackt');
+    } else {
+      const errData = await res.json();
+      console.warn('⚠️ Fehler beim Tracken des Post-Visits:', errData);
+    }
+  } catch (err) {
+    console.error('❌ Fehler beim Tracken des Post-Visits:', err);
   }
 }
 
