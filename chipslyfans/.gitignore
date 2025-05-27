@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+*flag-icons-main
+.flag-icons-main
+./flag-icons-main
+flag-icons-main

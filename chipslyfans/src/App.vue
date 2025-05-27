@@ -3,6 +3,8 @@ import { useRoute } from 'vue-router';
 import { computed, ref, onMounted, onBeforeUnmount  } from 'vue';
 import { useAuthStore } from './store/auth.js';
 import { useFetch } from './helpers/authenticate.js'
+import { useI18n } from 'vue-i18n'
+import { languages } from './language/languages.js'
 import { 
   ChevronRightIcon, 
   ChevronLeftIcon,
@@ -18,6 +20,7 @@ import {
   ArrowLeftStartOnRectangleIcon,
 
 } from '@heroicons/vue/24/outline'
+import { ChevronDownIcon } from '@heroicons/vue/24/solid'
 import router from './router';
 
 const isExpanded = ref(true)
@@ -26,11 +29,27 @@ const authStore = useAuthStore();
 const isSidebarVisibleMobile = ref(false)
 const route = useRoute();
 const userId = ref('')
+
+const { locale } = useI18n()
+const languageDropdownOpen = ref(false)
+const dropdownRef = ref(null)
+
 const showNavbar = computed(() => {
   return route.path !== '/login' && !route.path.includes('/settings');
 });
 const isAuth = ref(null)
 
+
+function changeLanguage(code) {
+  locale.value = code
+  languageDropdownOpen.value = false
+}
+
+function closeOnClickOutside(e) {
+  if (dropdownRef.value && !dropdownRef.value.contains(e.target)) {
+    languageDropdownOpen.value = false
+  }
+}
 
 function toggleSidebar() {
   if (!isMobile.value) {
@@ -53,6 +72,7 @@ function handleResize() {
 onMounted(async () => {
   handleResize()
   window.addEventListener('resize', handleResize)
+  document.addEventListener('click', closeOnClickOutside)
   authStore.checkAuth();
   isAuth.value = await isAuthenticated.value
   console.log(await isAuthenticated.value)
@@ -60,6 +80,7 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', handleResize)
+  document.removeEventListener('click', closeOnClickOutside)
 })
 
 
@@ -219,7 +240,35 @@ const isAuthenticated = computed(async () => {
             <EllipsisHorizontalIcon class="h-6 w-6 flex-shrink-0" />
             <span class="ml-3 whitespace-nowrap transition-opacity duration-200" :class="{ 'opacity-0': (!isExpanded && !isSidebarVisibleMobile) }">{{ $t('nav.more') }}</span>
           </router-link>
+          <!-- Language Selector -->
+<div class="relative px-3 mt-4" ref="dropdownRef">
+  <button
+    @click="languageDropdownOpen = !languageDropdownOpen"
+    class="flex items-center w-full p-3 rounded-lg transition hover:bg-gray-100"
+  >
+    <span class="text-lg">{{ languages.find(l => l.code === locale)?.flag }}</span>
+    <span v-if="isExpanded" class="ml-3 text-sm">{{ languages.find(l => l.code === locale)?.name }}</span>
+    <ChevronDownIcon v-if="isExpanded" class="ml-auto h-4 w-4 text-gray-500" />
+  </button>
 
+          <!-- Dropdown -->
+          <div
+            v-if="languageDropdownOpen"
+            class="absolute left-full top-0 ml-2 z-50 w-48 bg-white rounded-lg shadow-lg border border-gray-200"
+          >
+            <ul class="grid grid-cols-2 gap-1 p-2">
+              <li
+                v-for="lang in languages"
+                :key="lang.code"
+                @click="changeLanguage(lang.code)"
+                class="flex items-center p-2 rounded hover:bg-gray-100 cursor-pointer"
+              >
+                <span class="text-lg">{{ lang.flag }}</span>
+                <span class="ml-2 text-sm">{{ lang.name }}</span>
+              </li>
+            </ul>
+          </div>
+        </div>
           <div class="px-3 mt-6 transition-all duration-300" :class="{'mx-0': !isExpanded, 'mx-3': isExpanded}">
             <button 
               @click="router.push('/new-post')"
@@ -257,10 +306,10 @@ const isAuthenticated = computed(async () => {
         </div>
       </aside>
       <div
-  v-if="isSidebarVisibleMobile"
-  @click="isSidebarVisibleMobile = false"
-  class="fixed inset-0 bg-black/30 z-40 sm:hidden"
-></div>
+        v-if="isSidebarVisibleMobile"
+        @click="isSidebarVisibleMobile = false"
+        class="fixed inset-0 bg-black/30 z-40 sm:hidden"
+      ></div>
     </div>
 
     <main 
