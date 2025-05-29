@@ -33,6 +33,7 @@ The platform is ideal for artists, performers, educators, fitness coaches, and a
 - **Bcrypt** (Password hashing)
 - **Cloud Storage Integration with AWS S3**
 - **Payments with STRIPE**
+- **Adaptive feed for user's interests**
 
 ---
 
