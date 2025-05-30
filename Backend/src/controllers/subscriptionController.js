@@ -76,10 +76,11 @@ export const getMySubscriptions = async (req, res) => {
             where: { consumerId },
             include: [{
                 model: Abonnement,
+                as: 'abonnement', // <-- wichtig!
                 include: [{
                     model: User,
                     as: 'creator',
-                    attributes: ['id', 'username'], // oder was du brauchst
+                    attributes: ['id', 'username'],
                 }],
             }],
         });

@@ -9,6 +9,7 @@ import authRoutes from "./routes/authRoutes.js";
 import subscriptionRoutes from "./routes/subscriptionRoutes.js";
 import commentRoutes from "./routes/commentRoutes.js";
 import interactionRoutes from "./routes/interactionRoutes.js";
+import abonnementRoutes from "./routes/abonnementRoutes.js";
 
 import webhookRoutes from "./middlewares/webhookRoutes.js";
 import { connectDB, sequelize } from "./config/db.js";
@@ -58,6 +59,7 @@ app.use("/auth", authRoutes);
 app.use("/subscription", subscriptionRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/interactions", interactionRoutes)
+app.use("/abonnements", abonnementRoutes)
 
 async function startServer() {
     await connectDB();

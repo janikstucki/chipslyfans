@@ -72,6 +72,7 @@
     
 <script setup>
   import { ref, onMounted } from 'vue';
+  import { MinusCircleIcon } from '@heroicons/vue/24/solid';
   
   const subscriptions = ref([]);
   const createPrice = ref('');
@@ -101,7 +102,7 @@
 
   const createAbonnement = async () => {
       try {
-          const res = await fetch(`${import.meta.env.VITE_BASE_URL}/abonnement`, {
+          const res = await fetch(`${import.meta.env.VITE_BASE_URL}/abonnements`, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
