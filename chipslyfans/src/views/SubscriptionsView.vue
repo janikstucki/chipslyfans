@@ -72,12 +72,14 @@
     
 <script setup>
   import { ref, onMounted } from 'vue';
-
+  
   const subscriptions = ref([]);
-
+  const createPrice = ref('');
+  const createDescription = ref('');
+  
   onMounted(async () => {
-      try {
-          const res = await fetch('/api/subscription/my', {
+    try {
+          const res = await fetch(`${import.meta.env.VITE_BASE_URL}/subscription/my`, {
               method: 'GET',
               headers: {
                   'Content-Type': 'application/json',
@@ -95,6 +97,37 @@
           console.error('Fehler beim Laden der Subscriptions:', error);
       }
   });
+
+
+  const createAbonnement = async () => {
+      try {
+          const res = await fetch(`${import.meta.env.VITE_BASE_URL}/abonnement`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+              body: JSON.stringify({
+                  cost: createPrice.value,
+                  description: createDescription.value,
+              }),
+          });
+
+          if (!res.ok) {
+              const err = await res.json();
+              throw new Error(err.message || 'Fehler beim Erstellen des Abonnements');
+          }
+
+          const data = await res.json();
+          console.log('Abonnement erstellt:', data);
+          alert('Abonnement erfolgreich erstellt!');
+          // Optional: Seite neu laden oder Dashboard-Daten neu holen
+      } catch (error) {
+          console.error('Fehler beim Erstellen des Abonnements:', error);
+          alert(error.message);
+      }
+  };
+
 </script>
   
   
