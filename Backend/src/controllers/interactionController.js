@@ -108,15 +108,23 @@ export const markInteractionAsRead = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const interaction = await Interaction.findOne({
-      where: {
-        id,
-        userId
-      }
+    const interaction = await Interaction.findByPk(id, {
+      include: [{
+        model: Post,
+        as: 'post',
+        attributes: ['authorId']
+      }]
     });
 
     if (!interaction) {
       return res.status(404).json({ error: 'Interaktion nicht gefunden' });
+    }
+
+    const isOwnerInteraction = interaction.userId === userId;
+    const isOwnerOfPost = interaction.post?.authorId === userId;
+
+    if (!isOwnerInteraction && !isOwnerOfPost) {
+      return res.status(403).json({ error: 'Keine Berechtigung, diese Interaktion zu ändern' });
     }
 
     // Markiere als gelesen
