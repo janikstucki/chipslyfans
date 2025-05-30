@@ -35,10 +35,10 @@
           
           <div v-if="myAbonnement">
             <p>Aktueller Preis: {{ myAbonnement.abonnement.cost }} CHF</p>
-            <p>Ab nächstem Jahr: {{ myAbonnement.abonnement.futureCost || 'nicht gesetzt' }} CHF</p>
+            <p>Ab dem nächsten Jahr: {{ myAbonnement.abonnement.futureCost || 'nicht gesetzt' }} CHF</p>
             <p>Abonnenten: {{ myAbonnement.subscriberCount }}</p>
 
-            <div class="mt-4 grid grid-cols-3 gap-4">
+            <div class="mt-4 flex flex-wrap gap-4">
               <div class="p-4 bg-gray-50 rounded">
                 <p class="text-sm text-gray-500">Heute</p>
                 <p class="text-xl font-bold">{{ myAbonnement.earnings.today }} CHF</p>
@@ -82,7 +82,7 @@
   const myAbonnement = ref(null);
   const createPrice = ref('');
   const createDescription = ref('');
-  const newPrice = ref('');
+  const newPrice = ref();
   let userId = ref('')
   
   onMounted(async () => {
@@ -133,6 +133,7 @@
   }
 
   const createAbonnement = async () => {
+    console.log(newPrice.value);
     try {
         const res = await fetch(`${import.meta.env.VITE_BASE_URL}/abonnements`, {
             method: 'POST',
@@ -159,4 +160,37 @@
     }
   };
 
+  const updatePrice = async () => {
+    const futureCostValue = Number(newPrice.value);
+    console.log('DEBUG | Future cost to send:', futureCostValue);
+      if (!newPrice.value || isNaN(newPrice.value)) {
+          alert('Bitte einen gültigen Preis eingeben.');
+          return;
+      }
+
+      try {
+          const response = await fetch(`${import.meta.env.VITE_BASE_URL}/abonnements/${myAbonnement.value.abonnement.id}/future-cost`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              credentials: 'include',
+              body: JSON.stringify({ futureCost: futureCostValue }),
+          });
+
+          if (!response.ok) {
+              const errorData = await response.json();
+              throw new Error(errorData.message || 'Unbekannter Fehler beim Aktualisieren');
+          }
+
+          const result = await response.json();
+          console.log('Backend-Antwort:', result);
+
+          myAbonnement.value.abonnement.futureCost = result.abonnement.futureCost;
+          newPrice.value = '';
+
+          alert('Neuer Preis erfolgreich gespeichert!');
+      } catch (error) {
+          console.error('Fehler beim Aktualisieren des Preises:', error);
+          alert(error.message || 'Fehler beim Aktualisieren des Preises');
+      }
+  };
 </script>

@@ -111,7 +111,8 @@ export const getAbonnementDashboard = async (req, res) => {
 
 
 export async function updateFutureCost(abonnementId, futureCost) {
-    if (!futureCost || isNaN(futureCost)) {
+    const numericFutureCost = Number(futureCost);
+    if (isNaN(numericFutureCost) || numericFutureCost <= 0) {
         throw new Error('Ungültiger Preis');
     }
 
@@ -120,7 +121,7 @@ export async function updateFutureCost(abonnementId, futureCost) {
         throw new Error('Abonnement nicht gefunden');
     }
 
-    abonnement.futureCost = futureCost;
+    abonnement.futureCost = numericFutureCost;
     await abonnement.save();
 
     return abonnement;
@@ -131,13 +132,13 @@ export async function handleUpdateFutureCost(req, res) {
     const { futureCost } = req.body;
 
     try {
-        const updatedAbonnement = await updateFutureCost(id, futureCost);
+        const updated = await updateFutureCost(id, futureCost);
         res.json({
             message: 'Future-Cost erfolgreich aktualisiert',
-            abonnement: updatedAbonnement,
+            abonnement: updated,
         });
     } catch (error) {
-        console.error('Fehler beim Aktualisieren des Future-Cost:', error);
+        console.error('Fehler:', error);
         if (error.message === 'Abonnement nicht gefunden') {
             res.status(404).json({ message: error.message });
         } else if (error.message === 'Ungültiger Preis') {
@@ -147,4 +148,3 @@ export async function handleUpdateFutureCost(req, res) {
         }
     }
 }
-
