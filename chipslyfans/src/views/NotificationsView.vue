@@ -87,7 +87,7 @@ const benachrichtigungen = ref([]);
 const iconMap = {
   like: HeartIcon,
   comment: ChatBubbleLeftIcon,
-  visit: EyeIcon,
+  post_visit: EyeIcon,
   share: BookmarkIcon,
   subscription: BanknotesIcon,
   message: ChatBubbleLeftRightIcon,
@@ -110,7 +110,18 @@ onMounted(async () => {
     const data = await res.json();
     console.log('Benachrichtigungen:', data);
 
-    benachrichtigungen.value = data.map((i) => ({
+    // My actions excluding post visits
+    const myActions = (data.myInteractions || []).filter(
+      i => i.type !== 'post_visit'
+    );
+
+    // Foreign visits on my posts
+    const foreignVisits = data.visitsOnMyPosts || [];
+
+    // Merge both arrays
+    const allNotifications = [...myActions, ...foreignVisits];
+
+    benachrichtigungen.value = allNotifications.map((i) => ({
       id: i.id,
       autor: i.user?.username || 'Unbekannt',
       profilbild: i.user?.profilepicture || null,
@@ -123,11 +134,13 @@ onMounted(async () => {
     }));
 
     benachrichtigungen.value.sort((a, b) => new Date(b.datum) - new Date(a.datum));
+
     isLoading.value = false;
   } catch (err) {
     console.error('Fehler beim Laden:', err);
   }
 });
+
 
 async function readNotification(id) {
   try {

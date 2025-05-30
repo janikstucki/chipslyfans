@@ -72,7 +72,7 @@
         "inbox": "Inbox",
         "like": "liked your post ",
         "comment": "commented on your post ",
-        "visit": "visited your post ",
+        "post_visit": "viewed your post ",
         "share": "shared your post ",
         "subscription": "subscribed to you",
         "message": "sent you a message",

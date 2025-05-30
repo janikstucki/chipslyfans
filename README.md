@@ -22,7 +22,6 @@ The platform is ideal for artists, performers, educators, fitness coaches, and a
 - **Vue Router**
 - **Pinia** (State Management)
 - **Tailwind CSS** (UI Styling)
-- **Axios** (HTTP client)
 
 ### Backend
 - **Node.js** with **Express.js**

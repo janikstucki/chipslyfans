@@ -67,14 +67,14 @@
     },
     "notifications": {
         "inbox": "Posteingang",
-        "like": "hat deinen Beitrag geliked",
-        "comment": "hat deinen Beitrag kommentiert",
-        "visit": "hat deinen Beitrag besucht",
-        "share": "hat deinen Beitrag geteilt",
+        "like": "hat deinen Beitrag geliked ",
+        "comment": "hat deinen Beitrag kommentiert ",
+        "post_visit": "hat deinen Beitrag angesehen ",
+        "share": "hat deinen Beitrag geteilt ",
         "subscription": "hat dich abonniert",
-        "message": "hat dir eine Nachricht gesendet",
+        "message": "hat dir eine Nachricht geschickt",
         "mention": "hat dich in einem Beitrag erwähnt",
-        "login_alert": "hat sich bei deinem Konto angemeldet"
+        "login_alert": "hat sich in deinen Account eingeloggt"
     },
     "newpost": {
         "confirmation_box": {

@@ -29,13 +29,14 @@ export const getUserInteractions = async (req, res) => {
       messages: 'message',
       postVisit: 'post_visit',
       mentions: 'mention',
-      loginAlerts: 'login_alert' 
+      loginAlerts: 'login_alert'
     };
 
     const allowedTypes = Object.keys(enabledNotifications)
       .filter(key => enabledNotifications[key])
       .map(key => notificationTypeMap[key]);
 
+    // 🧩 Teil 1: Eigene Interaktionen wie bisher
     const interactions = await Interaction.findAll({
       where: {
         userId,
@@ -56,12 +57,50 @@ export const getUserInteractions = async (req, res) => {
       order: [['createdAt', 'DESC']]
     });
 
-    res.status(200).json(interactions);
+    // 🧩 Teil 2: Fremde Visits auf eigene Posts
+    const myPosts = await Post.findAll({
+      where: { authorId: userId },
+      attributes: ['id']
+    });
+
+    const myPostIds = myPosts.map(post => post.id);
+
+    let visitsOnMyPosts = [];
+    if (myPostIds.length > 0) {
+      visitsOnMyPosts = await Interaction.findAll({
+        where: {
+          postId: myPostIds,
+          type: 'post_visit',
+          userId: { [Op.ne]: userId }
+        },
+        include: [
+          {
+            model: Post,
+            as: 'post',
+            attributes: ['id', 'title']
+          },
+          {
+            model: User,
+            as: 'user',
+            attributes: ['id', 'username', 'profilepicture']
+          }
+        ],
+        order: [['createdAt', 'DESC']]
+      });
+    }
+
+    // 🧩 Endgültige Antwort
+    res.status(200).json({
+      myInteractions: interactions,
+      visitsOnMyPosts
+    });
+
   } catch (err) {
     console.error('❌ Fehler beim Laden der Interaktionen:', err);
     res.status(500).json({ error: 'Fehler beim Laden der Interaktionen' });
   }
 };
+
 
 
 export const markInteractionAsRead = async (req, res) => {
