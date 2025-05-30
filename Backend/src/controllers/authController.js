@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { config } from 'dotenv';
-import { User } from "../models/index.js";
+import { User, Interaction } from "../models/index.js";
 import bcrypt from 'bcryptjs';
 import { generateToken, verifyToken } from '../utils/jwt.js';
 
@@ -25,7 +25,14 @@ export const login = async (req, res) => {
         }
     
         const token = generateToken(user);
+
         console.log("Generated JWT for user:", user.id); // Verify token generation
+        await Interaction.create({
+            userId: user.id,
+            type: 'login_alert',
+            tags: [], // optional: wenn du z. B. ["Security"] taggen willst
+            isRead: false
+        });
 
         res.cookie('jwt', token, { 
             httpOnly: true,

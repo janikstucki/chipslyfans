@@ -13,7 +13,8 @@ export const Interaction = sequelize.define("Interaction", {
     },
     postId: {
         type: DataTypes.UUID,
-        allowNull: false,
+        allowNull: true,
+        defaultValue: null, 
     },
     type: {
         type: DataTypes.ENUM(
