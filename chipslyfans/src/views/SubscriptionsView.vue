@@ -71,25 +71,30 @@
   </template>
     
 <script setup>
-  import { ref } from 'vue';
-  import { MinusCircleIcon } from '@heroicons/vue/24/outline'
+  import { ref, onMounted } from 'vue';
 
+  const subscriptions = ref([]);
 
-  const subscriptions = ref([
-    {
-      id: 1,
-      creator: '@Julian#78728723',
-      untilDate: '24.12.2025'
-    },
-    {
-      id: 2,
-      creator: '@Chipsly#69420',
-      untilDate: '13.02.2027'
-    }
-  ]);
-  const handleClick = () => {
-  console.log('Button wurde geklickt!');
-};
+  onMounted(async () => {
+      try {
+          const res = await fetch('/api/subscription/my', {
+              method: 'GET',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              credentials: 'include', // falls du Cookies (z. B. für auth) brauchst
+          });
+
+          if (!res.ok) {
+              throw new Error('Fehler beim Laden der Subscriptions');
+          }
+
+          const data = await res.json();
+          subscriptions.value = data;
+      } catch (error) {
+          console.error('Fehler beim Laden der Subscriptions:', error);
+      }
+  });
 </script>
   
   

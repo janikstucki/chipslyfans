@@ -1,4 +1,4 @@
-import { Abonnement, Subscription } from '../models/index.js';
+import { Abonnement, Subscription, User  } from '../models/index.js';
 
 export const checkSubscriptionStatus = async (req, res) => {
     const { creatorId } = req.params; // ID des Profilbesitzers
@@ -63,3 +63,39 @@ export const cancelSubscription = async (req, res) => {
         res.status(500).json({ message: "Serverfehler beim Kündigen der Subscription" });
     }
 }
+
+export const getMySubscriptions = async (req, res) => {
+    const consumerId = req.user?.id;
+
+    if (!consumerId) {
+        return res.status(401).json({ message: "Nicht autorisiert" });
+    }
+
+    try {
+        const subscriptions = await Subscription.findAll({
+            where: { consumerId },
+            include: [{
+                model: Abonnement,
+                include: [{
+                    model: User,
+                    as: 'creator',
+                    attributes: ['id', 'username'], // oder was du brauchst
+                }],
+            }],
+        });
+
+        const formatted = subscriptions.map(sub => ({
+            id: sub.id,
+            abonnementId: sub.abonnementId,
+            creator: sub.Abonnement?.creator?.username || 'Unbekannt',
+            subscribedAt: sub.subscribedAt,
+            expiresAt: sub.expiresAt,
+            isActive: sub.isActive,
+        }));
+
+        res.json(formatted);
+    } catch (error) {
+        console.error("Fehler bei getMySubscriptions:", error);
+        res.status(500).json({ message: "Serverfehler beim Holen der Subscriptions" });
+    }
+};
