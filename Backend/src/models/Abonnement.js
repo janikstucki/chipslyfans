@@ -16,6 +16,10 @@ export const Abonnement = sequelize.define("Abonnement", {
         type: DataTypes.DECIMAL(10, 2),
         allowNull: false,
     },
+    futureCost: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true,
+    },
     description: {
         type: DataTypes.TEXT,
         allowNull: true,
@@ -28,6 +32,8 @@ export const Abonnement = sequelize.define("Abonnement", {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
     },
+    
+    
 }, {
     tableName: "abonnements",
     timestamps: false
