@@ -34,34 +34,34 @@
           <h2 class="text-lg font-semibold mb-4">Mein Abonnement Dashboard</h2>
           
           <div v-if="myAbonnement">
-            <p>Aktueller Preis: {{ myAbonnement.cost }} €</p>
-            <p>Ab nächstem Jahr: {{ myAbonnement.futureCost || 'nicht gesetzt' }} €</p>
-            <p>Abonnenten: {{ subscriberCount }}</p>
+            <p>Aktueller Preis: {{ myAbonnement.abonnement.cost }} CHF</p>
+            <p>Ab nächstem Jahr: {{ myAbonnement.abonnement.futureCost || 'nicht gesetzt' }} CHF</p>
+            <p>Abonnenten: {{ myAbonnement.subscriberCount }}</p>
 
             <div class="mt-4 grid grid-cols-3 gap-4">
               <div class="p-4 bg-gray-50 rounded">
                 <p class="text-sm text-gray-500">Heute</p>
-                <p class="text-xl font-bold">{{ earningsToday }} €</p>
+                <p class="text-xl font-bold">{{ myAbonnement.earnings.today }} CHF</p>
               </div>
               <div class="p-4 bg-gray-50 rounded">
                 <p class="text-sm text-gray-500">Diesen Monat</p>
-                <p class="text-xl font-bold">{{ earningsMonth }} €</p>
+                <p class="text-xl font-bold">{{ myAbonnement.earnings.month }} CHF</p>
               </div>
               <div class="p-4 bg-gray-50 rounded">
                 <p class="text-sm text-gray-500">Dieses Jahr</p>
-                <p class="text-xl font-bold">{{ earningsYear }} €</p>
+                <p class="text-xl font-bold">{{ myAbonnement.earnings.year }} CHF</p>
               </div>
             </div>
 
             <div class="mt-6">
-              <input v-model="newPrice" type="number" class="border p-2 rounded" placeholder="Neuer Preis ab nächstem Jahr" />
+              <input v-model="newPrice" type="number" class="w-auto border p-2 rounded" placeholder="Neuer Preis ab nächstem Jahr" />
               <button @click="updatePrice" class="ml-2 bg-blue-600 text-white px-4 py-2 rounded">Preis ändern</button>
             </div>
           </div>
 
           <div v-else>
             <h3 class="text-md font-medium mb-2">Noch kein Abonnement erstellt</h3>
-            <input v-model="createPrice" type="number" class="border p-2 rounded" placeholder="Preis in €" />
+            <input v-model="createPrice" type="number" class=" border p-2 rounded" placeholder="Preis in CHF" />
             <textarea v-model="createDescription" class="border p-2 rounded mt-2 w-full" placeholder="Beschreibung"></textarea>
             <button @click="createAbonnement" class="mt-2 bg-green-600 text-white px-4 py-2 rounded">Abonnement erstellen</button>
           </div>
@@ -72,63 +72,91 @@
     
 <script setup>
   import { ref, onMounted } from 'vue';
+  import { useUserStore } from '../store/auth.js';
   import { MinusCircleIcon } from '@heroicons/vue/24/solid';
   
+  const userStore = useUserStore();
+
+
   const subscriptions = ref([]);
+  const myAbonnement = ref(null);
   const createPrice = ref('');
   const createDescription = ref('');
+  const newPrice = ref('');
+  let userId = ref('')
   
   onMounted(async () => {
-    try {
-          const res = await fetch(`${import.meta.env.VITE_BASE_URL}/subscription/my`, {
-              method: 'GET',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              credentials: 'include', // falls du Cookies (z. B. für auth) brauchst
-          });
+    await userStore.fetchCurrentUser();
+    userId = userStore.userId;
 
-          if (!res.ok) {
-              throw new Error('Fehler beim Laden der Subscriptions');
-          }
-
-          const data = await res.json();
-          subscriptions.value = data;
-      } catch (error) {
-          console.error('Fehler beim Laden der Subscriptions:', error);
-      }
+    subscriptions.value = await getSubscriptions(userId);
+    myAbonnement.value = await getAbonnement(userId);
+    console.log('Subscriptions:', subscriptions.value);
   });
 
+  async function getSubscriptions(userId) {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/subscription/my/${userId}`, {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          credentials: 'include', 
+        });
+        if (!res.ok) {
+            throw new Error('Fehler beim Laden der Subscriptions');
+        }
+        const data = await res.json();
+        return data;
+    } catch (error) {
+      console.error('Fehler beim Laden der Subscriptions:', error);
+    }
+  }
+
+  async function getAbonnement(userId) {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_BASE_URL}/abonnements/${userId}`, {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          credentials: 'include', 
+        });
+        if (!res.ok) {
+            throw new Error('Fehler beim Laden des Abonnements');
+        }
+        const data = await res.json();
+        return data;
+    } catch (error) {
+      console.error('Fehler beim Laden des Abonnements:', error);
+    }
+  }
 
   const createAbonnement = async () => {
-      try {
-          const res = await fetch(`${import.meta.env.VITE_BASE_URL}/abonnements`, {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/json',
-              },
-              credentials: 'include',
-              body: JSON.stringify({
-                  cost: createPrice.value,
-                  description: createDescription.value,
-              }),
-          });
-
-          if (!res.ok) {
-              const err = await res.json();
-              throw new Error(err.message || 'Fehler beim Erstellen des Abonnements');
-          }
-
-          const data = await res.json();
-          console.log('Abonnement erstellt:', data);
-          alert('Abonnement erfolgreich erstellt!');
-          // Optional: Seite neu laden oder Dashboard-Daten neu holen
-      } catch (error) {
-          console.error('Fehler beim Erstellen des Abonnements:', error);
-          alert(error.message);
-      }
+    try {
+        const res = await fetch(`${import.meta.env.VITE_BASE_URL}/abonnements`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                cost: createPrice.value,
+                description: createDescription.value,
+            }),
+        });
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.message || 'Fehler beim Erstellen des Abonnements');
+        }
+        const data = await res.json();
+        console.log('Abonnement erstellt:', data);
+        alert('Abonnement erfolgreich erstellt!');
+        // Optional: Seite neu laden oder Dashboard-Daten neu holen
+    } catch (error) {
+        console.error('Fehler beim Erstellen des Abonnements:', error);
+        alert(error.message);
+    }
   };
 
 </script>
-  
-  

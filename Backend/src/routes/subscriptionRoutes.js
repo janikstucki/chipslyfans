@@ -7,6 +7,6 @@ const router = express.Router();
 router.get('/status/:creatorId', authenticate, checkSubscriptionStatus);
 router.delete('/cancel/:subscriptionId', authenticate, cancelSubscription);
 
-router.get('/my', authenticate, getMySubscriptions);
+router.get('/my/:userId', authenticate, getMySubscriptions);
 
 export default router;
