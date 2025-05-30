@@ -108,3 +108,43 @@ export const getAbonnementDashboard = async (req, res) => {
     }
 };
 
+
+
+export async function updateFutureCost(abonnementId, futureCost) {
+    if (!futureCost || isNaN(futureCost)) {
+        throw new Error('Ungültiger Preis');
+    }
+
+    const abonnement = await Abonnement.findByPk(abonnementId);
+    if (!abonnement) {
+        throw new Error('Abonnement nicht gefunden');
+    }
+
+    abonnement.futureCost = futureCost;
+    await abonnement.save();
+
+    return abonnement;
+}
+
+export async function handleUpdateFutureCost(req, res) {
+    const { id } = req.params;
+    const { futureCost } = req.body;
+
+    try {
+        const updatedAbonnement = await updateFutureCost(id, futureCost);
+        res.json({
+            message: 'Future-Cost erfolgreich aktualisiert',
+            abonnement: updatedAbonnement,
+        });
+    } catch (error) {
+        console.error('Fehler beim Aktualisieren des Future-Cost:', error);
+        if (error.message === 'Abonnement nicht gefunden') {
+            res.status(404).json({ message: error.message });
+        } else if (error.message === 'Ungültiger Preis') {
+            res.status(400).json({ message: error.message });
+        } else {
+            res.status(500).json({ message: 'Interner Serverfehler' });
+        }
+    }
+}
+
