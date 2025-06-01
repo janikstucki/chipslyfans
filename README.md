@@ -50,8 +50,7 @@ The platform is ideal for artists, performers, educators, fitness coaches, and a
 - Pay-per-view (PPV) content
 
 ### 💳 Monetization
-- Monthly and yearly subscription models
-- Custom tip amounts and donation options
+- Monthly subscription models
 - Revenue dashboard for creators
 - Integrated payment gateway with Stripe
 
