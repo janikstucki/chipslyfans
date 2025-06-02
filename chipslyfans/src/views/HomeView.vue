@@ -333,7 +333,6 @@ const router = useRouter()
 const navigateToPost = (id) => {
   router.push({ name: 'PostDetail', params: { id: id } })
 }
-
 const filteredPosts = computed(() => {
   if (!searchQuery.value) return displayedPosts.value;
 
@@ -343,10 +342,11 @@ const filteredPosts = computed(() => {
       (post.title && post.title.toLowerCase().includes(query)) ||
       (post.content && post.content.toLowerCase().includes(query)) ||
       (post.author?.username && post.author.username.toLowerCase().includes(query)) ||
-      (post.author?.beschreibung && post.author.beschreibung.toLowerCase().includes(query))
+      (post.tags && post.tags.some(tag => tag.toLowerCase().includes(query)))
     );
   });
 });
+
 
 
 
