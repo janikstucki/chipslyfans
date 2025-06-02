@@ -52,7 +52,6 @@
           <!-- Feed -->
           <div  
               v-for="post in filteredPosts"
-
               :key="post.id"
               class="bg-white shadow-sm rounded-lg p-4 mb-6 hover:shadow-md transition"
               @click="!isClickOnProfile && navigateToPost(post.id)"
@@ -344,7 +343,6 @@ const router = useRouter()
 const navigateToPost = (id) => {
   router.push({ name: 'PostDetail', params: { id: id } })
 }
-
 const filteredPosts = computed(() => {
   if (!searchQuery.value) return displayedPosts.value;
 
@@ -358,6 +356,7 @@ const filteredPosts = computed(() => {
     );
   });
 });
+
 
 
 
