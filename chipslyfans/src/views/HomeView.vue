@@ -51,7 +51,8 @@
         <div class="space-y-4">
           <!-- Feed -->
           <div  
-              v-for="post in displayedPosts"
+              v-for="post in filteredPosts"
+
               :key="post.id"
               class="bg-white shadow-sm rounded-lg p-4 mb-6 hover:shadow-md transition"
               @click="!isClickOnProfile && navigateToPost(post.id)"
@@ -344,13 +345,19 @@ const navigateToPost = (id) => {
   router.push({ name: 'PostDetail', params: { id: id } })
 }
 
-const filteredBeitraege = computed(() => {
-  if (!searchQuery.value) return beitraege.value
-  return beitraege.value.filter(beitrag => 
-    beitrag.inhalt.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-    beitrag.autor.toLowerCase().includes(searchQuery.value.toLowerCase())
-  )
-})
+const filteredPosts = computed(() => {
+  if (!searchQuery.value) return displayedPosts.value;
+
+  const query = searchQuery.value.toLowerCase();
+  return displayedPosts.value.filter(post => {
+    return (
+      (post.title && post.title.toLowerCase().includes(query)) ||
+      (post.content && post.content.toLowerCase().includes(query)) ||
+      (post.author?.username && post.author.username.toLowerCase().includes(query)) ||
+      (post.tags && post.tags.some(tag => tag.toLowerCase().includes(query)))
+    );
+  });
+});
 
 
 
