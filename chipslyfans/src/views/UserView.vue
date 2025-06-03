@@ -30,12 +30,18 @@
     </div>
     <!-- UserView -->
     <div v-if="!loading" class="max-w-5xl mx-auto px-4 py-8">
-        <div class="flex justify-end mb-4" v-if="currentUserId === user.id">
+        <div class="flex gap-2 justify-end mb-4" v-if="currentUserId === user.id">
             <button
                 class="text-gray-600 hover:text-gray-800 transition"
                 @click="goToSettings"
                 title="Einstellungen">
                 <Cog6ToothIcon class="w-6 h-6" />
+            </button>
+            <button v-if="user.abonnement.creatorId == user.id"
+                class="text-gray-600 hover:text-gray-800 transition"
+                @click="goToDashboard"
+                title="Dashboard">
+                <img :src='dashboardIcon' alt="dashboard-icon" class="w-6 h-6" />
             </button>
         </div>
 
@@ -117,6 +123,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 
 import { Cog6ToothIcon } from '@heroicons/vue/24/outline'
+import dashboardIcon from '../assets/icons/dashboardIcon.png';
 
 
 const { t } = useI18n();
@@ -231,6 +238,10 @@ onMounted(async () => {
 
 function goToSettings() {
   router.push({ name: 'Settings' }); // oder dein passender Route-Name
+}
+
+function goToDashboard() {
+  router.push({ name: 'AboDashboard' }); // oder dein passender Route-Name
 }
 </script>
 

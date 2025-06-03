@@ -10,6 +10,7 @@ const UserDetail = () => import(/* webpackChunkName: "UserView" */ '../views/Use
 const Settings = () => import(/* webpackChunkName: "Settings" */ '../views/SettingsView.vue');
 const NewPost = () => import(/* webpackChunkName: "NewPostView" */ '../views/NewPostView.vue')
 const PaymentSuccess = () => import(/* webpackChunkName: "PaymentSuccess" */ '../views/PaymentSuccess.vue')
+const AboDashboard = () => import(/* webpackChunkName: "AboDashboard" */ '../views/AboDashboard.vue');
 
 
 const routes = [
@@ -40,38 +41,45 @@ const routes = [
 
     },
     {
-    path: '/user/:id/settings',
-    component: Settings,
-    name: 'Settings',
-    props: true,
-    meta: { requiresAuth: true, fullScreen: true },
-    children: [
-        {
-            path: '', // default child route
-            name: 'SettingsProfile',
-            component: () => import('../views/settings/SettingsProfile.vue'),
-        },
-        {
-            path: 'security',
-            name: 'SettingsSecurity',
-            component: () => import('../views/settings/SettingsSecurity.vue'),
-        },
-        {
-            path: 'notifications',
-            name: 'SettingsNotifications',
-            component: () => import('../views/settings/SettingsNotifications.vue'),
-        },
-        {
-            path: 'billing',
-            name: 'SettingsBilling',
-            component: () => import('../views/settings/SettingsBilling.vue'),
-        },
-        {
-            path: 'delete-account',
-            name: 'SettingsDelete',
-            component: () => import('../views/settings/SettingsDelete.vue'),
-        },
-    ]
+        path: '/user/:id/settings',
+        component: Settings,
+        name: 'Settings',
+        props: true,
+        meta: { requiresAuth: true, fullScreen: true },
+        children: [
+            {
+                path: '', // default child route
+                name: 'SettingsProfile',
+                component: () => import('../views/settings/SettingsProfile.vue'),
+            },
+            {
+                path: 'security',
+                name: 'SettingsSecurity',
+                component: () => import('../views/settings/SettingsSecurity.vue'),
+            },
+            {
+                path: 'notifications',
+                name: 'SettingsNotifications',
+                component: () => import('../views/settings/SettingsNotifications.vue'),
+            },
+            {
+                path: 'billing',
+                name: 'SettingsBilling',
+                component: () => import('../views/settings/SettingsBilling.vue'),
+            },
+            {
+                path: 'delete-account',
+                name: 'SettingsDelete',
+                component: () => import('../views/settings/SettingsDelete.vue'),
+            },
+        ]
+    },
+    {
+        path: '/user/:id/dashboard',
+        name: 'AboDashboard',
+        component: AboDashboard,
+        props: true,
+        meta: { requiresAuth: true, fullScreen: true }
     },
     {
         path: '/login',
