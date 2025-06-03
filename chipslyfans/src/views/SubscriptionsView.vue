@@ -30,7 +30,10 @@
             </div>
           </div>
         </div>
-        <div class="p-6 mt-8 bg-white rounded-lg shadow">
+        <div class="p-6 mt-8 bg-white rounded-lg shadow relative">
+          <button v-if="myAbonnement" class="absolute top-4 right-4 text-gray-600 hover:text-gray-800 transition" @click="goToDashboard" title="Dashboard">
+            <img :src='dashboardIcon' alt="dashboard-icon" class="w-6 h-6" />
+          </button>
           <h2 class="text-lg font-semibold mb-4">Mein Abonnement Dashboard</h2>
           
           <div v-if="myAbonnement">
@@ -73,9 +76,13 @@
 <script setup>
   import { ref, onMounted } from 'vue';
   import { useUserStore } from '../store/auth.js';
+  import { useRouter } from 'vue-router';
+
   import { MinusCircleIcon } from '@heroicons/vue/24/solid';
-  
+  import dashboardIcon from '../assets/icons/dashboardIcon.png';
+
   const userStore = useUserStore();
+  const router = useRouter();
 
 
   const subscriptions = ref([]);
@@ -193,4 +200,8 @@
           alert(error.message || 'Fehler beim Aktualisieren des Preises');
       }
   };
+
+function goToDashboard() {
+  router.push(`/user/${userId}/dashboard`); // oder dein passender Route-Name
+}
 </script>
