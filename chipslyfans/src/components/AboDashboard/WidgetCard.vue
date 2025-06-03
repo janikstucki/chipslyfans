@@ -1,5 +1,5 @@
 <template>
-    <div class="flex items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md w-full max-w-xs">
+    <div class="flex items-center gap-4 bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md w-[260px]">
         <component :is="iconComponent" class="h-8 w-8 text-blue-600" />
         <div>
             <p class="text-sm text-gray-500 dark:text-gray-400">{{ title }}</p>
@@ -10,7 +10,9 @@
 </template>
 
 <script setup>
-    defineProps({
+    import { computed } from 'vue';
+    import { CurrencyDollarIcon, UserGroupIcon, UserPlusIcon, ChartBarIcon } from '@heroicons/vue/24/outline';
+    const props = defineProps({
         icon: String,
         title: String,
         value: String,
@@ -19,10 +21,10 @@
 
     const iconComponent = computed(() => {
         return {
-        CurrencyDollarIcon,
-        UserGroupIcon,
-        UserPlusIcon,
-        ChartBarIcon,
-        }[icon];
+            CurrencyDollarIcon,
+            UserGroupIcon,
+            UserPlusIcon,
+            ChartBarIcon,
+        }[props.icon];
     });
 </script>
