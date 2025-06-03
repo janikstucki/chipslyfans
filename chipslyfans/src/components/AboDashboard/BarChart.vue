@@ -1,5 +1,7 @@
 <template>
-    <Bar :data="data" :options="options" />
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md w-full">
+        <Bar :data="data" :options="options" />
+    </div>
 </template>
 
 <script setup>
@@ -39,6 +41,6 @@ const options = {
 
 <style scoped>
 :deep(canvas) {
-    height: 200px !important;
+    height: 100% !important;
 }
 </style>
