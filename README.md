@@ -9,7 +9,6 @@ ChipslyFans empowers creators and influencers to:
 - Offer tier-based subscriptions
 - Share exclusive content (images, posts)
 - Interact privately with subscribers
-- Receive tips and donations
 
 The platform is ideal for artists, performers, educators, fitness coaches, and anyone offering value through digital media.
 
